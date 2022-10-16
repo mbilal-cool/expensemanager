@@ -3,7 +3,6 @@ import {Provider} from 'react-redux';
 import {store} from '../expensemanager/src/utils/Redux/store';
 import MainNavigation from './src/Navigation/mainNavigation';
 import RNBootSplash from 'react-native-bootsplash';
-// RNBootSplash.hide(); // immediate
 const App = () => {
   useEffect(() => {
     RNBootSplash.hide({fade: true});
