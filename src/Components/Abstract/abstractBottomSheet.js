@@ -9,6 +9,7 @@ const AbstractBottomSheet = props => {
   const {colors} = useTheme();
   return (
     <ActionSheet
+      // overdrawEnabled={false}
       onClose={() => props.onClose()}
       id={props.id}
       statusBarTranslucent={true}

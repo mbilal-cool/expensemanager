@@ -14,6 +14,7 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		184FA22A28FD2BF6008ECE0F /* 87.png in Resources */ = {isa = PBXBuildFile; fileRef = 184FA22928FD2BF6008ECE0F /* 87.png */; };
 		18DFAB7E28FC222000E73278 /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 18DFAB7D28FC222000E73278 /* BootSplash.storyboard */; };
 		1BB306B45C0F4DE78649AB55 /* Inter-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DFEE551E7CF442AF939F9678 /* Inter-Bold.ttf */; };
 		25A40B85B43A4B47A0DD78F6 /* Inter-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EE8FCC075EED491FB3DB2B2D /* Inter-SemiBold.ttf */; };
@@ -51,6 +52,7 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = expensemanager/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = expensemanager/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = expensemanager/main.m; sourceTree = "<group>"; };
+		184FA22928FD2BF6008ECE0F /* 87.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = 87.png; path = ../../../Downloads/AppIcons/Assets.xcassets/AppIcon.appiconset/87.png; sourceTree = "<group>"; };
 		18DFAB7D28FC222000E73278 /* BootSplash.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = BootSplash.storyboard; path = expensemanager/BootSplash.storyboard; sourceTree = "<group>"; };
 		19F6CBCC0A4E27FBF8BF4A61 /* libPods-expensemanager-expensemanagerTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-expensemanager-expensemanagerTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1D981C66D469469AA270D410 /* Arial-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Arial-Italic.ttf"; path = "../src/Assets/Fonts/Arial-Italic.ttf"; sourceTree = "<group>"; };
@@ -118,6 +120,7 @@
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
+				184FA22928FD2BF6008ECE0F /* 87.png */,
 				18DFAB7D28FC222000E73278 /* BootSplash.storyboard */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
@@ -308,6 +311,7 @@
 				9E553675803B4D47910455F5 /* Inter-Regular.ttf in Resources */,
 				25A40B85B43A4B47A0DD78F6 /* Inter-SemiBold.ttf in Resources */,
 				0D97FAA647DE40C18D15F0DE /* Inter-Thin.ttf in Resources */,
+				184FA22A28FD2BF6008ECE0F /* 87.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

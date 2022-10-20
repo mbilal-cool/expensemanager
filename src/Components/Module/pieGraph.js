@@ -68,10 +68,6 @@ const PieGraphV2 = ({onPressSector, data}) => {
         justifyContent: 'center',
       }}>
       <VictoryPie
-        dataComponent={
-          <Slice events={{onPressSector: () => console.log('hello')}} />
-        }
-        // labels={({datum}) => console.log(datum)}
         containerComponent={<VictoryContainer responsive={false} />}
         labelPlacement={'parallel'}
         labelRadius={50}
@@ -96,7 +92,6 @@ const PieGraphV2 = ({onPressSector, data}) => {
             target: 'data',
             eventHandlers: {
               onPress: () => {
-                // labelOutside === true ? SetShowLabel(true) : null;
                 return [
                   {
                     target: 'data',
@@ -140,7 +135,7 @@ const PieGraphV2 = ({onPressSector, data}) => {
                   style={{
                     height: 10,
                     width: 10,
-                    borderRadius: 5,
+                    borderRadius: 15,
                     backgroundColor: item.color,
                   }}></View>
                 <Text

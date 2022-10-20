@@ -21,6 +21,9 @@ const AbstractTextInput = ({
   renderInputIcon,
   labelStyle,
   password,
+  validate,
+
+  errorMessage,
 }) => {
   const {colors} = useTheme();
   const defaultHeight = Height ? Height : 50;
@@ -30,11 +33,18 @@ const AbstractTextInput = ({
   const defaultBorderWidth = borderWidth ? borderWidth : 0;
   const defaultBorderBottomWidth = borderBottomWidth ? borderBottomWidth : null;
   const defaultBorderColor = borderColor ? borderColor : 0;
-  const defaultValue = Value ? Value : null;
+
   const defaultBackgroundColor = backgroundColor
     ? backgroundColor
     : colors.white;
   const defaultLabelStyle = labelStyle ? labelStyle : styles.labelStyle;
+  const validateErrorMessage = () => {
+    if (Value == '') {
+      return validate ? '*Required Field' : null;
+    } else if (Value != '') {
+      return validate ? errorMessage : null;
+    }
+  };
   switch (type) {
     case 'simple':
       return (
@@ -85,10 +95,22 @@ const AbstractTextInput = ({
                     {flexDirection: 'row', alignItems: 'center'},
                   ]}
                   placeholderTextColor={placeholderTextColor}
-                  value={defaultValue}
-                  onChangeText={onChangeText}
+                  value={Value}
+                  onChangeText={e => {
+                    onChangeText(e);
+                  }}
                   secureTextEntry={password ? true : false}
                 />
+                <Text
+                  style={{
+                    color: colors.red1,
+                    fontSize: 12,
+                    position: 'absolute',
+                    bottom: -30,
+                    left: 0,
+                  }}>
+                  {validateErrorMessage()}
+                </Text>
               </View>
             </View>
           </View>
@@ -162,7 +184,7 @@ const AbstractTextInput = ({
                   styles.placeHolderTextStyle,
                   {color: colors.black},
                 ]}
-                value={defaultValue}
+                value={Value}
                 onChangeText={onChangeText}
               />
 

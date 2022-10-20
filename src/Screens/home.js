@@ -42,39 +42,13 @@ const Home = ({navigation}) => {
   const [sheetType, setSheetType] = useState('selectDate');
   const [isVisible, setIsVisible] = useState(false);
   const [user, setUser] = useState({name: 'bilal', password: 12345});
-  useEffect(() => {
-    setObjectValue(user);
-    getMyObject().then(res => console.log('hitt', res));
-    setIsVisible(true);
-  }, []);
-  const setObjectValue = async value => {
-    try {
-      const jsonValue = JSON.stringify(value);
-      await AsyncStorage.setItem('key', jsonValue);
-    } catch (e) {
-      // save error
-    }
-
-    console.log('Done.');
-  };
-
-  const getMyObject = async () => {
-    try {
-      const jsonValue = await AsyncStorage.getItem('key');
-      return jsonValue != null ? JSON.parse(jsonValue) : null;
-    } catch (e) {
-      // read error
-    }
-
-    console.log('Doneget.');
-  };
 
   const handleEntryDeatilPressed = () => {
     navigation.navigate('EntryDetails');
   };
 
   const onFocusSearchInput = () => {
-    // navigation.navigate('Users');
+    navigation.navigate('Search');
   };
   const openHomeBottomSheet = () => {
     setSheetType('selectDate');

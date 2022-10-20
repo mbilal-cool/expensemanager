@@ -5,31 +5,20 @@ import {
   Dimensions,
   TouchableOpacity,
   Alert,
+  KeyboardAvoidingView,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import AbstractBottomSheet from '../Abstract/abstractBottomSheet';
 import {SheetManager} from 'react-native-actions-sheet';
 import {Fonts, lightThemeColors} from '../../theme';
-
 import AbstractButton from '../Abstract/abstractButton';
 import AbstaractRadioButton from '../Abstract/abstractRadioButton';
 import {useTheme} from '@react-navigation/native';
-import {expenseList} from '../../mockData';
-
 import ArrowDownIconSvg from '../../Assets/Icons/arrowDownSvg';
 import ArrowUpIconSvg from '../../Assets/Icons/arrowUpSvg';
 import AbstractTextInput from '../Abstract/abstractTextInput';
 import {ScrollView} from 'react-native-gesture-handler';
-
-const HomeBottomSheet = ({
-  onPress,
-  id,
-  navigation,
-  type,
-  setType,
-  Date,
-  setDate,
-}) => {
+const HomeBottomSheet = ({id, type, setType, Date, setDate}) => {
   let allTime = {id: 1, title: 'All Time', pressed: false};
 
   const {height, width} = Dimensions.get('window');
@@ -37,7 +26,6 @@ const HomeBottomSheet = ({
   const {colors} = useTheme();
   const [buttonTitle, setButtonTitle] = useState('Add New');
   const [inputYear, SetInputYear] = useState('2022');
-  const [showAlert, setShowAlert] = useState(false);
 
   const [isVisible, setDropDownVisible] = useState(false);
   const [options, SetOptions] = useState([
@@ -323,7 +311,8 @@ const HomeBottomSheet = ({
             style={[
               styles.main,
               {
-                height: height * 0.25,
+                // height: height * 0.25,
+                height: 250,
                 paddingTop: 20,
                 backgroundColor: 'transparent',
                 justifyContent: 'flex-end',
@@ -375,7 +364,10 @@ const HomeBottomSheet = ({
                 borderWidth={1}
                 borderColor={lightThemeColors.grey}
                 Label={'ExpenseType'}
-                placeHolderTextStyle={styles.labelStyle}
+                placeHolderTextStyle={[
+                  styles.labelStyle,
+                  {color: colors.black},
+                ]}
                 type={'simple'}
                 PlaceHolder={'Type'}
                 placeholderTextColor={lightThemeColors.grey}

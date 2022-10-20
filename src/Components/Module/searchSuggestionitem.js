@@ -67,7 +67,7 @@ export default SearchSugesstionItem;
 const styles = StyleSheet.create({
   main: {
     position: 'absolute',
-    top: '61%',
+    top: '65%',
     left: 20,
     width: '100%',
 

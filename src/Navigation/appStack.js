@@ -13,12 +13,10 @@ import EntryDetails from '../Screens/detailEntry';
 import ExpenseType from '../Screens/expenseType';
 import ShowAllExpenses from '../Screens/showAllExpenses';
 import Users from '../Screens/message';
-import AuthStack from './authStack';
+
 const AppStack = () => {
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
-      <Stack.Screen component={AuthStack} name={'AuthStack'} />
-
       <Stack.Screen component={CustomBottomTabNavigation} name={'BottomTabs'} />
 
       <Stack.Screen
