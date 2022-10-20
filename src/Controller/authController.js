@@ -2,6 +2,7 @@ import {navigate} from '../Navigation/mainNavigation';
 import axios from 'axios';
 const baseUrl = 'https://reqres.in';
 class AuthController {
+  ////Abgjdbfjsb
   static handleSignupUser = () => {
     AuthController.signUpRequest()
       .then(res => console.log('hh', res), navigate('LogInScreen'))
