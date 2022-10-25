@@ -5,6 +5,7 @@ import {
   Image,
   TouchableOpacity,
   ImageBackground,
+  FlatList,
 } from 'react-native';
 import React from 'react';
 import AbstractButton from '../Abstract/abstractButton';
@@ -26,67 +27,70 @@ const ExpenseDetailItem = ({
   onPress = () => false,
 }) => {
   const {colors} = useTheme();
-  const expenseItems = {
-    date: '08/06/1197',
-    name: 'expense1',
-    type: 'salary',
-    Amount: '50,000,00',
-  };
   const defaultBackgroundColor = backgroundColor
     ? backgroundColor
     : colors.white;
   const defaultHeight = height ? height : 32;
   const defaultMarginBottom = marginBottom ? marginBottom : 0;
   const defaultBorderBottomWidth = borderBottomWidth ? borderBottomWidth : 0;
-  return expensesList?.map((item, index) => {
-    return (
-      <TouchableOpacity
-        key={index}
-        onPress={() => onPress()}
-        style={[
-          styles.Tile,
-          {
-            height: defaultHeight,
-            backgroundColor: defaultBackgroundColor,
-            borderRadius: borderRadius ? borderRadius : 0,
-            borderBottomWidth: defaultBorderBottomWidth,
-            marginBottom: defaultMarginBottom,
-          },
-          styles.shadowProp,
-        ]}>
-        <View
-          style={[styles.col, {justifyContent: 'flex-start', paddingLeft: 10}]}>
-          <Text style={[styles.itemTextStyle, {color: colors.black}]}>
-            {item.date}
-          </Text>
-        </View>
-        <View style={styles.col}>
-          <Text style={[styles.itemTextStyle, {color: colors.black}]}>
-            {item.name}
-          </Text>
-        </View>
-        <View style={[styles.col]}>
-          <Text style={[styles.itemTextStyle, {color: colors.black}]}>
-            {item.type}
-          </Text>
-        </View>
-        <View style={[styles.col]}>
-          <Text style={[styles.itemTextStyle, {color: colors.black}]}>
-            {item.Amount}
-          </Text>
-          {status ? (
-            <View style={{marginLeft: 10}}>
-              <ArrowUpIconSvg />
+
+  return (
+    <FlatList
+      data={expensesList}
+      renderItem={({item, index}) => {
+        return (
+          <TouchableOpacity
+            onPress={() => onPress()}
+            style={[
+              styles.Tile,
+              {
+                height: defaultHeight,
+                backgroundColor: defaultBackgroundColor,
+                borderRadius: borderRadius ? borderRadius : 0,
+                borderBottomWidth: defaultBorderBottomWidth,
+                marginBottom: defaultMarginBottom,
+              },
+              styles.shadowProp,
+            ]}>
+            <View
+              style={[
+                styles.col,
+                {justifyContent: 'flex-start', paddingLeft: 10},
+              ]}>
+              <Text style={[styles.itemTextStyle, {color: colors.black}]}>
+                {item.date}
+              </Text>
             </View>
-          ) : (
-            <View style={{marginLeft: 10}}>
-              <ArrowRightIconSvg color={colors.red1} />
+            <View style={styles.col}>
+              <Text style={[styles.itemTextStyle, {color: colors.black}]}>
+                {item.name}
+              </Text>
             </View>
-          )}
-        </View>
-      </TouchableOpacity>
-    );
-  });
+            <View style={[styles.col]}>
+              <Text style={[styles.itemTextStyle, {color: colors.black}]}>
+                {item.type}
+              </Text>
+            </View>
+            <View style={[styles.col]}>
+              <Text style={[styles.itemTextStyle, {color: colors.black}]}>
+                {item.Amount}
+              </Text>
+              {status ? (
+                <View style={{marginLeft: 10}}>
+                  <ArrowUpIconSvg />
+                </View>
+              ) : (
+                <View style={{marginLeft: 10}}>
+                  <ArrowRightIconSvg color={colors.red1} />
+                </View>
+              )}
+            </View>
+          </TouchableOpacity>
+        );
+      }}
+      keyExtractor={item => item.id}
+    />
+  );
 };
 
 export default ExpenseDetailItem;

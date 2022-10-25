@@ -253,61 +253,59 @@ const Expenses = ({navigation}) => {
           // {backgroundColor: colors.defaultBackground},
         ]}>
         <ContainerElement>
-          <ScrollView style={{}} showsVerticalScrollIndicator={false}>
-            <ExpenseDetailItem
-              onPress={handleEntryDeatilPressed}
-              expensesList={expenses}
-              borderRadius={6}
-              marginBottom={5}
-            />
-            <View style={{width: '100%', alignItems: 'flex-end'}}>
-              <AbstractButton
-                backgroundColor={colors.white}
-                height={32}
-                title={'View All'}
-                titleStyle={{
-                  color: lightThemeColors.red1,
-                  fontFamily: Fonts.interBold,
-                  fontWeight: '500',
-                  fontSize: 10,
-                }}
-                renderRightIcon={() => (
-                  <View style={{flexDirection: 'row'}}>
-                    <ArrowRightIconSvg />
-                    <ArrowRightIconSvg />
-                  </View>
-                )}
-                iconMargin={3.5}
-                width={69}
-                borderRadius={5}
-                onPress={onViewAllpress}
-              />
-            </View>
-            <View
-              style={{
-                justifyContent: 'center',
-                // backgroundColor: 'yellow',
-                paddingRight: 100,
-              }}>
-              <PieGraphV2 onPressSector={onPressSector} data={expenseDetails} />
-
-              <AbstractModal isVisible={modalVisible}>
-                <View
-                  style={{
-                    height: 100,
-                    width: 100,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}>
-                  <AbstractButton
-                    title={'close'}
-                    onPress={() => setModalVisible(false)}
-                  />
-                  <Text>{modalData?.label}</Text>
+          <ExpenseDetailItem
+            onPress={handleEntryDeatilPressed}
+            expensesList={expenses}
+            borderRadius={6}
+            marginBottom={5}
+          />
+          <View style={{width: '100%', alignItems: 'flex-end'}}>
+            <AbstractButton
+              backgroundColor={colors.white}
+              height={32}
+              title={'View All'}
+              titleStyle={{
+                color: lightThemeColors.red1,
+                fontFamily: Fonts.interBold,
+                fontWeight: '500',
+                fontSize: 10,
+              }}
+              renderRightIcon={() => (
+                <View style={{flexDirection: 'row'}}>
+                  <ArrowRightIconSvg />
+                  <ArrowRightIconSvg />
                 </View>
-              </AbstractModal>
-            </View>
-          </ScrollView>
+              )}
+              iconMargin={3.5}
+              width={69}
+              borderRadius={5}
+              onPress={onViewAllpress}
+            />
+          </View>
+          <View
+            style={{
+              justifyContent: 'center',
+              // backgroundColor: 'yellow',
+              paddingRight: 100,
+            }}>
+            <PieGraphV2 onPressSector={onPressSector} data={expenseDetails} />
+
+            <AbstractModal isVisible={modalVisible}>
+              <View
+                style={{
+                  height: 100,
+                  width: 100,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <AbstractButton
+                  title={'close'}
+                  onPress={() => setModalVisible(false)}
+                />
+                <Text>{modalData?.label}</Text>
+              </View>
+            </AbstractModal>
+          </View>
         </ContainerElement>
       </View>
       <ExpensesBottomSheet

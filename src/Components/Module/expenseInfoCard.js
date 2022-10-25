@@ -1,18 +1,38 @@
-import {Dimensions, StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import {
+  ActivityIndicator,
+  Dimensions,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import React, {useEffect} from 'react';
 import {Fonts} from '../../theme';
 import {useTheme} from '@react-navigation/native';
+import AbstractButton from '../Abstract/abstractButton';
+import ExpenseController from '../../Controller/expenseController';
+import {useState} from 'react';
+import {useSelector} from 'react-redux';
+import RefreshIconSvg from '../../Assets/Icons/refreshIconSvg';
 const {height, width} = Dimensions.get('window');
 
-const ExpenseInfoCard = ({
-  backgroundColor,
+const ExpenseInfoCard = ({backgroundColor}) => {
+  const [loading, setLoading] = useState(true);
+  const [success, setSuccess] = useState();
 
-  onPress = () => false,
-}) => {
   const {colors} = useTheme();
   const defaultBackgroundColor = backgroundColor
     ? backgroundColor
     : colors.white;
+  useEffect(() => {
+    fetchData();
+  }, []);
+  const fetchData = () => {
+    setLoading(true);
+    ExpenseController.getTotalExpenses(res => {
+      setLoading(false), setSuccess(res.success);
+    });
+  };
+  const count = useSelector(state => state.expense.totalExpense);
 
   return (
     <View
@@ -24,23 +44,47 @@ const ExpenseInfoCard = ({
         },
         styles.Shadow,
       ]}>
-      <View style={[styles.tile, {height: height * 0.05}]}>
-        <Text style={[styles.itemTextStyle, {color: colors.black}]}>
-          Total Expenses
-        </Text>
-      </View>
-      <View style={[styles.tile, {height: height * 0.065}]}>
-        <Text
-          style={[
-            styles.priceTag,
-            {
-              color: colors.red1,
-              marginLeft: 5,
-            },
-          ]}>
-          Rs. 1,000,000
-        </Text>
-      </View>
+      {loading ? (
+        <ActivityIndicator size="large" color={colors.red1} />
+      ) : success ? (
+        <>
+          <View style={[styles.tile, {height: height * 0.05}]}>
+            <Text style={[styles.itemTextStyle, {color: colors.black}]}>
+              Total Expenses
+            </Text>
+          </View>
+          <View style={[styles.tile, {height: height * 0.065}]}>
+            <Text
+              style={[
+                styles.priceTag,
+                {
+                  color: colors.red1,
+                  marginLeft: 5,
+                },
+              ]}>
+              {count ? `Rs. \u0020${count}` : 'Rs. 1,000,000'}
+            </Text>
+          </View>
+        </>
+      ) : (
+        <View style={{alignItems: 'center'}}>
+          <AbstractButton
+            backgroundColor={colors.grey}
+            height={50}
+            titleStyle={{
+              color: colors.white,
+              fontFamily: Fonts.interBold,
+              fontWeight: '600',
+              fontSize: 16,
+            }}
+            renderLeftIcon={() => <RefreshIconSvg height={35} width={35} />}
+            width={50}
+            borderRadius={50}
+            onPress={fetchData}
+          />
+          <Text style={{marginTop: 0, color: colors.black1}}>Retry!</Text>
+        </View>
+      )}
     </View>
   );
 };
@@ -57,6 +101,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 20,
     zIndex: 9999,
+    alignItems: 'center',
   },
   tile: {
     height: 29,

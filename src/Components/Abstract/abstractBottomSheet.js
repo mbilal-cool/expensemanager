@@ -19,10 +19,10 @@ const AbstractBottomSheet = props => {
         backgroundColor: colors.white,
         borderTopLeftRadius: 25,
         borderTopRightRadius: 25,
+        paddingBottom: 20,
       }}
       // bounciness={5}
       drawUnderStatusBar={false}
-      // gestureEnabled={true}
       // indicatorStyle={{width: 70, height: 3.7, marginTop: 10}}
       // CustomHeaderComponent={props.MyHeader}
       overlayColor={'black'}
@@ -31,11 +31,10 @@ const AbstractBottomSheet = props => {
       {props.appendButton ? (
         <View
           style={{
-            marginBottom: 20,
             paddingHorizontal: 15,
+            paddingTop: 20,
             width: '97%',
             alignSelf: 'center',
-            // backgroundColor: 'green',
           }}>
           <AbstractButton
             backgroundColor={colors.red1}

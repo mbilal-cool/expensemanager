@@ -133,7 +133,14 @@ android {
     ndkVersion rootProject.ext.ndkVersion
 
     compileSdkVersion rootProject.ext.compileSdkVersion
-
+     signingConfigs{
+    release {
+      storeFile file('your_key_name')
+      storePassword 'kitkat123'
+      keyAlias 'your_key_alias'
+      keyPassword 'kitkat123'
+    }
+     }
     defaultConfig {
         applicationId "com.expensemanager"
         minSdkVersion rootProject.ext.minSdkVersion

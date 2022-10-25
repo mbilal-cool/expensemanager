@@ -18,6 +18,8 @@ const SignUpScreen = ({navigation}) => {
     passwordError: '',
   });
   const [validate, setValidate] = useState(false);
+  const [resError, setResError] = useState('');
+
   const [darkMode, setDarkMode] = useState();
   const {colors} = useTheme();
   useEffect(() => {
@@ -74,6 +76,7 @@ const SignUpScreen = ({navigation}) => {
     setValidate(true);
 
     if (
+      resError == '' &&
       user.nameError == '' &&
       user.emailError == '' &&
       user.passwordError == '' &&
@@ -81,8 +84,8 @@ const SignUpScreen = ({navigation}) => {
       user.email != '' &&
       user.password != ''
     ) {
-      AuthController.handleSignupUser();
-
+      AuthController.handleSignupUser(e => setResError(e));
+      console.log('hadi', resError);
       // navigation.navigate('LogInScreen');
     } else return;
   };
@@ -170,6 +173,21 @@ const SignUpScreen = ({navigation}) => {
             borderRadius={30}
             onPress={onSignUpButtonPressed}
           />
+          {resError != '' ? (
+            <Text
+              style={[
+                styles.labelStyle,
+                {
+                  color: colors.red1,
+                  position: 'absolute',
+                  bottom: -20,
+                  left: 17,
+                  fontSize: 14,
+                },
+              ]}>
+              Network Error, Try Again !
+            </Text>
+          ) : null}
         </View>
       </View>
     </View>

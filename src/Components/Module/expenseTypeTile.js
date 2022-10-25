@@ -15,29 +15,18 @@ const ExpenseTypeTile = ({
   Width,
   Label,
   placeHolder,
-  borderRadius,
-  borderWidth,
   borderColor,
   borderBottomWidth,
-  Value,
   onPress = () => false,
   backgroundColor,
   labelStyle,
 }) => {
   const {colors} = useTheme();
-  const [value, SetValue] = useState('');
-  const [options, SetOptions] = useState([
-    {label: 'OfficeExpense', value: '1'},
-    {label: 'SalaryExpense ', value: '2'},
-  ]);
   const defaultHeight = Height ? Height : 50;
   const defaultWidth = Width ? Width : '100%';
   const defaultLabel = Label ? Label : 'TextInput';
-  const defaultBorderRadius = borderRadius ? borderRadius : 50;
-  const defaultBorderWidth = borderWidth ? borderWidth : 0;
   const defaultBorderBottomWidth = borderBottomWidth ? borderBottomWidth : null;
   const defaultBorderColor = borderColor ? borderColor : lightThemeColors.grey1;
-  const defaultValue = Value ? Value : null;
   const defaultBackgroundColor = backgroundColor
     ? backgroundColor
     : colors.white;
@@ -56,14 +45,22 @@ const ExpenseTypeTile = ({
         },
       ]}>
       <View style={styles.tile}>
-        <View style={[styles.col, {justifyContent: 'flex-start'}]}>
+        <View
+          style={[
+            styles.col,
+            {
+              justifyContent: 'flex-start',
+              // backgroundColor: 'red',
+              paddingTop: 3,
+            },
+          ]}>
           <AllExpensesIconSvg height={12} width={15} />
         </View>
         <View
           style={[
             styles.col,
             {
-              //   backgroundColor: 'green',
+              // backgroundColor: 'green',
               width: '90%',
               justifyContent: 'flex-start',
               alignItems: 'flex-start',
@@ -83,8 +80,8 @@ const ExpenseTypeTile = ({
               alignItems: 'flex-start',
               justifyContent: 'space-between',
               // backgroundColor: 'green',
-              width: '85%',
-
+              width: '90%',
+              paddingTop: 3,
               borderBottomWidth: defaultBorderBottomWidth,
               borderColor: defaultBorderColor,
             },

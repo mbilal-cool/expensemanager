@@ -7,18 +7,12 @@ const PaymentDetailMethod = ({
   Height,
   Width,
   Label,
-  PlaceHolder,
   borderRadius,
   borderWidth,
   borderColor,
   borderBottomWidth,
   Value,
-  onChangeText = () => false,
   backgroundColor,
-  placeholderTextColor,
-  type,
-  renderLabelIcon,
-  renderInputIcon,
   labelStyle,
 }) => {
   const [options, SetOptions] = useState([
@@ -28,11 +22,8 @@ const PaymentDetailMethod = ({
   const defaultHeight = Height ? Height : 50;
   const defaultWidth = Width ? Width : '100%';
   const defaultLabel = Label ? Label : 'TextInput';
-  const defaultBorderRadius = borderRadius ? borderRadius : 50;
-  const defaultBorderWidth = borderWidth ? borderWidth : 0;
   const defaultBorderBottomWidth = borderBottomWidth ? borderBottomWidth : null;
   const defaultBorderColor = borderColor ? borderColor : lightThemeColors.grey1;
-  const defaultValue = Value ? Value : null;
   const defaultBackgroundColor = backgroundColor
     ? backgroundColor
     : lightThemeColors.white;
@@ -77,7 +68,7 @@ const PaymentDetailMethod = ({
               alignItems: 'center',
               justifyContent: 'flex-start',
               //   backgroundColor: 'red',
-              width: '85%',
+              width: '90%',
 
               borderBottomWidth: defaultBorderBottomWidth,
               borderColor: defaultBorderColor,

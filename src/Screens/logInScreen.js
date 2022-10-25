@@ -14,6 +14,7 @@ const LoginScreen = ({navigation}) => {
     password: '',
     passwordError: '',
   });
+  const [resError, setResError] = useState('error');
   const [validate, setValidate] = useState(false);
   const [darkMode, setDarkMode] = useState();
   const {colors} = useTheme();
@@ -139,6 +140,21 @@ const LoginScreen = ({navigation}) => {
             borderRadius={30}
             onPress={onLoginButtonPressed}
           />
+          {resError != '' ? (
+            <Text
+              style={[
+                styles.labelStyle,
+                {
+                  color: colors.red1,
+                  position: 'absolute',
+                  bottom: -20,
+                  left: 17,
+                  fontSize: 14,
+                },
+              ]}>
+              Network Error, Try Again !
+            </Text>
+          ) : null}
         </View>
       </View>
     </SafeAreaView>

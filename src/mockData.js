@@ -8,7 +8,7 @@ export const expenseList = [
     Amount: '50,000.00',
   },
   {
-    id: 1,
+    id: 2,
     title: 'Today',
     date: '10/09/22',
     name: 'Expanse 1',
@@ -16,7 +16,7 @@ export const expenseList = [
     Amount: '50,000.00',
   },
   {
-    id: 1,
+    id: 3,
     title: 'Today',
     date: '10/09/22',
     name: 'Expanse 1',

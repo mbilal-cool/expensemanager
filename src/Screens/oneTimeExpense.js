@@ -142,7 +142,13 @@ const OneTimeExpense = ({navigation}) => {
 
       <View style={styles.middleContainer}>
         <View
-          style={[styles.horizontalContainer, {backgroundColor: colors.white}]}>
+          style={[
+            styles.horizontalContainer,
+            {
+              // backgroundColor: colors.white
+              // backgroundColor: 'tomato',
+            },
+          ]}>
           <AbstractTextInput
             backgroundColor={'transparent'}
             borderBottomWidth={1}
@@ -165,13 +171,14 @@ const OneTimeExpense = ({navigation}) => {
                   <Text
                     style={[
                       styles.titleStyle,
-                      {color: colors.black, fontSize: 9},
+                      {color: colors.black, fontSize: 10},
                     ]}>
                     $
                   </Text>
                 </View>
               </View>
             )}
+            alignIcon={'flex-end'}
           />
           <AbstractTextInput
             backgroundColor={'transparent'}
@@ -186,7 +193,7 @@ const OneTimeExpense = ({navigation}) => {
           />
           <ExpenseTypeTile
             backgroundColor={'transparent'}
-            borderBottomWidth={2}
+            borderBottomWidth={1}
             Label={'ExpenseType'}
             placeHolder={'Office Expense'}
             borderColor={colors.grey2}
@@ -195,7 +202,7 @@ const OneTimeExpense = ({navigation}) => {
 
           <ExpenseDateTile
             backgroundColor={'transparent'}
-            borderBottomWidth={2}
+            borderBottomWidth={1}
             Label={'Date'}
             borderColor={colors.grey2}
             onPress={handleDatePress}
@@ -311,7 +318,7 @@ const styles = StyleSheet.create({
     // backgroundColor: 'red',
     width: '100%',
     justifyContent: 'space-between',
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
     paddingVertical: 20,
   },
   sugesstionHeading: {

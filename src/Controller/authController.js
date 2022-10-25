@@ -1,17 +1,21 @@
 import {navigate} from '../Navigation/mainNavigation';
 import axios from 'axios';
-const baseUrl = 'https://reqres.in';
+
 class AuthController {
   ////Abgjdbfjsb
-  static handleSignupUser = () => {
+  static handleSignupUser = call_back => {
     AuthController.signUpRequest()
-      .then(res => console.log('hh', res), navigate('LogInScreen'))
-      .catch(err => console.log('hh', err));
+      .then(res => {
+        res ? navigate('LogInScreen') : null;
+      })
+      .catch(err => {
+        console.log(err), call_back(err);
+      });
   };
   static signUpRequest = () => {
     return new Promise((resolve, reject) => {
       axios
-        .get('https://mocki.io/v1/d4867d8b-b5d5-4a48-a4ab-79131b5809b8')
+        .get('https://jsonplaceholder.typicode.com/users')
         .then(response => {
           resolve(response.status);
         })

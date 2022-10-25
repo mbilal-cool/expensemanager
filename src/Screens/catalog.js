@@ -126,14 +126,12 @@ const Catalog = ({navigation}) => {
             <ExpenseDetailHeader height={24} backgroundColor={'transparent'} />
           </View>
           <ContainerElement>
-            <ScrollView>
-              <ExpenseDetailItem
-                onPress={handleEntryDeatilPressed}
-                expensesList={expenses}
-                borderRadius={6}
-                marginBottom={5}
-              />
-            </ScrollView>
+            <ExpenseDetailItem
+              onPress={handleEntryDeatilPressed}
+              expensesList={expenses}
+              borderRadius={6}
+              marginBottom={5}
+            />
           </ContainerElement>
         </View>
         <ContainerElement>

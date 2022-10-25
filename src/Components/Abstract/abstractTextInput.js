@@ -22,6 +22,7 @@ const AbstractTextInput = ({
   labelStyle,
   password,
   validate,
+  alignIcon,
 
   errorMessage,
 }) => {
@@ -125,70 +126,65 @@ const AbstractTextInput = ({
               height: defaultHeight,
               width: defaultWidth,
               // backgroundColor: 'green',
+              flexDirection: 'row',
               backgroundColor: defaultBackgroundColor,
             },
           ]}>
-          <View style={styles.tile}>
-            <View
-              style={[
-                styles.col,
-                {
-                  justifyContent: 'flex-start',
-                  // backgroundColor: 'cyan',
-                  alignItems: 'center',
-                },
-              ]}>
-              {renderLabelIcon ? renderLabelIcon() : null}
-            </View>
-            <View
-              style={[
-                styles.col,
-                {
-                  width: '90%',
-                  justifyContent: 'flex-start',
-                  alignItems: 'flex-start',
-                },
-              ]}>
-              <Text style={defaultLabelStyle}>{defaultLabel}</Text>
-            </View>
+          <View
+            style={[
+              styles.col,
+              {
+                justifyContent: alignIcon ? alignIcon : 'flex-start',
+                // backgroundColor: 'cyan',
+                alignItems: 'center',
+                paddingVertical: 4,
+              },
+            ]}>
+            {renderLabelIcon
+              ? renderLabelIcon()
+              : renderInputIcon
+              ? renderInputIcon()
+              : null}
           </View>
 
-          <View style={[styles.tile, {height: 25}]}>
+          <View style={[styles.tile, {height: '100%', width: '90%'}]}>
             <View
               style={[
                 styles.col,
                 {
-                  // paddingBottom: 8,
-                  // backgroundColor: 'cyan',
-                  justifyContent: 'center',
-                },
-              ]}>
-              {renderInputIcon ? renderInputIcon() : null}
-            </View>
-            <View
-              style={[
-                styles.col,
-                {
-                  // backgroundColor: 'red',
-                  width: '85%',
+                  width: '100%',
                   // paddingBottom: 8,
                   borderBottomWidth: defaultBorderBottomWidth,
                   borderColor: defaultBorderColor,
+                  alignItems: 'flex-start',
+                  justifyContent: 'flex-end',
                 },
               ]}>
+              <Text
+                style={[
+                  styles.labelStyle,
+                  {position: 'absolute', top: -1, zIndex: 1},
+                ]}>
+                {defaultLabel ? defaultLabel : 'textInput'}
+              </Text>
               <TextInput
                 placeholderTextColor={placeholderTextColor}
                 placeholder={PlaceHolder}
                 style={[
-                  styles.textInput,
-                  styles.placeHolderTextStyle,
+                  [
+                    styles.textInput,
+                    {
+                      height: '70%',
+                      // backgroundColor: 'green',
+                      paddingBottom: -1,
+                    },
+                  ],
+                  [styles.placeHolderTextStyle, {}],
                   {color: colors.black},
                 ]}
                 value={Value}
                 onChangeText={onChangeText}
               />
-
-              {/* <Text style={{color: 'black'}}>gfdhsvsdfgsh</Text> */}
             </View>
           </View>
         </View>
@@ -229,7 +225,7 @@ const styles = StyleSheet.create({
   placeHolderTextStyle: {
     fontFamily: Fonts.interBold,
     fontWeight: '500',
-    fontSize: 9,
+    fontSize: 12,
     // color: 'white',
   },
   textInput: {

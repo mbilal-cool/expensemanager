@@ -11,7 +11,7 @@ import {
 import React, {useEffect, useState} from 'react';
 import {useTheme} from '@react-navigation/native';
 import {SheetManager} from 'react-native-actions-sheet';
-
+import ExpenseController from '../Controller/expenseController';
 import ExpenseDetailItem from '../Components/Module/expenseDetailItem';
 
 import FocusAwareStatusBar from '../Components/Abstract/focusAwareStatusBar';
@@ -28,10 +28,10 @@ import {Fonts, lightThemeColors} from '../theme';
 import AbstractModal from '../Components/Abstract/abstractModal';
 import AbstractButton from '../Components/Abstract/abstractButton';
 import AbstractTextInput from '../Components/Abstract/abstractTextInput';
+import {useSelector} from 'react-redux';
 const Home = ({navigation}) => {
-  const [password, SetPassword] = useState();
+  const [totalExpense, setTotalExpense] = useState({});
   const [inputpassword, SetinputPassword] = useState();
-
   const {colors} = useTheme();
   const [date, setDate] = useState({
     month: 'May',
@@ -53,9 +53,6 @@ const Home = ({navigation}) => {
   const openHomeBottomSheet = () => {
     setSheetType('selectDate');
     SheetManager.show('Home');
-  };
-  const handleSelectedDate = date => {
-    console.log(date);
   };
 
   return (
@@ -126,12 +123,14 @@ const Home = ({navigation}) => {
           </View>
         </ScrollView>
       </View>
+
       <HomeBottomSheet
         id={'Home'}
         type={sheetType}
         setType={setSheetType}
         Date={date}
         setDate={setDate}
+        buttontitle={'Add New'}
       />
       <AbstractModal isVisible={isVisible}>
         <View

@@ -171,7 +171,12 @@ const ExpenseType = ({navigation}) => {
           </View>
         </View>
       )}
-      <HomeBottomSheet id={'etype'} type={sheetType} setType={setSheetType} />
+      <HomeBottomSheet
+        id={'etype'}
+        type={sheetType}
+        setType={setSheetType}
+        buttontitle={'Add'}
+      />
     </View>
   );
 };

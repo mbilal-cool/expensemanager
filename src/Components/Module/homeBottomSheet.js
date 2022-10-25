@@ -18,16 +18,19 @@ import ArrowDownIconSvg from '../../Assets/Icons/arrowDownSvg';
 import ArrowUpIconSvg from '../../Assets/Icons/arrowUpSvg';
 import AbstractTextInput from '../Abstract/abstractTextInput';
 import {ScrollView} from 'react-native-gesture-handler';
-const HomeBottomSheet = ({id, type, setType, Date, setDate}) => {
+const HomeBottomSheet = ({id, type, setType, Date, setDate, buttontitle}) => {
   let allTime = {id: 1, title: 'All Time', pressed: false};
 
   const {height, width} = Dimensions.get('window');
 
   const {colors} = useTheme();
-  const [buttonTitle, setButtonTitle] = useState('Add New');
+  const [buttonTitle, setButtonTitle] = useState(buttontitle);
   const [inputYear, SetInputYear] = useState('2022');
 
   const [isVisible, setDropDownVisible] = useState(false);
+  useEffect(() => {
+    setButtonTitle(buttonTitle);
+  }, []);
   const [options, SetOptions] = useState([
     {id: 1, title: 'Whole Year', pressed: true},
 
@@ -76,7 +79,7 @@ const HomeBottomSheet = ({id, type, setType, Date, setDate}) => {
   const onClose = () => {
     setType(type);
     setDropDownVisible(false);
-    setButtonTitle(type == 'addExpenseType' ? 'Add New' : 'Add');
+    setButtonTitle('Add New');
   };
   const onAddNewPress = () => {
     setType('addNewYear');
@@ -115,7 +118,7 @@ const HomeBottomSheet = ({id, type, setType, Date, setDate}) => {
   };
   const selectBottomSheetType = type => {
     switch (type) {
-      case 'selectDate':
+      case 'selectDate': {
         return (
           <View style={[styles.main, {height: height * 0.7, paddingTop: 20}]}>
             <View
@@ -204,6 +207,7 @@ const HomeBottomSheet = ({id, type, setType, Date, setDate}) => {
                   // backgroundColor: 'red',
                   justifyContent: 'space-between',
                   paddingHorizontal: 20,
+                  // paddingBottom: 10,
                 },
               ]}>
               <View style={styles.radioContainerColumn}>
@@ -221,15 +225,16 @@ const HomeBottomSheet = ({id, type, setType, Date, setDate}) => {
             </View>
           </View>
         );
+      }
       case 'suggestNewYear':
         return (
           <View
             style={[
               styles.main,
               {
-                height: height * 0.24,
-                paddingTop: 20,
-                backgroundColor: 'transparent',
+                height: height * 0.3,
+                paddingVertical: 0,
+                // backgroundColor: 'red',
 
                 justifyContent: 'flex-end',
               },
@@ -238,10 +243,10 @@ const HomeBottomSheet = ({id, type, setType, Date, setDate}) => {
               style={[
                 styles.containerHorizontal,
                 {
-                  flex: 0.45,
-                  // backgroundColor: 'tomato',
-                  justifyContent: 'flex-start',
-                  alignItems: 'flex-start',
+                  height: null,
+                  // backgroundColor: 'green',
+                  justifyContent: 'flex-end',
+                  alignItems: 'flex-end',
                   paddingHorizontal: 20,
                 },
               ]}>
@@ -277,29 +282,31 @@ const HomeBottomSheet = ({id, type, setType, Date, setDate}) => {
                     {backgroundColor: colors.skyBlueLight},
                     styles.shadow,
                   ]}>
-                  <AbstaractRadioButton
-                    onPress={year => handleSuggestedYearPressed(year)}
-                    justifyContent={'space-between'}
-                    reverse={true}
-                    options={addNewYear}
-                    setOPtions={SetAddNewYear}
-                    width={'100%'}
-                    titleStyle={[
-                      styles.titleStyle,
-                      {fontSize: 14, marginLeft: 13},
-                    ]}
-                  />
-                  <AbstractButton
-                    onPress={onAddNewPress}
-                    title={'Add New'}
-                    titleStyle={[
-                      styles.titleStyle,
-                      {color: colors.red1, marginRight: 25, fontSize: 14},
-                    ]}
-                    backgroundColor={'transparent'}
-                    height={20}
-                    width={'30%'}
-                  />
+                  <ScrollView showsVerticalScrollIndicator={false}>
+                    <AbstaractRadioButton
+                      onPress={year => handleSuggestedYearPressed(year)}
+                      justifyContent={'space-between'}
+                      reverse={true}
+                      options={addNewYear}
+                      setOPtions={SetAddNewYear}
+                      width={'100%'}
+                      titleStyle={[
+                        styles.titleStyle,
+                        {fontSize: 14, marginLeft: 13},
+                      ]}
+                    />
+                    <AbstractButton
+                      onPress={onAddNewPress}
+                      title={'Add New'}
+                      titleStyle={[
+                        styles.titleStyle,
+                        {color: colors.red1, marginRight: 25, fontSize: 14},
+                      ]}
+                      backgroundColor={'transparent'}
+                      height={20}
+                      width={'30%'}
+                    />
+                  </ScrollView>
                 </View>
               ) : null}
             </View>
@@ -311,11 +318,11 @@ const HomeBottomSheet = ({id, type, setType, Date, setDate}) => {
             style={[
               styles.main,
               {
-                // height: height * 0.25,
-                height: 250,
+                height: height * 0.15,
+
                 paddingTop: 20,
                 backgroundColor: 'transparent',
-                justifyContent: 'flex-end',
+                // justifyContent: 'flex-end',
               },
             ]}>
             <View
@@ -349,7 +356,7 @@ const HomeBottomSheet = ({id, type, setType, Date, setDate}) => {
           <View
             style={[
               styles.main,
-              {height: 145, justifyContent: 'center', paddingTop: 20},
+              {height: height * 0.15, justifyContent: 'center', paddingTop: 20},
             ]}>
             <View
               style={[
@@ -473,12 +480,12 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   dropUp: {
-    // height: 300,
+    height: 275,
     width: '100%',
 
     borderRadius: 13,
     position: 'absolute',
-    top: -250,
+    top: -280,
     right: 20,
     paddingHorizontal: 20,
     paddingVertical: 10,
