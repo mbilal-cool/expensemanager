@@ -17,7 +17,7 @@ const {height, width} = Dimensions.get('window');
 
 const ExpenseInfoCard = ({backgroundColor}) => {
   const [loading, setLoading] = useState(true);
-  const [success, setSuccess] = useState();
+  const [error, setError] = useState(false);
 
   const {colors} = useTheme();
   const defaultBackgroundColor = backgroundColor
@@ -28,10 +28,16 @@ const ExpenseInfoCard = ({backgroundColor}) => {
   }, []);
   const fetchData = () => {
     setLoading(true);
-    ExpenseController.getTotalExpenses(res => {
-      setLoading(false), setSuccess(res.success);
-    });
+    ExpenseController.getTotalExpenses(
+      res => {
+        setLoading(res);
+      },
+      err => {
+        setError(err);
+      },
+    );
   };
+
   const count = useSelector(state => state.expense.totalExpense);
 
   return (
@@ -46,27 +52,7 @@ const ExpenseInfoCard = ({backgroundColor}) => {
       ]}>
       {loading ? (
         <ActivityIndicator size="large" color={colors.red1} />
-      ) : success ? (
-        <>
-          <View style={[styles.tile, {height: height * 0.05}]}>
-            <Text style={[styles.itemTextStyle, {color: colors.black}]}>
-              Total Expenses
-            </Text>
-          </View>
-          <View style={[styles.tile, {height: height * 0.065}]}>
-            <Text
-              style={[
-                styles.priceTag,
-                {
-                  color: colors.red1,
-                  marginLeft: 5,
-                },
-              ]}>
-              {count ? `Rs. \u0020${count}` : 'Rs. 1,000,000'}
-            </Text>
-          </View>
-        </>
-      ) : (
+      ) : error ? (
         <View style={{alignItems: 'center'}}>
           <AbstractButton
             backgroundColor={colors.grey}
@@ -84,6 +70,26 @@ const ExpenseInfoCard = ({backgroundColor}) => {
           />
           <Text style={{marginTop: 0, color: colors.black1}}>Retry!</Text>
         </View>
+      ) : (
+        <>
+          <View style={[styles.tile, {height: height * 0.05}]}>
+            <Text style={[styles.itemTextStyle, {color: colors.black}]}>
+              Total Expenses
+            </Text>
+          </View>
+          <View style={[styles.tile, {height: height * 0.065}]}>
+            <Text
+              style={[
+                styles.priceTag,
+                {
+                  color: colors.red1,
+                  marginLeft: 5,
+                },
+              ]}>
+              {count ? `Rs.\u00A0 ${count}` : 'Rs. 1,000,000'}
+            </Text>
+          </View>
+        </>
       )}
     </View>
   );

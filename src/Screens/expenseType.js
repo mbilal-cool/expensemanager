@@ -28,10 +28,12 @@ import AbstractNoData from '../Components/Abstract/abstractNoData';
 import ThemeController from '../Controller/themeController';
 import HomeBottomSheet from '../Components/Module/homeBottomSheet';
 
-const ExpenseType = ({navigation}) => {
+const ExpenseType = ({route, navigation}) => {
+  const {setSelectedExpenseType} = route.params;
   const {height, width} = Dimensions.get('window');
   const {colors} = useTheme();
   const [types, SetTypes] = useState(expenseTypes);
+
   const [darkMode, setDarkMode] = useState(expenseTypes);
   const [sheetType, setSheetType] = useState('addExpenseType');
 
@@ -55,8 +57,9 @@ const ExpenseType = ({navigation}) => {
       ThemeController.removingListener();
     };
   }, []);
-  const handleSheet = () => {
-    SheetManager.show('addExpenseType');
+  const handleExpenseTypePressed = title => {
+    setSelectedExpenseType(prev => ({...prev, expenseCategory: title}));
+    navigation.goBack();
   };
   const handleLeftArrowPressed = () => {
     navigation.goBack();
@@ -150,7 +153,10 @@ const ExpenseType = ({navigation}) => {
                 Already added Expense Type
               </Text>
             </View>
-            <ExpenseTypesList expenseTypes={types} />
+            <ExpenseTypesList
+              expenseTypes={types}
+              onPress={title => handleExpenseTypePressed(title)}
+            />
           </View>
           <View>
             <AbstractButton

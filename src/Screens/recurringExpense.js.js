@@ -24,7 +24,7 @@ import {useTheme} from '@react-navigation/native';
 import ThemeController from '../Controller/themeController';
 import ExpenseController from '../Controller/expenseController';
 import {set} from 'immer/dist/internal';
-const OneTimeExpense = ({route, navigation}) => {
+const RecurringExpense = ({route, navigation}) => {
   const {editExpense} = route.params ? route.params : '';
 
   const [loading, setLoading] = useState(false);
@@ -135,7 +135,7 @@ const OneTimeExpense = ({route, navigation}) => {
                     styles.titleStyle,
                     {color: colors.black, fontSize: 20},
                   ]}>
-                  Ontime Expense
+                  Recurring Expense
                 </Text>
               </View>
             )}
@@ -331,7 +331,7 @@ const OneTimeExpense = ({route, navigation}) => {
   );
 };
 
-export default OneTimeExpense;
+export default RecurringExpense;
 
 const styles = StyleSheet.create({
   main: {

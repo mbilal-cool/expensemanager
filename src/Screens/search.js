@@ -10,7 +10,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import SearchSugesstionItem from '../Components/Module/searchSuggestionitem';
 import {useTheme} from '@react-navigation/native';
 import {lightThemeColors, Fonts} from '../theme';
-import ExpenseDetailItem from '../Components/Module/expenseDetailItem';
+import ExpenseDetailItemList from '../Components/Module/expenseDetailItemList';
 
 import FocusAwareStatusBar from '../Components/Abstract/focusAwareStatusBar';
 import AbstractHeader from '../Components/Abstract/abstractHeader';
@@ -47,8 +47,14 @@ const Search = ({navigation}) => {
   const addOneTimePresss = () => {
     navigation.navigate('OneTimeExpense');
   };
+  const addRecurringPress = () => {
+    navigation.navigate('RecurringExpense');
+  };
   const handleLeftArrowPressed = () => {
     navigation.goBack();
+  };
+  const onViewAllpress = () => {
+    navigation.navigate('ShowAllExpenses');
   };
   return (
     <View style={[styles.main, {backgroundColor: colors.defaultBackground}]}>
@@ -154,7 +160,7 @@ const Search = ({navigation}) => {
             iconMargin={10}
             width={'48%'}
             borderRadius={30}
-            onPress={addOneTimePresss}
+            onPress={addRecurringPress}
             renderRightIcon={() => (
               <PlusIconSvg
                 width={height * 0.015}
@@ -172,24 +178,30 @@ const Search = ({navigation}) => {
             Search results from catalog
           </Text>
         </View>
-        <ScrollView>
-          <View style={{paddingHorizontal: 20}}>
-            <SearchResultItem />
-            <SearchResultItem />
-            <SearchResultItem />
-          </View>
-          <View style={[styles.horizontalContainer]}>
-            <Text style={styles.sugesstionHeading}>Already added Expense</Text>
-          </View>
-          <ExpenseDetailHeader backgroundColor={'transparent'} />
-          <View style={{paddingHorizontal: 20, paddingVertical: 10}}>
-            <ExpenseDetailItem
-              expensesList={expenses}
-              borderRadius={6}
-              marginBottom={5}
-            />
-          </View>
-        </ScrollView>
+
+        <View style={{paddingHorizontal: 20}}>
+          <SearchResultItem />
+          <SearchResultItem />
+          <SearchResultItem />
+        </View>
+        <View style={[styles.horizontalContainer]}>
+          <Text style={styles.sugesstionHeading}>Already added Expense</Text>
+        </View>
+        <ExpenseDetailHeader backgroundColor={'transparent'} />
+        <View
+          style={{
+            flex: 1,
+            paddingHorizontal: 20,
+            paddingVertical: 10,
+            // backgroundColor: 'green',
+          }}>
+          <ExpenseDetailItemList
+            noOfPlaceHolders={[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}
+            navigation={navigation}
+            borderRadius={6}
+            marginBottom={5}
+          />
+        </View>
       </View>
     </View>
   );
@@ -203,20 +215,20 @@ const styles = StyleSheet.create({
     backgroundColor: lightThemeColors.defaultBackground,
     alignItems: 'center',
     zIndex: 0,
-    // paddingHorizontal: 30,
   },
   headerContainer: {
     height: height * 0.23,
     // backgroundColor: lightThemeColors.darkBlue,
-    backgroundColor: 'green',
+    // backgroundColor: 'green',
     width: '100%',
     paddingHorizontal: 20,
   },
   middleContainer: {
-    height: 576,
+    flex: 1,
     width: '100%',
-    // backgroundColor: 'green',
+    // backgroundColor: 'red',
     zIndex: -1,
+    paddingBottom: 10,
   },
   horizontalContainer: {
     height: 57,

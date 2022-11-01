@@ -34,12 +34,18 @@ const ExpenseDetailScreenItem = ({
         },
       ]}>
       <View style={[styles.Tile, {minHeight: 19}]}>
-        <Text style={[styles.itemHeadingStyle, {color: colors.grey5}]}>{`${
+        <Text
+          adjustsFontSizeToFit
+          numberOfLines={1}
+          style={[styles.itemHeadingStyle, {color: colors.grey5}]}>{`${
           title ? title : ' title'
         }:`}</Text>
       </View>
       <View style={[styles.Tile, {minHeight: 19, maxHeight: 67}]}>
-        <Text style={[styles.itemTextStyle, {color: colors.black}]}>
+        <Text
+          adjustsFontSizeToFit
+          numberOfLines={1}
+          style={[styles.itemTextStyle, {color: colors.black}]}>
           {description}
         </Text>
       </View>
@@ -58,13 +64,13 @@ const styles = StyleSheet.create({
   itemHeadingStyle: {
     fontFamily: Fonts.interBold,
     fontWeight: '400',
-    fontSize: 16,
+    fontSize: 14,
     color: lightThemeColors.grey5,
   },
   itemTextStyle: {
     fontFamily: Fonts.interBold,
     fontWeight: '500',
-    fontSize: 16,
+    fontSize: 12,
     color: lightThemeColors.black,
   },
 });

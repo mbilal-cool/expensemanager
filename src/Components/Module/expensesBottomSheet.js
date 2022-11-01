@@ -20,7 +20,6 @@ const ExpensesBottomSheet = ({onPress, id, reportType, setReportType}) => {
   ]);
 
   const onReportDurationRadioPressed = title => {
-    console.log(title);
     onPress(title);
     SheetManager.hide(id);
   };

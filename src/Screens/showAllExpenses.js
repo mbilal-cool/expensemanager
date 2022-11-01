@@ -5,7 +5,7 @@ import {Fonts, lightThemeColors} from '../theme';
 
 import {useTheme} from '@react-navigation/native';
 import {expenseList} from '../mockData';
-import ExpenseDetailItem from '../Components/Module/expenseDetailItem';
+import ExpenseDetailItemList from '../Components/Module/expenseDetailItemList';
 import ExpenseDetailHeader from '../Components/Module/expenseDetailHeader';
 import FocusAwareStatusBar from '../Components/Abstract/focusAwareStatusBar';
 import ThemeController from '../Controller/themeController';
@@ -73,23 +73,12 @@ export default function ShowAllExpenses({navigation}) {
         )}
       />
       <ExpenseDetailHeader />
-
-      <View
-        style={[
-          styles.containerHorizontal,
-          {
-            height: 714,
-            // backgroundColor: 'yellow',
-            flexDirection: 'column',
-            justifyContent: 'flex-start',
-            paddingHorizontal: 20,
-          },
-        ]}>
-        <ExpenseDetailItem
-          onPress={reportDetailItemPressed}
-          expensesList={expenses}
+      <View style={styles.itemWrapper}>
+        <ExpenseDetailItemList
+          noOfPlaceHolders={[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}
           borderRadius={6}
           marginBottom={5}
+          navigation={navigation}
         />
       </View>
     </View>
@@ -100,15 +89,14 @@ const styles = StyleSheet.create({
   main: {
     flex: 1,
   },
-  containerHorizontal: {
-    flexDirection: 'row',
-    height: 70,
-    width: '100%',
-    // backgroundColor: 'green',
-    alignItems: 'flex-end',
-    // justifyContent: 'center',
+  itemWrapper: {
+    flex: 1,
+    paddingTop: 10,
+    paddingBottom: 30,
     paddingHorizontal: 20,
+    // backgroundColor: 'yellow',
   },
+
   titleStyle: {
     fontFamily: Fonts.interBold,
     fontWeight: '500',

@@ -9,11 +9,11 @@ import CustomBottomTabNavigation from './customBottomTabNavigation';
 import Search from '../Screens/search';
 import OneTimeExpense from '../Screens/oneTimeExpense';
 import Catalog from '../Screens/catalog';
+import AddCatelog from '../Screens/addCatlog';
+import RecurringExpense from '../Screens/recurringExpense.js';
 import EntryDetails from '../Screens/detailEntry';
 import ExpenseType from '../Screens/expenseType';
 import ShowAllExpenses from '../Screens/showAllExpenses';
-import Users from '../Screens/message';
-
 const AppStack = () => {
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
@@ -38,8 +38,8 @@ const AppStack = () => {
         }}
       />
       <Stack.Screen
-        component={Users}
-        name={'Users'}
+        component={RecurringExpense}
+        name={'RecurringExpense'}
         options={{
           cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
           gestureEnabled: true,
@@ -76,6 +76,15 @@ const AppStack = () => {
       <Stack.Screen
         component={Catalog}
         name={'Catalog'}
+        options={{
+          cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+          gestureEnabled: true,
+          gestureDirection: 'horizontal',
+        }}
+      />
+      <Stack.Screen
+        component={AddCatelog}
+        name={'AddCatelog'}
         options={{
           cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
           gestureEnabled: true,

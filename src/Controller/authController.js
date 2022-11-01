@@ -2,7 +2,6 @@ import {navigate} from '../Navigation/mainNavigation';
 import axios from 'axios';
 
 class AuthController {
-  ////Abgjdbfjsb
   static handleSignupUser = call_back => {
     AuthController.signUpRequest()
       .then(res => {

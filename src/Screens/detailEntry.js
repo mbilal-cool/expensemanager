@@ -11,7 +11,7 @@ import {lightThemeColors, Fonts} from '../theme';
 import FocusAwareStatusBar from '../Components/Abstract/focusAwareStatusBar';
 import AbstractHeader from '../Components/Abstract/abstractHeader';
 import {SheetManager} from 'react-native-actions-sheet';
-
+import ExpenseController from '../Controller/expenseController';
 import AbstractButton from '../Components/Abstract/abstractButton';
 
 import ArrowLeftTailSvg from '../Assets/Icons/arrowleftTailSvg';
@@ -19,13 +19,17 @@ import ExpenseDetailScreenItem from '../Components/Module/expenseDetailScreenIte
 import PencilIconSvg from '../Assets/Icons/pencilSvg';
 import {useTheme} from '@react-navigation/native';
 import ExpensesBottomSheet from '../Components/Module/expensesBottomSheet';
+import {useGetSingleExpence} from '../Controller/expenseController';
 
-const EntryDetails = ({navigation}) => {
+const EntryDetails = ({navigation, route}) => {
   const [sheetType, SetSheetType] = useState('deleteEntry');
+  const singleExpense = useGetSingleExpence(route.params.id);
 
   const {colors} = useTheme();
   const handleEditPressed = () => {
-    navigation.navigate('OneTimeExpense');
+    navigation.navigate('OneTimeExpense', {
+      editExpense: singleExpense,
+    });
   };
   const handleLeftArrowPressed = () => {
     navigation.goBack();
@@ -36,6 +40,7 @@ const EntryDetails = ({navigation}) => {
     SheetManager.show('detail');
   };
   const onDeleteButtonPress = () => {
+    ExpenseController.DeleteExpenceItem(route.params.id);
     SheetManager.hide('detail');
     navigation.goBack();
   };
@@ -83,7 +88,7 @@ const EntryDetails = ({navigation}) => {
               justifyContent: 'flex-end',
               //   alignItems: 'center',
               paddingBottom: 20,
-              paddingHorizontal: 10,
+              paddingHorizontal: 20,
             }}>
             <ArrowLeftTailSvg color={colors.black} />
           </TouchableOpacity>
@@ -96,13 +101,19 @@ const EntryDetails = ({navigation}) => {
             <View style={styles.Column}>
               <ExpenseDetailScreenItem
                 title={'Expense Name'}
-                description={'joe Salary'}
+                description={
+                  singleExpense ? singleExpense.expenseName : 'salary'
+                }
               />
             </View>
             <View style={styles.Column}>
               <ExpenseDetailScreenItem
                 title={'Expense Type'}
-                description={' Salary'}
+                description={
+                  singleExpense
+                    ? singleExpense.expenseCategory
+                    : 'office Expense'
+                }
               />
             </View>
           </View>
@@ -110,13 +121,15 @@ const EntryDetails = ({navigation}) => {
             <View style={styles.Column}>
               <ExpenseDetailScreenItem
                 title={'Expense Date'}
-                description={'22/10/2022'}
+                description={
+                  singleExpense ? singleExpense.createdAt : '30/10/22'
+                }
               />
             </View>
             <View style={styles.Column}>
               <ExpenseDetailScreenItem
                 title={'Expense Amount'}
-                description={'$4500'}
+                description={singleExpense ? singleExpense.amount : '35000'}
               />
             </View>
           </View>
@@ -124,13 +137,17 @@ const EntryDetails = ({navigation}) => {
             <View style={styles.Column}>
               <ExpenseDetailScreenItem
                 title={'Expense State'}
-                description={'Reccuring'}
+                description={
+                  singleExpense ? singleExpense.expenseType : 'oneTime'
+                }
               />
             </View>
             <View style={styles.Column}>
               <ExpenseDetailScreenItem
                 title={'Medium'}
-                description={'ONline'}
+                description={
+                  singleExpense ? singleExpense.paymentMedium : 'onLine'
+                }
               />
             </View>
           </View>
@@ -138,7 +155,9 @@ const EntryDetails = ({navigation}) => {
             <View style={styles.Column}>
               <ExpenseDetailScreenItem
                 title={'Expense Added'}
-                description={'05 May, 2022'}
+                description={
+                  singleExpense ? singleExpense.createdAt : '30/10/22'
+                }
               />
             </View>
           </View>
@@ -147,7 +166,7 @@ const EntryDetails = ({navigation}) => {
               <ExpenseDetailScreenItem
                 title={'Note'}
                 description={
-                  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.'
+                  singleExpense ? singleExpense.note : 'my First note'
                 }
               />
             </View>

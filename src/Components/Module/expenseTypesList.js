@@ -21,7 +21,7 @@ const ExpenseTypesList = ({
     return (
       <TouchableOpacity
         key={index}
-        onPress={() => onPress()}
+        onPress={() => onPress(item.title)}
         style={[
           styles.Tile,
           {

@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import DatePicker from 'react-native-date-picker';
 import {lightThemeColors, Fonts} from '../theme';
-import ExpenseDetailItem from '../Components/Module/expenseDetailItem';
+import ExpenseDetailItemList from '../Components/Module/expenseDetailItemList';
 import {SheetManager} from 'react-native-actions-sheet';
 import FocusAwareStatusBar from '../Components/Abstract/focusAwareStatusBar';
 import AbstractHeader from '../Components/Abstract/abstractHeader';
@@ -253,35 +253,17 @@ const Expenses = ({navigation}) => {
           // {backgroundColor: colors.defaultBackground},
         ]}>
         <ContainerElement>
-          <ExpenseDetailItem
+          <ExpenseDetailItemList
+            noOfPlaceHolders={[0, 0, 0]}
             onPress={handleEntryDeatilPressed}
-            expensesList={expenses}
+            date={'31/10/22'}
             borderRadius={6}
             marginBottom={5}
+            showAllButton={true}
+            onViewAllpress={onViewAllpress}
+            navigation={navigation}
           />
-          <View style={{width: '100%', alignItems: 'flex-end'}}>
-            <AbstractButton
-              backgroundColor={colors.white}
-              height={32}
-              title={'View All'}
-              titleStyle={{
-                color: lightThemeColors.red1,
-                fontFamily: Fonts.interBold,
-                fontWeight: '500',
-                fontSize: 10,
-              }}
-              renderRightIcon={() => (
-                <View style={{flexDirection: 'row'}}>
-                  <ArrowRightIconSvg />
-                  <ArrowRightIconSvg />
-                </View>
-              )}
-              iconMargin={3.5}
-              width={69}
-              borderRadius={5}
-              onPress={onViewAllpress}
-            />
-          </View>
+
           <View
             style={{
               justifyContent: 'center',

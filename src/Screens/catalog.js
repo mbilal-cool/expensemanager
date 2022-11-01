@@ -9,7 +9,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {useTheme} from '@react-navigation/native';
 import ContainerElement from '../Components/Abstract/containerElement';
 import {lightThemeColors, Fonts} from '../theme';
-import ExpenseDetailItem from '../Components/Module/expenseDetailItem';
+import ExpenseDetailItemList from '../Components/Module/expenseDetailItemList';
 import FocusAwareStatusBar from '../Components/Abstract/focusAwareStatusBar';
 import AbstractHeader from '../Components/Abstract/abstractHeader';
 import SearchBar from '../Components/Module/searchBar';
@@ -36,7 +36,9 @@ const Catalog = ({navigation}) => {
   const handleEntryDeatilPressed = () => {
     navigation.navigate('EntryDetails');
   };
-
+  const onCreatePress = () => {
+    navigation.navigate('AddCatelog');
+  };
   const handleLeftArrowPressed = () => {
     navigation.goBack();
   };
@@ -126,11 +128,13 @@ const Catalog = ({navigation}) => {
             <ExpenseDetailHeader height={24} backgroundColor={'transparent'} />
           </View>
           <ContainerElement>
-            <ExpenseDetailItem
-              onPress={handleEntryDeatilPressed}
-              expensesList={expenses}
+            <ExpenseDetailItemList
+              noOfPlaceHolders={[0, 0, 0]}
+              date={'31/10/22'}
               borderRadius={6}
               marginBottom={5}
+              navigation={navigation}
+              showAllButton={true}
             />
           </ContainerElement>
         </View>
@@ -151,7 +155,7 @@ const Catalog = ({navigation}) => {
             iconMargin={10}
             width={'100%'}
             borderRadius={30}
-            // onPress={handleSheet}
+            onPress={onCreatePress}
           />
         </ContainerElement>
       </View>
@@ -182,7 +186,7 @@ const styles = StyleSheet.create({
     zIndex: -1,
     // paddingHorizontal: 20,
     justifyContent: 'space-between',
-    paddingBottom: 15,
+    paddingBottom: 30,
   },
   horizontalContainer: {
     height: 50,

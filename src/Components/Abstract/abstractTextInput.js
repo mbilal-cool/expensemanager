@@ -23,6 +23,7 @@ const AbstractTextInput = ({
   password,
   validate,
   alignIcon,
+  defaultValue,
 
   errorMessage,
 }) => {
@@ -137,7 +138,8 @@ const AbstractTextInput = ({
                 justifyContent: alignIcon ? alignIcon : 'flex-start',
                 // backgroundColor: 'cyan',
                 alignItems: 'center',
-                paddingVertical: 4,
+                // paddingVertical: 4,
+                paddingBottom: 9.5,
               },
             ]}>
             {renderLabelIcon
@@ -163,11 +165,12 @@ const AbstractTextInput = ({
               <Text
                 style={[
                   styles.labelStyle,
-                  {position: 'absolute', top: -1, zIndex: 1},
+                  {position: 'absolute', top: 2, zIndex: 1},
                 ]}>
                 {defaultLabel ? defaultLabel : 'textInput'}
               </Text>
               <TextInput
+                defaultValue={defaultValue}
                 placeholderTextColor={placeholderTextColor}
                 placeholder={PlaceHolder}
                 style={[

@@ -4,6 +4,7 @@ import {lightThemeColors, Fonts} from '../../theme';
 import PaymentMethodIconSvg from '../../Assets/Icons/paymentMethodIconSvg';
 import AbstaractRadioButton from '../Abstract/abstractRadioButton';
 const PaymentDetailMethod = ({
+  onPress = () => false,
   Height,
   Width,
   Label,
@@ -14,10 +15,19 @@ const PaymentDetailMethod = ({
   Value,
   backgroundColor,
   labelStyle,
+  defaultCheckedItem,
 }) => {
   const [options, SetOptions] = useState([
-    {title: 'Online', id: 1, pressed: true},
-    {title: 'Cash', id: 2, pressed: false},
+    {
+      title: 'Online',
+      id: 1,
+      pressed: defaultCheckedItem == 'Online' ? true : false,
+    },
+    {
+      title: 'Cash',
+      id: 2,
+      pressed: defaultCheckedItem == 'Cash' ? true : false,
+    },
   ]);
   const defaultHeight = Height ? Height : 50;
   const defaultWidth = Width ? Width : '100%';
@@ -81,7 +91,11 @@ const PaymentDetailMethod = ({
               justifyContent: 'space-between',
               // backgroundColor: 'yellow',
             }}>
-            <AbstaractRadioButton options={options} setOPtions={SetOptions} />
+            <AbstaractRadioButton
+              options={options}
+              setOPtions={SetOptions}
+              onPress={onPress}
+            />
           </View>
         </View>
       </View>

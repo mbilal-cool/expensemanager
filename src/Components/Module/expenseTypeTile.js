@@ -50,11 +50,12 @@ const ExpenseTypeTile = ({
             styles.col,
             {
               justifyContent: 'flex-start',
+              alignItems: 'center',
               // backgroundColor: 'red',
-              paddingTop: 3,
+              // paddingTop: 3,
             },
           ]}>
-          <AllExpensesIconSvg height={12} width={15} />
+          <AllExpensesIconSvg height={17} width={15} />
         </View>
         <View
           style={[
@@ -62,7 +63,7 @@ const ExpenseTypeTile = ({
             {
               // backgroundColor: 'green',
               width: '90%',
-              justifyContent: 'flex-start',
+              justifyContent: 'center',
               alignItems: 'flex-start',
             },
           ]}>

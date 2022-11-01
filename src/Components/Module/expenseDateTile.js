@@ -13,7 +13,7 @@ const ExpenseDateTile = ({
   Height,
   Width,
   Label,
-
+  placeHolder,
   borderColor,
   borderBottomWidth,
 
@@ -56,9 +56,9 @@ const ExpenseDateTile = ({
           style={[
             styles.col,
             {
-              //   backgroundColor: 'green',
+              // backgroundColor: 'green',
               width: '90%',
-              justifyContent: 'flex-start',
+              justifyContent: 'center',
               alignItems: 'flex-start',
             },
           ]}>
@@ -75,7 +75,7 @@ const ExpenseDateTile = ({
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'flex-start',
-              //   backgroundColor: 'green',
+              // backgroundColor: 'green',
               width: '90%',
 
               borderBottomWidth: defaultBorderBottomWidth,
@@ -83,7 +83,7 @@ const ExpenseDateTile = ({
             },
           ]}>
           <Text style={[styles.placeHolderTextStyle, {color: colors.black}]}>
-            {selectedDate ? selectedDate : '05,May,20222'}
+            {selectedDate ? selectedDate : placeHolder}
           </Text>
         </View>
       </View>
