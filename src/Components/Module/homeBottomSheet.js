@@ -18,10 +18,19 @@ import ArrowDownIconSvg from '../../Assets/Icons/arrowDownSvg';
 import ArrowUpIconSvg from '../../Assets/Icons/arrowUpSvg';
 import AbstractTextInput from '../Abstract/abstractTextInput';
 import {ScrollView} from 'react-native-gesture-handler';
-const HomeBottomSheet = ({id, type, setType, Date, setDate, buttontitle}) => {
+const HomeBottomSheet = ({
+  id,
+  type,
+  setType,
+  Date,
+  setDate,
+  buttontitle,
+  onPress = () => false,
+}) => {
   let allTime = {id: 1, title: 'All Time', pressed: false};
 
   const {height, width} = Dimensions.get('window');
+  const [inputExpenseType, setInputExpenseType] = useState('');
 
   const {colors} = useTheme();
   const [buttonTitle, setButtonTitle] = useState(buttontitle);
@@ -378,6 +387,8 @@ const HomeBottomSheet = ({id, type, setType, Date, setDate, buttontitle}) => {
                 type={'simple'}
                 PlaceHolder={'Type'}
                 placeholderTextColor={lightThemeColors.grey}
+                Value={inputExpenseType}
+                onChangeText={setInputExpenseType}
               />
             </View>
           </View>
@@ -400,6 +411,7 @@ const HomeBottomSheet = ({id, type, setType, Date, setDate, buttontitle}) => {
       onInputAddYear();
       SheetManager.hide(id);
     } else if (type == 'addExpenseType') {
+      onPress(inputExpenseType);
       SheetManager.hide(id);
     }
   };

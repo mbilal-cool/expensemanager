@@ -15,7 +15,7 @@ const expenseSlice = createSlice({
       state.totalExpense = action.payload.totalAmount;
     },
     setExpense: (state, action) => {
-      console.log(action.payload);
+      // console.log(action.payload);
 
       state.expenses.push(action.payload);
     },

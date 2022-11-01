@@ -33,10 +33,18 @@ const ExpenseType = ({route, navigation}) => {
   const {height, width} = Dimensions.get('window');
   const {colors} = useTheme();
   const [types, SetTypes] = useState(expenseTypes);
-
   const [darkMode, setDarkMode] = useState(expenseTypes);
   const [sheetType, setSheetType] = useState('addExpenseType');
-
+  const onAddTypePressed = type => {
+    SetTypes(prev => [
+      ...prev,
+      {
+        id: 1,
+        title: type,
+        sf: 'OE',
+      },
+    ]);
+  };
   const handleEntryDeatilPressed = () => {
     navigation.navigate('EntryDetails');
   };
@@ -182,6 +190,7 @@ const ExpenseType = ({route, navigation}) => {
         type={sheetType}
         setType={setSheetType}
         buttontitle={'Add'}
+        onPress={type => onAddTypePressed(type)}
       />
     </View>
   );

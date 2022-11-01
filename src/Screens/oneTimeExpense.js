@@ -97,235 +97,233 @@ const OneTimeExpense = ({route, navigation}) => {
 
   return (
     <>
+      <View style={[styles.main, {backgroundColor: colors.defaultBackground}]}>
+        <FocusAwareStatusBar
+          barStyle={darkMode ? 'light-content' : 'dark-content'}
+          translucent={true}
+          backgroundColor={colors.defaultBackground}
+        />
+
+        <AbstractHeader
+          backgroundColor={'transparent'}
+          renderMiddleItem={() => (
+            <View
+              style={{
+                width: '100%',
+                height: '100%',
+                //   backgroundColor: 'green',
+                justifyContent: 'flex-end',
+                paddingBottom: 15,
+                alignItems: 'center',
+              }}>
+              <Text
+                style={[
+                  styles.titleStyle,
+                  {color: colors.black, fontSize: 20},
+                ]}>
+                Ontime Expense
+              </Text>
+            </View>
+          )}
+          renderLeftItem={() => (
+            <TouchableOpacity
+              onPress={() => handleLeftArrowPressed()}
+              style={{
+                width: '100%',
+                height: '100%',
+                // backgroundColor: 'green',
+                justifyContent: 'flex-end',
+                //   alignItems: 'center',
+                paddingBottom: 20,
+                paddingHorizontal: 25,
+              }}>
+              <ArrowLeftTailSvg color={colors.black} />
+            </TouchableOpacity>
+          )}
+        />
+
+        <View style={styles.middleContainer}>
+          <View
+            style={[
+              styles.horizontalContainer,
+              {
+                // backgroundColor: colors.white
+                // backgroundColor: 'tomato',
+              },
+            ]}>
+            <AbstractTextInput
+              PlaceHolder={editExpense ? editExpense.amount : '3500'}
+              placeholderTextColor={colors.black}
+              onChangeText={e => setExpense(prev => ({...prev, amount: e}))}
+              Value={expense.amount}
+              backgroundColor={'transparent'}
+              borderBottomWidth={1}
+              borderColor={colors.grey2}
+              Label={'Amount'}
+              renderInputIcon={() => (
+                <View
+                  style={{
+                    height: 17,
+                    width: 15,
+                    borderRadius: 5,
+                    borderWidth: 1,
+                    borderColor: lightThemeColors.grey,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                  <View>
+                    <Text
+                      style={[
+                        styles.titleStyle,
+                        {color: colors.black, fontSize: 10},
+                      ]}>
+                      $
+                    </Text>
+                  </View>
+                </View>
+              )}
+              alignIcon={'flex-end'}
+            />
+            <AbstractTextInput
+              onChangeText={e =>
+                setExpense(prev => ({...prev, expenseName: e}))
+              }
+              Value={expense.expenseName}
+              backgroundColor={'transparent'}
+              borderBottomWidth={1}
+              borderColor={colors.grey2}
+              Label={'Expense Name'}
+              PlaceHolder={editExpense ? editExpense.expenseName : 'Salary'}
+              placeholderTextColor={colors.black}
+              renderLabelIcon={() => (
+                <AllExpensesIconSvg width={15} height={17} />
+              )}
+            />
+            <ExpenseTypeTile
+              backgroundColor={'transparent'}
+              borderBottomWidth={1}
+              Label={'ExpenseType'}
+              placeHolder={
+                expense.expenseCategory == ''
+                  ? editExpense
+                    ? editExpense.expenseCategory
+                    : 'Office Expense'
+                  : expense.expenseCategory
+              }
+              borderColor={colors.grey2}
+              onPress={handleExpenseTypePressed}
+            />
+
+            <ExpenseDateTile
+              placeHolder={editExpense ? editExpense.createdAt : '31/10/22'}
+              backgroundColor={'transparent'}
+              borderBottomWidth={1}
+              Label={'Date'}
+              borderColor={colors.grey2}
+              onPress={handleDatePress}
+              selectedDate={expense.createdAt}
+            />
+
+            <PaymentDetailMethod
+              defaultCheckedItem={
+                editExpense ? editExpense.paymentMedium : 'Cash'
+              }
+              Label={'Payment'}
+              backgroundColor={'transparent'}
+              borderBottomWidth={1}
+              borderColor={colors.grey2}
+              onPress={title =>
+                setExpense(prev => ({...prev, paymentMedium: title}))
+              }
+            />
+            <AbstractTextInput
+              onChangeText={e => setExpense(prev => ({...prev, note: e}))}
+              Value={expense.note}
+              backgroundColor={'transparent'}
+              borderBottomWidth={1}
+              borderColor={colors.grey2}
+              Label={'Note'}
+              PlaceHolder={
+                editExpense
+                  ? editExpense.note
+                  : 'Lorem Ipsum has been the industrys standard dummy text ever'
+              }
+              placeholderTextColor={colors.black}
+              renderLabelIcon={() => (
+                <ClipBoardIconSvg width={15} height={17} />
+              )}
+            />
+          </View>
+          <View
+            style={[
+              styles.horizontalContainer,
+              {
+                height: 40,
+                width: '100%',
+                backgroundColor: 'transparent',
+                // paddingHorizontal: 0,
+                paddingVertical: 0,
+                flexDirection: 'row',
+              },
+            ]}>
+            <AbstractButton
+              backgroundColor={lightThemeColors.red1}
+              height={40}
+              title={loading ? null : 'Save'}
+              titleStyle={{
+                color: colors.white,
+                fontFamily: Fonts.interBold,
+                fontWeight: '600',
+                fontSize: 16,
+              }}
+              width={'48%'}
+              borderRadius={30}
+              onPress={handleSavePress}
+            />
+            <AbstractButton
+              borderWidth={1}
+              borderColor={colors.black}
+              backgroundColor={'transparent'}
+              height={40}
+              title={'Cancel'}
+              titleStyle={{
+                color: colors.black,
+                fontFamily: Fonts.interBold,
+                fontWeight: '600',
+                fontSize: 16,
+              }}
+              iconMargin={10}
+              width={'48%'}
+              borderRadius={30}
+              onPress={handleLeftArrowPressed}
+            />
+          </View>
+        </View>
+        <DatePicker
+          modal
+          open={open}
+          date={date}
+          onConfirm={date => {
+            convertDate(new Date(date));
+            setOpen(false);
+          }}
+          onCancel={() => {
+            setOpen(false);
+          }}
+        />
+      </View>
       {loading ? (
         <View
-          style={[
-            styles.main,
-            {
-              backgroundColor: lightThemeColors.black1,
-              alignItems: 'center',
-              justifyContent: 'center',
-            },
-          ]}>
-          <ActivityIndicator size="large" color={colors.white} />
+          style={{
+            ...StyleSheet.absoluteFillObject,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: 'rgba(0,0,0,0.3)',
+          }}>
+          <ActivityIndicator size="large" color={colors.black} />
         </View>
       ) : (
-        <View
-          style={[styles.main, {backgroundColor: colors.defaultBackground}]}>
-          <FocusAwareStatusBar
-            barStyle={darkMode ? 'light-content' : 'dark-content'}
-            translucent={true}
-            backgroundColor={colors.defaultBackground}
-          />
-
-          <AbstractHeader
-            backgroundColor={'transparent'}
-            renderMiddleItem={() => (
-              <View
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  //   backgroundColor: 'green',
-                  justifyContent: 'flex-end',
-                  paddingBottom: 15,
-                  alignItems: 'center',
-                }}>
-                <Text
-                  style={[
-                    styles.titleStyle,
-                    {color: colors.black, fontSize: 20},
-                  ]}>
-                  Ontime Expense
-                </Text>
-              </View>
-            )}
-            renderLeftItem={() => (
-              <TouchableOpacity
-                onPress={() => handleLeftArrowPressed()}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  // backgroundColor: 'green',
-                  justifyContent: 'flex-end',
-                  //   alignItems: 'center',
-                  paddingBottom: 20,
-                  paddingHorizontal: 25,
-                }}>
-                <ArrowLeftTailSvg color={colors.black} />
-              </TouchableOpacity>
-            )}
-          />
-
-          <View style={styles.middleContainer}>
-            <View
-              style={[
-                styles.horizontalContainer,
-                {
-                  // backgroundColor: colors.white
-                  // backgroundColor: 'tomato',
-                },
-              ]}>
-              <AbstractTextInput
-                PlaceHolder={editExpense ? editExpense.amount : '3500'}
-                placeholderTextColor={colors.black}
-                onChangeText={e => setExpense(prev => ({...prev, amount: e}))}
-                Value={expense.amount}
-                backgroundColor={'transparent'}
-                borderBottomWidth={1}
-                borderColor={colors.grey2}
-                Label={'Amount'}
-                renderInputIcon={() => (
-                  <View
-                    style={{
-                      height: 17,
-                      width: 15,
-                      borderRadius: 5,
-                      borderWidth: 1,
-                      borderColor: lightThemeColors.grey,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}>
-                    <View>
-                      <Text
-                        style={[
-                          styles.titleStyle,
-                          {color: colors.black, fontSize: 10},
-                        ]}>
-                        $
-                      </Text>
-                    </View>
-                  </View>
-                )}
-                alignIcon={'flex-end'}
-              />
-              <AbstractTextInput
-                onChangeText={e =>
-                  setExpense(prev => ({...prev, expenseName: e}))
-                }
-                Value={expense.expenseName}
-                backgroundColor={'transparent'}
-                borderBottomWidth={1}
-                borderColor={colors.grey2}
-                Label={'Expense Name'}
-                PlaceHolder={editExpense ? editExpense.expenseName : 'Salary'}
-                placeholderTextColor={colors.black}
-                renderLabelIcon={() => (
-                  <AllExpensesIconSvg width={15} height={17} />
-                )}
-              />
-              <ExpenseTypeTile
-                backgroundColor={'transparent'}
-                borderBottomWidth={1}
-                Label={'ExpenseType'}
-                placeHolder={
-                  expense.expenseCategory == ''
-                    ? editExpense
-                      ? editExpense.expenseCategory
-                      : 'Office Expense'
-                    : expense.expenseCategory
-                }
-                borderColor={colors.grey2}
-                onPress={handleExpenseTypePressed}
-              />
-
-              <ExpenseDateTile
-                placeHolder={editExpense ? editExpense.createdAt : '31/10/22'}
-                backgroundColor={'transparent'}
-                borderBottomWidth={1}
-                Label={'Date'}
-                borderColor={colors.grey2}
-                onPress={handleDatePress}
-                selectedDate={expense.createdAt}
-              />
-
-              <PaymentDetailMethod
-                defaultCheckedItem={
-                  editExpense ? editExpense.paymentMedium : 'Cash'
-                }
-                Label={'Payment'}
-                backgroundColor={'transparent'}
-                borderBottomWidth={1}
-                borderColor={colors.grey2}
-                onPress={title =>
-                  setExpense(prev => ({...prev, paymentMedium: title}))
-                }
-              />
-              <AbstractTextInput
-                onChangeText={e => setExpense(prev => ({...prev, note: e}))}
-                Value={expense.note}
-                backgroundColor={'transparent'}
-                borderBottomWidth={1}
-                borderColor={colors.grey2}
-                Label={'Note'}
-                PlaceHolder={
-                  editExpense
-                    ? editExpense.note
-                    : 'Lorem Ipsum has been the industrys standard dummy text ever'
-                }
-                placeholderTextColor={colors.black}
-                renderLabelIcon={() => (
-                  <ClipBoardIconSvg width={15} height={17} />
-                )}
-              />
-            </View>
-            <View
-              style={[
-                styles.horizontalContainer,
-                {
-                  height: 40,
-                  width: '100%',
-                  backgroundColor: 'transparent',
-                  // paddingHorizontal: 0,
-                  paddingVertical: 0,
-                  flexDirection: 'row',
-                },
-              ]}>
-              <AbstractButton
-                backgroundColor={lightThemeColors.red1}
-                height={40}
-                title={loading ? null : 'Save'}
-                titleStyle={{
-                  color: colors.white,
-                  fontFamily: Fonts.interBold,
-                  fontWeight: '600',
-                  fontSize: 16,
-                }}
-                width={'48%'}
-                borderRadius={30}
-                onPress={handleSavePress}
-              />
-              <AbstractButton
-                borderWidth={1}
-                borderColor={colors.black}
-                backgroundColor={'transparent'}
-                height={40}
-                title={'Cancel'}
-                titleStyle={{
-                  color: colors.black,
-                  fontFamily: Fonts.interBold,
-                  fontWeight: '600',
-                  fontSize: 16,
-                }}
-                iconMargin={10}
-                width={'48%'}
-                borderRadius={30}
-                onPress={handleLeftArrowPressed}
-              />
-            </View>
-          </View>
-          <DatePicker
-            modal
-            open={open}
-            date={date}
-            onConfirm={date => {
-              convertDate(new Date(date));
-              setOpen(false);
-            }}
-            onCancel={() => {
-              setOpen(false);
-            }}
-          />
-        </View>
+        false
       )}
     </>
   );

@@ -24,7 +24,7 @@ class AuthController {
     });
   };
 
-  static handleLogin = (email = 'chumar', password = '1234') => {
+  static handleLogin = (email = 'mbilal', password = '1234') => {
     AuthController.requestLogin()
       .then(res => {
         if (res.success) {

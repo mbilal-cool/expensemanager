@@ -140,7 +140,7 @@ const LoginScreen = ({navigation}) => {
             borderRadius={30}
             onPress={onLoginButtonPressed}
           />
-          {resError != '' ? (
+          {/* {resError != '' ? (
             <Text
               style={[
                 styles.labelStyle,
@@ -154,7 +154,7 @@ const LoginScreen = ({navigation}) => {
               ]}>
               Network Error, Try Again !
             </Text>
-          ) : null}
+          ) : null} */}
         </View>
       </View>
     </SafeAreaView>
@@ -168,12 +168,13 @@ const styles = StyleSheet.create({
     flex: 1,
     // backgroundColor: 'red',
     // justifyContent: 'center',
-    paddingHorizontal: 20,
+    // paddingHorizontal: 20,
   },
   middleContainer: {
     flex: 0.4,
     // backgroundColor: 'red',
     justifyContent: 'flex-end',
+    paddingHorizontal: 20,
   },
   containerHorizontal: {
     height: 200,
