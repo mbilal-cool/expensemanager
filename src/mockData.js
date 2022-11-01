@@ -6,7 +6,7 @@ export const expenseList = [
   {
     id: idGenerator(),
     amount: '10000',
-    expenseName: 'Salary',
+    expenseName: 'Salarry',
     note: 'Lorem Ipsum is simply dummy text of the printing and typesetting ...',
 
     createdAt: '31/10/22',
@@ -83,7 +83,7 @@ export const expenseList = [
   {
     id: idGenerator(),
     amount: '10000',
-    expenseName: 'Salary',
+    expenseName: 'Salaroy',
     note: 'Lorem Ipsum is simply dummy text of the printing and typesetting ...',
 
     createdAt: '01/11/22',

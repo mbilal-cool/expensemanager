@@ -352,7 +352,10 @@ const HomeBottomSheet = ({
                 Height={50}
                 borderWidth={1}
                 borderColor={lightThemeColors.grey}
-                placeHolderTextStyle={[styles.titleStyle]}
+                placeHolderTextStyle={[
+                  styles.titleStyle,
+                  {color: colors.black},
+                ]}
                 placeholderTextColor={colors.black}
                 type={'simple'}
                 PlaceHolder={'2022'}

@@ -224,7 +224,7 @@ const Expenses = ({navigation}) => {
                   backgroundColor: lightThemeColors.red1,
                   alignItems: 'center',
                   paddingHorizontal: 10,
-                  paddingRight: 10,
+                  paddingRight: 12,
                   justifyContent: 'space-around',
                 }}>
                 <Text

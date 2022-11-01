@@ -48,7 +48,7 @@ const SignUpScreen = ({navigation}) => {
   };
 
   const nvalidations = e => {
-    let res = /^[a-zA-Z]+$/.test(e);
+    let res = /^[a-z A-Z]+$/.test(e);
     if (res) {
       SetUser(prev => ({...prev, nameError: ''}));
     } else {
@@ -85,7 +85,7 @@ const SignUpScreen = ({navigation}) => {
       user.password != ''
     ) {
       AuthController.handleSignupUser(e => setResError(e));
-      console.log('hadi', resError);
+
       // navigation.navigate('LogInScreen');
     } else return;
   };
@@ -226,6 +226,6 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.interBold,
     fontWeight: '500',
     color: lightThemeColors.black,
-    fontSize: 16,
+    fontSize: 13,
   },
 });

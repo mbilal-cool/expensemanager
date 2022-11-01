@@ -2,6 +2,7 @@ import {StyleSheet, Text, View, TextInput} from 'react-native';
 import React from 'react';
 import {lightThemeColors, Fonts} from '../../theme';
 import {useTheme} from '@react-navigation/native';
+import {useState} from 'react';
 const AbstractTextInput = ({
   Height,
   Width,
@@ -35,7 +36,7 @@ const AbstractTextInput = ({
   const defaultBorderWidth = borderWidth ? borderWidth : 0;
   const defaultBorderBottomWidth = borderBottomWidth ? borderBottomWidth : null;
   const defaultBorderColor = borderColor ? borderColor : 0;
-
+  const [secureTextEntry, setSecureTextEntry] = useState(false);
   const defaultBackgroundColor = backgroundColor
     ? backgroundColor
     : colors.white;
@@ -94,7 +95,10 @@ const AbstractTextInput = ({
                   style={[
                     [styles.textInput, {height: 50}],
                     placeHolderTextStyle,
-                    {flexDirection: 'row', alignItems: 'center'},
+                    {
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                    },
                   ]}
                   placeholderTextColor={placeholderTextColor}
                   value={Value}

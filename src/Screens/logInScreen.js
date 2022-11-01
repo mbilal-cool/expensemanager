@@ -9,8 +9,8 @@ import ThemeController from '../Controller/themeController';
 
 const LoginScreen = ({navigation}) => {
   const [user, SetUser] = useState({
-    email: '',
-    emailError: '',
+    name: '',
+    nameError: '',
     password: '',
     passwordError: '',
   });
@@ -29,8 +29,8 @@ const LoginScreen = ({navigation}) => {
   }, []);
   const onChangeText = (e, type) => {
     switch (type) {
-      case 'email':
-        return SetUser(prev => ({...prev, email: e})), ValidateEmail(e);
+      case 'name':
+        return SetUser(prev => ({...prev, name: e})), nameValidations(e);
 
       case 'password':
         return SetUser(prev => ({...prev, password: e})), ValidatePassword(e);
@@ -40,11 +40,12 @@ const LoginScreen = ({navigation}) => {
     }
   };
 
-  const ValidateEmail = mail => {
-    if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail)) {
-      SetUser(prev => ({...prev, emailError: ''}));
+  const nameValidations = e => {
+    let res = /^[a-z A-Z]+$/.test(e);
+    if (res) {
+      SetUser(prev => ({...prev, nameError: ''}));
     } else {
-      SetUser(prev => ({...prev, emailError: 'Enter Valid Name'}));
+      SetUser(prev => ({...prev, nameError: 'Enter Valid Name'}));
     }
   };
   const ValidatePassword = e => {
@@ -61,9 +62,9 @@ const LoginScreen = ({navigation}) => {
     setValidate(true);
 
     if (
-      user.emailError == '' &&
+      user.nameError == '' &&
       user.passwordError == '' &&
-      user.email != '' &&
+      user.name != '' &&
       user.password != ''
     ) {
       navigation.navigate('AppStack');
@@ -103,13 +104,13 @@ const LoginScreen = ({navigation}) => {
             borderColor={lightThemeColors.grey}
             placeHolderTextStyle={[styles.labelStyle, {color: colors.black}]}
             type={'simple'}
-            PlaceHolder={'Email'}
+            PlaceHolder={'Name'}
             placeholderTextColor={lightThemeColors.grey}
-            Value={user.email}
-            onChangeText={e => onChangeText(e, 'email')}
+            Value={user.name}
+            onChangeText={e => onChangeText(e, 'name')}
             validate={validate}
-            validations={e => ValidateEmail(e)}
-            errorMessage={user.emailError}
+            validations={e => nameValidations(e)}
+            errorMessage={user.nameError}
           />
           <AbstractTextInput
             password={true}
@@ -193,6 +194,6 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.interBold,
     fontWeight: '500',
     color: lightThemeColors.black,
-    fontSize: 16,
+    fontSize: 13,
   },
 });
