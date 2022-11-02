@@ -147,7 +147,7 @@ const OneTimeExpense = ({route, navigation}) => {
             style={[
               styles.horizontalContainer,
               {
-                // backgroundColor: colors.white
+                backgroundColor: colors.white,
                 // backgroundColor: 'tomato',
               },
             ]}>

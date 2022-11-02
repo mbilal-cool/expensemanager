@@ -1,25 +1,48 @@
 import {navigate} from '../Navigation/mainNavigation';
 import axios from 'axios';
+const baseUrl = 'https://expensemanagementsys.herokuapp.com/';
+const params = {
+  username: 'Muhammad Bilal',
+  email: 'mianBilal@gmail.com',
+  password: 'kitkat123',
+  roles: ['admin'],
+};
 
 class AuthController {
-  static handleSignupUser = call_back => {
+  static handleSignupUser = _call_back => {
     AuthController.signUpRequest()
       .then(res => {
-        res ? navigate('LogInScreen') : null;
+        console.log(res.data);
+        if (res.data.success) {
+          navigate('LogInScreen');
+        } else {
+          _call_back(res.data.message);
+        }
       })
       .catch(err => {
-        console.log(err), call_back(err);
+        console.log(err);
+        _call_back(err);
       });
   };
   static signUpRequest = () => {
     return new Promise((resolve, reject) => {
       axios
-        .get('https://jsonplaceholder.typicode.com/users')
+        .post(
+          'https://expensemanagementsys.herokuapp.com/api/auth/signup',
+
+          {
+            username: 'Muhammad Bilal',
+            email: 'mianBilal123@gmail.com',
+            password: 'kitkat123',
+            roles: ['admin'],
+          },
+        )
         .then(response => {
-          resolve(response.status);
+          resolve(response);
         })
         .catch(error => {
-          reject(error);
+          console.log(error);
+          reject('Network Error');
         });
     });
   };

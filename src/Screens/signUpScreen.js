@@ -75,19 +75,16 @@ const SignUpScreen = ({navigation}) => {
   const onSignUpButtonPressed = () => {
     setValidate(true);
 
-    if (
-      resError == '' &&
-      user.nameError == '' &&
-      user.emailError == '' &&
-      user.passwordError == '' &&
-      user.name != '' &&
-      user.email != '' &&
-      user.password != ''
-    ) {
-      AuthController.handleSignupUser(e => setResError(e));
-
-      // navigation.navigate('LogInScreen');
-    } else return;
+    // if (
+    //   user.nameError == '' &&
+    //   user.emailError == '' &&
+    //   user.passwordError == '' &&
+    //   user.name != '' &&
+    //   user.email != '' &&
+    //   user.password != ''
+    // ) {
+    AuthController.handleSignupUser(e => setResError(e));
+    // }
   };
 
   return (
