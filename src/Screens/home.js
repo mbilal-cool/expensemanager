@@ -31,10 +31,10 @@ const convertDate = inputDate => {
   month = inputDate.getMonth() + 1;
   year = inputDate.getFullYear();
   date = date.toString().padStart(2, '0');
-  year = year.toString().substr(2, 3);
+
   month = month.toString().padStart(2, '0');
 
-  let result = `${date}/${month}/${year}`;
+  let result = `${year}-${month}-${date}`;
   return result.toString();
 };
 const Home = ({navigation}) => {
@@ -57,9 +57,8 @@ const Home = ({navigation}) => {
     date = inputDate.getDate();
     month = inputDate.getMonth() + 1;
 
-    date = date.toString().padStart(2, '0');
-
     month = month.toString().padStart(2, '0');
+
     let modifymonth = month => {
       switch (month) {
         case '01':
@@ -145,40 +144,40 @@ const Home = ({navigation}) => {
         {/* {todayDataAvailable && prevDataAvailbele ? (
           <ActivityIndicator size="large" color={colors.red1} />
         ) : ( */}
-
-        <ExpenseDetailHeader
-          height={50}
-          headingMain={'Today'}
-          currentDate={todayDate}
-          backgroundColor={'transparent'}
-        />
-        <View style={{paddingHorizontal: 20, paddingVertical: 10}}>
-          <ExpenseDetailItemList
-            noOfPlaceHolders={[0, 0, 0]}
-            date={currentDate}
-            borderRadius={6}
-            marginBottom={5}
-            showAllButton={true}
-            navigation={navigation}
+        <ScrollView showsVerticalScrollIndicator={false} bounce={false}>
+          <ExpenseDetailHeader
+            height={50}
+            headingMain={'Today'}
+            currentDate={todayDate}
+            backgroundColor={'transparent'}
           />
-        </View>
+          <View style={{paddingHorizontal: 20, paddingVertical: 10}}>
+            <ExpenseDetailItemList
+              noOfPlaceHolders={[0, 0, 0]}
+              date={currentDate}
+              borderRadius={6}
+              marginBottom={5}
+              showAllButton={true}
+              navigation={navigation}
+            />
+          </View>
 
-        <ExpenseDetailHeader
-          height={50}
-          headingMain={'Previous'}
-          backgroundColor={'transparent'}
-        />
-        <View style={{paddingHorizontal: 20, paddingVertical: 10}}>
-          <ExpenseDetailItemList
-            noOfPlaceHolders={[0, 0, 0]}
-            date={'31/10/22'}
-            borderRadius={6}
-            marginBottom={5}
-            navigation={navigation}
-            showAllButton={true}
+          <ExpenseDetailHeader
+            height={50}
+            headingMain={'Previous'}
+            backgroundColor={'transparent'}
           />
-        </View>
-
+          <View style={{paddingHorizontal: 20, paddingVertical: 10}}>
+            <ExpenseDetailItemList
+              noOfPlaceHolders={[0, 0, 0]}
+              date={'2022-11-02'}
+              borderRadius={6}
+              marginBottom={5}
+              navigation={navigation}
+              showAllButton={true}
+            />
+          </View>
+        </ScrollView>
         {/* )} */}
       </View>
 

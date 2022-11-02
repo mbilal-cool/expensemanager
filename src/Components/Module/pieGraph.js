@@ -79,8 +79,8 @@ const PieGraphV2 = ({onPressSector, data}) => {
           speed={1200}>
           <SkeletonPlaceholder.Item alignItems="center">
             <SkeletonPlaceholder.Item
-              width={width * 0.5}
-              height={width * 0.5}
+              width={width * 0.55}
+              height={width * 0.55}
               borderRadius={200}
               marginTop={60}
             />
@@ -95,8 +95,8 @@ const PieGraphV2 = ({onPressSector, data}) => {
             data={dataPieChart}
             labelPosition={'centroid'}
             colorScale={dataPieChart.map(item => item.color)}
-            height={width * 0.76}
-            width={width * 0.76}
+            height={width * 0.86}
+            width={width * 0.81}
             style={{
               data: {fillOpacity: 0.9, stroke: colors.white, strokeWidth: 1},
               labels: {
@@ -136,8 +136,9 @@ const PieGraphV2 = ({onPressSector, data}) => {
           position: 'absolute',
           // alignItems: 'center',
           justifyContent: 'center',
-          top: 50,
-          right: -150,
+          top: 65,
+          right: -130,
+          paddingLeft: 5,
         }}>
         {loading ? (
           <SkeletonPlaceholder
@@ -202,7 +203,7 @@ const PieGraphV2 = ({onPressSector, data}) => {
                       fontWeight: '400',
                       fontSize: width * 0.025,
                       color: colors.black,
-                      marginLeft: 10,
+                      marginLeft: 5,
                     }}>
                     {item.titleWithPercentage}
                   </Text>

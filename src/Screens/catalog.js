@@ -130,7 +130,7 @@ const Catalog = ({navigation}) => {
           <ContainerElement>
             <ExpenseDetailItemList
               noOfPlaceHolders={[0, 0, 0]}
-              date={'31/10/22'}
+              date={'2022-11-02'}
               borderRadius={6}
               marginBottom={5}
               navigation={navigation}

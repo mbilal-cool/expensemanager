@@ -77,7 +77,7 @@ const AddCatelog = ({route, navigation}) => {
     year = year.toString().substr(2, 3);
     month = month.toString().padStart(2, '0');
 
-    let result = `${date}/${month}/${year}`;
+    let result = `${year}-${month}-${date}`;
     setExpense(prev => ({...prev, createdAt: result}));
   };
   const handleDatePress = () => {

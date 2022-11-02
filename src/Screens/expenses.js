@@ -14,25 +14,18 @@ import FocusAwareStatusBar from '../Components/Abstract/focusAwareStatusBar';
 import AbstractHeader from '../Components/Abstract/abstractHeader';
 import {useTheme} from '@react-navigation/native';
 import SearchBar from '../Components/Module/searchBar';
-
 import ExpenseDetailHeader from '../Components/Module/expenseDetailHeader';
 import {expenseList} from '../mockData';
 import DateRange from '../Components/Module/dateRange';
-
 import AbstractButton from '../Components/Abstract/abstractButton';
-import ArrowRightIconSvg from '../Assets/Icons/arrowRightsvg';
-
 import ArrowDownIconSvg from '../Assets/Icons/arrowDownSvg';
-
 import ExpensesBottomSheet from '../Components/Module/expensesBottomSheet';
-
 import PieGraphV2 from '../Components/Module/pieGraph';
 import AbstractModal from '../Components/Abstract/abstractModal';
 import ContainerElement from '../Components/Abstract/containerElement';
 import {useState, useEffect} from 'react';
 import ThemeController from '../Controller/themeController';
 const {height, width} = Dimensions.get('window');
-
 const Expenses = ({navigation}) => {
   const [darkMode, setDarkMode] = useState(false);
   const [filter, setFilter] = useState('All');
@@ -45,7 +38,6 @@ const Expenses = ({navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalData, setModalData] = useState({});
   const [sheetType, SetSheetType] = useState('reportDuration');
-
   const expenseDetails = [
     {
       name: 'Salary Expenses',
@@ -123,7 +115,6 @@ const Expenses = ({navigation}) => {
   const onPressSector = (value, selectedSectorData) => {
     setModalData(selectedSectorData);
   };
-
   const [expenses, SetExpenses] = useState(expenseList);
   useEffect(() => {
     ThemeController.checkAsyncAndSetPreviousMode();
@@ -156,10 +147,10 @@ const Expenses = ({navigation}) => {
     year = inputDate.getFullYear();
 
     date = date.toString().padStart(2, '0');
-    year = year.toString().substr(2, 3);
+
     month = month.toString().padStart(2, '0');
 
-    let result = `${date}/${month}/${year}`;
+    let result = `${year}-${month}-${date}`;
     dateType == 'start' ? setStartDate(result) : setEndDate(result);
   };
   const handleStartDatePress = () => {
@@ -252,43 +243,45 @@ const Expenses = ({navigation}) => {
           styles.middleContainer,
           // {backgroundColor: colors.defaultBackground},
         ]}>
-        <ContainerElement>
-          <ExpenseDetailItemList
-            noOfPlaceHolders={[0, 0, 0]}
-            onPress={handleEntryDeatilPressed}
-            date={'31/10/22'}
-            borderRadius={6}
-            marginBottom={5}
-            showAllButton={true}
-            onViewAllpress={onViewAllpress}
-            navigation={navigation}
-          />
+        <ScrollView bounces={false} showsVerticalScrollIndicator={false}>
+          <ContainerElement>
+            <ExpenseDetailItemList
+              noOfPlaceHolders={[0, 0, 0]}
+              onPress={handleEntryDeatilPressed}
+              date={'2022-11-02'}
+              borderRadius={6}
+              marginBottom={5}
+              showAllButton={true}
+              onViewAllpress={onViewAllpress}
+              navigation={navigation}
+            />
 
-          <View
-            style={{
-              justifyContent: 'center',
-              // backgroundColor: 'yellow',
-              paddingRight: 100,
-            }}>
-            <PieGraphV2 onPressSector={onPressSector} data={expenseDetails} />
+            <View
+              style={{
+                justifyContent: 'center',
+                // backgroundColor: 'green',
+                paddingRight: 80,
+              }}>
+              <PieGraphV2 onPressSector={onPressSector} data={expenseDetails} />
 
-            <AbstractModal isVisible={modalVisible}>
-              <View
-                style={{
-                  height: 100,
-                  width: 100,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
-                <AbstractButton
-                  title={'close'}
-                  onPress={() => setModalVisible(false)}
-                />
-                <Text>{modalData?.label}</Text>
-              </View>
-            </AbstractModal>
-          </View>
-        </ContainerElement>
+              <AbstractModal isVisible={modalVisible}>
+                <View
+                  style={{
+                    height: 100,
+                    width: 100,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  <AbstractButton
+                    title={'close'}
+                    onPress={() => setModalVisible(false)}
+                  />
+                  <Text>{modalData?.label}</Text>
+                </View>
+              </AbstractModal>
+            </View>
+          </ContainerElement>
+        </ScrollView>
       </View>
       <ExpensesBottomSheet
         id={'expenses'}

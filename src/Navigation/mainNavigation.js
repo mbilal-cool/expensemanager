@@ -59,7 +59,7 @@ const MainNavigation = () => {
   return (
     <NavigationContainer theme={appTheme} ref={navigationRef}>
       <Stack.Navigator screenOptions={{headerShown: false}}>
-        <Stack.Screen component={AuthStack} name={'AuthStack'} />
+        {/* <Stack.Screen component={AuthStack} name={'AuthStack'} /> */}
         <Stack.Screen component={AppStack} name={'AppStack'} />
       </Stack.Navigator>
     </NavigationContainer>

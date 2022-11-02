@@ -7,7 +7,6 @@ const AbstaractRadioButton = ({
   height,
   width,
   options,
-
   onPress = () => false,
   bR,
   justifyContent,
@@ -105,7 +104,7 @@ const styles = StyleSheet.create({
     width: 16,
     borderRadius: 10,
     borderWidth: 1.5,
-    backgroundColor: lightThemeColors.white,
+
     alignItems: 'center',
     justifyContent: 'center',
   },
