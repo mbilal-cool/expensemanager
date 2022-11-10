@@ -23,11 +23,18 @@ import ExpenseTypeTile from '../Components/Module/expenseTypeTile';
 import {useTheme} from '@react-navigation/native';
 import ThemeController from '../Controller/themeController';
 import ExpenseController from '../Controller/expenseController';
-import {set} from 'immer/dist/internal';
-const OneTimeExpense = ({route, navigation}) => {
-  const {editExpense} = route.params ? route.params : '';
+import {useSelector} from 'react-redux';
 
+const OneTimeExpense = ({route, navigation}) => {
+  const userId = useSelector(state => state.user.user.id);
+  const token = useSelector(state => state.user.user);
+
+  const {editExpense} = route.params ? route.params : '';
+  const {expensCategoryItem} = route.params ? route.params : '';
   const [loading, setLoading] = useState(false);
+  const [oneTimeExpenseID, SetoneTimeExpenseID] = useState(
+    '63625be0bec8a249188c9be1',
+  );
   const idGenerator = () => {
     return Math.floor((1 + Math.random()) * 0x1000);
   };
@@ -41,7 +48,7 @@ const OneTimeExpense = ({route, navigation}) => {
     paymentMedium: '',
     createdBy: '',
     expenseType: 'onTime expense',
-    expenseCategory: '',
+    expenseCategory: null,
   });
   const [edit, setEdit] = useState({obj: '', id: ''});
   const [date, setDate] = useState(new Date());
@@ -61,7 +68,7 @@ const OneTimeExpense = ({route, navigation}) => {
     };
   }, []);
   const handleExpenseTypePressed = () => {
-    navigation.navigate('ExpenseType', {setSelectedExpenseType: setExpense});
+    navigation.navigate('ExpenseType');
   };
   const handleLeftArrowPressed = () => {
     navigation.goBack();
@@ -77,7 +84,7 @@ const OneTimeExpense = ({route, navigation}) => {
 
     month = month.toString().padStart(2, '0');
 
-    let result = `${year}${month}-${date}/`;
+    let result = `${year}-${month}-${date}`;
     setExpense(prev => ({...prev, createdAt: result}));
   };
   const handleDatePress = () => {
@@ -85,14 +92,40 @@ const OneTimeExpense = ({route, navigation}) => {
   };
   const handleSavePress = () => {
     setLoading(true);
-    letprepareObj = editExpense ? {obj: expense, id: editExpense.id} : null;
-    editExpense
-      ? (ExpenseController.updateExpenceItem(letprepareObj),
+    if (editExpense) {
+      let prepareObj = {
+        amount: expense.amount,
+        expenseName: expense.expenseName,
+        note: expense.note,
+        createdAt: expense.createdAt,
+        deletedAt: expense.createdAt,
+        paymentMedium: expense.paymentMedium,
+        createdBy: userId,
+        expenseType: oneTimeExpenseID,
+        expenseCategory: expensCategoryItem.id,
+      }(
+        ExpenseController.updateExpenceItem(prepareObj),
         setLoading(false),
-        navigation.goBack())
-      : ExpenseController.handleAddExpense(expense, res => {
+        navigation.goBack(),
+      );
+    } else {
+      ExpenseController.handleAddExpense(
+        {
+          amount: parseInt(expense.amount),
+          expenseName: expense.expenseName,
+          note: expense.note,
+          createdAt: expense.createdAt,
+          deletedAt: expense.createdAt,
+          paymentMedium: expense.paymentMedium,
+          createdBy: userId,
+          expenseType: oneTimeExpenseID,
+          expenseCategory: expensCategoryItem._id,
+        },
+        res => {
           setLoading(false), navigation.goBack();
-        });
+        },
+      );
+    }
   };
 
   return (
@@ -204,11 +237,11 @@ const OneTimeExpense = ({route, navigation}) => {
               borderBottomWidth={1}
               Label={'ExpenseType'}
               placeHolder={
-                expense.expenseCategory == ''
+                expensCategoryItem == undefined
                   ? editExpense
                     ? editExpense.expenseCategory
                     : 'Office Expense'
-                  : expense.expenseCategory
+                  : expensCategoryItem.name
               }
               borderColor={colors.grey2}
               onPress={handleExpenseTypePressed}

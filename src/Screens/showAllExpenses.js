@@ -5,7 +5,7 @@ import {Fonts, lightThemeColors} from '../theme';
 
 import {useTheme} from '@react-navigation/native';
 import {expenseList} from '../mockData';
-import ExpenseDetailItemList from '../Components/Module/expenseDetailItemList';
+// import ExpenseDetailItem from '../Components/Module/expenseDetailItem';
 import ExpenseDetailHeader from '../Components/Module/expenseDetailHeader';
 import FocusAwareStatusBar from '../Components/Abstract/focusAwareStatusBar';
 import ThemeController from '../Controller/themeController';
@@ -74,12 +74,12 @@ export default function ShowAllExpenses({navigation}) {
       />
       <ExpenseDetailHeader />
       <View style={styles.itemWrapper}>
-        <ExpenseDetailItemList
+        {/* <ExpenseDetailItemList
           noOfPlaceHolders={[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}
           borderRadius={6}
           marginBottom={5}
           navigation={navigation}
-        />
+        /> */}
       </View>
     </View>
   );

@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import DatePicker from 'react-native-date-picker';
 import {lightThemeColors, Fonts} from '../theme';
-import ExpenseDetailItemList from '../Components/Module/expenseDetailItemList';
+// import ExpenseDetailItemList from '../Components/Module/expenseDetailItemList';
 import {SheetManager} from 'react-native-actions-sheet';
 import FocusAwareStatusBar from '../Components/Abstract/focusAwareStatusBar';
 import AbstractHeader from '../Components/Abstract/abstractHeader';
@@ -245,7 +245,7 @@ const Expenses = ({navigation}) => {
         ]}>
         <ScrollView bounces={false} showsVerticalScrollIndicator={false}>
           <ContainerElement>
-            <ExpenseDetailItemList
+            {/* <ExpenseDetailItemList
               noOfPlaceHolders={[0, 0, 0]}
               onPress={handleEntryDeatilPressed}
               date={'2022-11-02'}
@@ -254,7 +254,7 @@ const Expenses = ({navigation}) => {
               showAllButton={true}
               onViewAllpress={onViewAllpress}
               navigation={navigation}
-            />
+            /> */}
 
             <View
               style={{

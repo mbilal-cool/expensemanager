@@ -1,4 +1,10 @@
-import {StyleSheet, Text, View, SafeAreaView} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  SafeAreaView,
+  ActivityIndicator,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {Fonts, lightThemeColors} from '../theme';
 import AbstractTextInput from '../Components/Abstract/abstractTextInput';
@@ -6,7 +12,7 @@ import FocusAwareStatusBar from '../Components/Abstract/focusAwareStatusBar';
 import AbstractButton from '../Components/Abstract/abstractButton';
 import {useTheme} from '@react-navigation/native';
 import ThemeController from '../Controller/themeController';
-
+import AuthController from '../Controller/authController';
 const LoginScreen = ({navigation}) => {
   const [user, SetUser] = useState({
     name: '',
@@ -15,7 +21,7 @@ const LoginScreen = ({navigation}) => {
     passwordError: '',
   });
   const [resError, setResError] = useState('error');
-  const [validate, setValidate] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [darkMode, setDarkMode] = useState();
   const {colors} = useTheme();
   useEffect(() => {
@@ -27,6 +33,7 @@ const LoginScreen = ({navigation}) => {
       ThemeController.removingListener();
     };
   }, []);
+
   const onChangeText = (e, type) => {
     switch (type) {
       case 'name':
@@ -58,107 +65,157 @@ const LoginScreen = ({navigation}) => {
       SetUser(prev => ({...prev, passwordError: ''}));
     }
   };
-  const onLoginButtonPressed = () => {
-    setValidate(true);
 
+  const onLoginButtonPressed = () => {
     if (
       user.nameError == '' &&
       user.passwordError == '' &&
       user.name != '' &&
       user.password != ''
     ) {
-      navigation.navigate('AppStack');
-    } else return;
+      setLoading(true);
+
+      AuthController.handleLogin(
+        {username: user.name, password: user.password},
+        res => {
+          SetUser(prev => ({...prev, name: '', password: ''}));
+          setLoading(res);
+        },
+        reserror => setResError(reserror),
+      );
+    }
   };
   return (
-    <SafeAreaView
-      style={[styles.main, {backgroundColor: colors.defaultBackground}]}>
-      <FocusAwareStatusBar
-        barStyle={darkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={colors.defaultBackground}
-        translucent={true}
-      />
-      <View
+    <>
+      <SafeAreaView
+        style={[styles.main, {backgroundColor: colors.defaultBackground}]}>
+        <FocusAwareStatusBar
+          barStyle={darkMode ? 'light-content' : 'dark-content'}
+          backgroundColor={colors.defaultBackground}
+          translucent={true}
+        />
+        <View
+          style={[
+            styles.containerHorizontal,
+            {
+              // backgroundColor: 'yellow',
+              flex: 0.12,
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingBottom: 0,
+            },
+          ]}>
+          <Text
+            style={[
+              styles.labelStyle,
+              {color: colors.black, fontWeight: '900', fontSize: 20},
+            ]}>
+            LogIn
+          </Text>
+        </View>
+        <View style={styles.middleContainer}>
+          <View style={[styles.containerHorizontal]}>
+            <AbstractTextInput
+              borderWidth={1}
+              borderColor={lightThemeColors.grey}
+              placeHolderTextStyle={[styles.labelStyle, {color: colors.black}]}
+              type={'simple'}
+              PlaceHolder={'Name'}
+              placeholderTextColor={lightThemeColors.grey}
+              Value={user.name}
+              onChangeText={e => onChangeText(e, 'name')}
+              errorMessage={user.nameError}
+            />
+            <AbstractTextInput
+              password={true}
+              borderWidth={1}
+              borderColor={lightThemeColors.grey}
+              placeHolderTextStyle={[styles.labelStyle, {color: colors.black}]}
+              type={'simple'}
+              PlaceHolder={'Password'}
+              placeholderTextColor={lightThemeColors.grey}
+              Value={user.password}
+              onChangeText={e => onChangeText(e, 'password')}
+              errorMessage={user.passwordError}
+            />
+            <AbstractButton
+              backgroundColor={lightThemeColors.red1}
+              height={50}
+              title={'LogIn'}
+              titleStyle={{
+                color: colors.white,
+                fontFamily: Fonts.interBold,
+                fontWeight: '600',
+                fontSize: 16,
+              }}
+              iconMargin={10}
+              width={'100%'}
+              borderRadius={30}
+              onPress={onLoginButtonPressed}
+            />
+            {/* {resError != '' ? (
+      <Text
         style={[
-          styles.containerHorizontal,
+          styles.labelStyle,
           {
-            // backgroundColor: 'yellow',
-            flex: 0.12,
-            alignItems: 'center',
-            justifyContent: 'flex-end',
-            paddingBottom: 0,
+            color: colors.red1,
+            position: 'absolute',
+            bottom: -20,
+            left: 17,
+            fontSize: 14,
           },
         ]}>
-        <Text
-          style={[
-            styles.labelStyle,
-            {color: colors.black, fontWeight: '900', fontSize: 20},
-          ]}>
-          LogIn
-        </Text>
-      </View>
-      <View style={styles.middleContainer}>
-        <View style={[styles.containerHorizontal]}>
-          <AbstractTextInput
-            borderWidth={1}
-            borderColor={lightThemeColors.grey}
-            placeHolderTextStyle={[styles.labelStyle, {color: colors.black}]}
-            type={'simple'}
-            PlaceHolder={'Name'}
-            placeholderTextColor={lightThemeColors.grey}
-            Value={user.name}
-            onChangeText={e => onChangeText(e, 'name')}
-            validate={validate}
-            validations={e => nameValidations(e)}
-            errorMessage={user.nameError}
-          />
-          <AbstractTextInput
-            password={true}
-            borderWidth={1}
-            borderColor={lightThemeColors.grey}
-            placeHolderTextStyle={[styles.labelStyle, {color: colors.black}]}
-            type={'simple'}
-            PlaceHolder={'Password'}
-            placeholderTextColor={lightThemeColors.grey}
-            Value={user.password}
-            onChangeText={e => onChangeText(e, 'password')}
-            validate={validate}
-            errorMessage={user.passwordError}
-            validations={e => ValidatePassword(e)}
-          />
-          <AbstractButton
-            backgroundColor={lightThemeColors.red1}
-            height={50}
-            title={'LogIn'}
-            titleStyle={{
-              color: colors.white,
-              fontFamily: Fonts.interBold,
-              fontWeight: '600',
-              fontSize: 16,
-            }}
-            iconMargin={10}
-            width={'100%'}
-            borderRadius={30}
-            onPress={onLoginButtonPressed}
-          />
-          {/* {resError != '' ? (
-            <Text
-              style={[
-                styles.labelStyle,
-                {
-                  color: colors.red1,
-                  position: 'absolute',
-                  bottom: -20,
-                  left: 17,
-                  fontSize: 14,
-                },
-              ]}>
-              Network Error, Try Again !
+        Network Error, Try Again !
+      </Text>
+    ) : null} */}
+          </View>
+          <View
+            style={[
+              styles.containerHorizontal,
+              {
+                // backgroundColor: 'yellow',
+                height: 60,
+                alignItems: 'center',
+                flexDirection: 'row',
+                justifyContent: 'flex-start',
+                paddingLeft: 15,
+              },
+            ]}>
+            <Text style={[styles.labelStyle, {color: colors.grey1}]}>
+              Don't have an account?
             </Text>
-          ) : null} */}
+            <AbstractButton
+              backgroundColor={'transparent'}
+              height={20}
+              title={'SignUp'}
+              titleStyle={{
+                color: colors.red1,
+                fontFamily: Fonts.interBold,
+                fontWeight: '600',
+                fontSize: 13,
+              }}
+              iconMargin={10}
+              width={'20%'}
+              borderRadius={30}
+              onPress={() => navigation.navigate('SignUpScreen')}
+            />
+          </View>
         </View>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+      {loading ? (
+        <View
+          style={{
+            ...StyleSheet.absoluteFillObject,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: 'rgba(0,0,0,0.3)',
+          }}>
+          <ActivityIndicator size="large" color={colors.black} />
+        </View>
+      ) : (
+        false
+      )}
+    </>
   );
 };
 
@@ -172,13 +229,13 @@ const styles = StyleSheet.create({
     // paddingHorizontal: 20,
   },
   middleContainer: {
-    flex: 0.4,
+    flex: 0.45,
     // backgroundColor: 'red',
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
     paddingHorizontal: 20,
   },
   containerHorizontal: {
-    height: 200,
+    height: 230,
     width: '100%',
     // backgroundColor: 'green',
     alignItems: 'flex-end',

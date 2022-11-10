@@ -4,6 +4,7 @@ import {expenseList} from '../../../mockData';
 const initialState = {
   totalExpense: 0,
   expenses: expenseList,
+  expenseCategories: [],
 };
 
 const expenseSlice = createSlice({
@@ -12,7 +13,7 @@ const expenseSlice = createSlice({
 
   reducers: {
     setTotalExpense: (state, action) => {
-      state.totalExpense = action.payload.totalAmount;
+      state.totalExpense = action.payload.data[0].totalExpense;
     },
     setExpense: (state, action) => {
       // console.log(action.payload);
@@ -39,6 +40,9 @@ const expenseSlice = createSlice({
         singleExpense => singleExpense.id != action.payload,
       );
     },
+    setExpenseCategories: (state, action) => {
+      state.expenseCategories = action.payload;
+    },
   },
 });
 
@@ -47,5 +51,6 @@ export const {
   setExpense,
   updateSingleExpense,
   deleteSingleExpense,
+  setExpenseCategories,
 } = expenseSlice.actions;
 export default expenseSlice.reducer;

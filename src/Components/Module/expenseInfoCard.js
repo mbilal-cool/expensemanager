@@ -18,7 +18,6 @@ const {height, width} = Dimensions.get('window');
 const ExpenseInfoCard = ({backgroundColor}) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-
   const {colors} = useTheme();
   const defaultBackgroundColor = backgroundColor
     ? backgroundColor

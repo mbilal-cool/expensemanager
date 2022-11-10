@@ -10,7 +10,6 @@ import React, {useEffect, useRef, useState} from 'react';
 import SearchSugesstionItem from '../Components/Module/searchSuggestionitem';
 import {useTheme} from '@react-navigation/native';
 import {lightThemeColors, Fonts} from '../theme';
-import ExpenseDetailItemList from '../Components/Module/expenseDetailItemList';
 
 import FocusAwareStatusBar from '../Components/Abstract/focusAwareStatusBar';
 import AbstractHeader from '../Components/Abstract/abstractHeader';
@@ -45,10 +44,12 @@ const Search = ({navigation}) => {
     };
   }, []);
   const addOneTimePresss = () => {
-    navigation.navigate('OneTimeExpense');
+    navigation.navigate('OneTimeExpense', {});
   };
   const addRecurringPress = () => {
-    navigation.navigate('RecurringExpense');
+    navigation.navigate('RecurringExpense', {
+      recurringExpenseID: '63625be0bec8a249188c9be2',
+    });
   };
   const handleLeftArrowPressed = () => {
     navigation.goBack();
@@ -195,12 +196,12 @@ const Search = ({navigation}) => {
             paddingVertical: 10,
             // backgroundColor: 'green',
           }}>
-          <ExpenseDetailItemList
+          {/* <ExpenseDetailItemList
             noOfPlaceHolders={[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}
             navigation={navigation}
             borderRadius={6}
             marginBottom={5}
-          />
+          /> */}
         </View>
       </View>
     </View>

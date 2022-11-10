@@ -25,7 +25,6 @@ const AbstractTextInput = ({
   validate,
   alignIcon,
   defaultValue,
-
   errorMessage,
 }) => {
   const {colors} = useTheme();
@@ -36,17 +35,15 @@ const AbstractTextInput = ({
   const defaultBorderWidth = borderWidth ? borderWidth : 0;
   const defaultBorderBottomWidth = borderBottomWidth ? borderBottomWidth : null;
   const defaultBorderColor = borderColor ? borderColor : 0;
-  const [secureTextEntry, setSecureTextEntry] = useState(false);
   const defaultBackgroundColor = backgroundColor
     ? backgroundColor
     : colors.white;
+  const [errorMsg, setErrorMsg] = useState('*Required Field!');
   const defaultLabelStyle = labelStyle ? labelStyle : styles.labelStyle;
-  const validateErrorMessage = () => {
+  const handleErrorMessage = () => {
     if (Value == '') {
-      return validate ? '*Required Field' : null;
-    } else if (Value != '') {
-      return validate ? errorMessage : null;
-    }
+      return '*Required Field!';
+    } else return errorMessage;
   };
   switch (type) {
     case 'simple':
@@ -115,7 +112,7 @@ const AbstractTextInput = ({
                     bottom: -30,
                     left: 0,
                   }}>
-                  {validateErrorMessage()}
+                  {handleErrorMessage()}
                 </Text>
               </View>
             </View>

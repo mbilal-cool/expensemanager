@@ -26,7 +26,8 @@ import ExpenseController from '../Controller/expenseController';
 import {set} from 'immer/dist/internal';
 const RecurringExpense = ({route, navigation}) => {
   const {editExpense} = route.params ? route.params : '';
-
+  const {recurringExpenseID} = route.params ? route.params : '';
+  console.log('recurringExpenseID', recurringExpenseID);
   const [loading, setLoading] = useState(false);
   const idGenerator = () => {
     return Math.floor((1 + Math.random()) * 0x1000);
@@ -252,6 +253,36 @@ const RecurringExpense = ({route, navigation}) => {
               renderLabelIcon={() => (
                 <ClipBoardIconSvg width={15} height={17} />
               )}
+            />
+          </View>
+          <View
+            style={[
+              styles.horizontalContainer,
+              {
+                alignItems: 'flex-start',
+                flex: 1,
+                width: '100%',
+                // backgroundColor: 'yellow',
+                paddingHorizontal: 0,
+                paddingVertical: 0,
+                flexDirection: 'row',
+              },
+            ]}>
+            <AbstractButton
+              backgroundColor={'transparent'}
+              height={40}
+              title={loading ? null : 'Add From Catalog'}
+              titleStyle={{
+                fontStyle: 'italic',
+                color: colors.darkBlue,
+                fontFamily: Fonts.interBold,
+                fontWeight: '600',
+                fontSize: 12,
+                textDecorationLine: 'underline',
+              }}
+              width={'42%'}
+              borderRadius={30}
+              onPress={() => navigation.navigate('Catalog')}
             />
           </View>
           <View

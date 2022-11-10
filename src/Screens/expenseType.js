@@ -29,7 +29,6 @@ import ThemeController from '../Controller/themeController';
 import HomeBottomSheet from '../Components/Module/homeBottomSheet';
 
 const ExpenseType = ({route, navigation}) => {
-  const {setSelectedExpenseType} = route.params;
   const {height, width} = Dimensions.get('window');
   const {colors} = useTheme();
   const [types, SetTypes] = useState(expenseTypes);
@@ -65,9 +64,10 @@ const ExpenseType = ({route, navigation}) => {
       ThemeController.removingListener();
     };
   }, []);
-  const handleExpenseTypePressed = title => {
-    setSelectedExpenseType(prev => ({...prev, expenseCategory: title}));
-    navigation.goBack();
+  const handleExpenseTypePressed = item => {
+    navigation.navigate('OneTimeExpense', {
+      expensCategoryItem: item,
+    });
   };
   const handleLeftArrowPressed = () => {
     navigation.goBack();
@@ -162,8 +162,7 @@ const ExpenseType = ({route, navigation}) => {
               </Text>
             </View>
             <ExpenseTypesList
-              expenseTypes={types}
-              onPress={title => handleExpenseTypePressed(title)}
+              onPress={item => handleExpenseTypePressed(item)}
             />
           </View>
           <View>

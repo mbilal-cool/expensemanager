@@ -12,8 +12,7 @@ import AboutIconSvg from '../Assets/Icons/aboutUsSvg';
 import {useTheme} from '@react-navigation/native';
 import ThemeController from '../Controller/themeController';
 import {useEffect} from 'react';
-import AuthController from '../Controller/authController';
-const MoreScreen = ({navigation}) => {
+const Setting = ({navigation}) => {
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
@@ -50,39 +49,13 @@ const MoreScreen = ({navigation}) => {
               // backgroundColor: 'green',
               justifyContent: 'space-between',
             },
-          ]}>
-          <ProfileDetailTile />
-          <SettingTile
-            onPress={handleCatalogPressed}
-            settingTitle={'Catalog'}
-            renderIconLeft={() => <CatalogIconSvg />}
-          />
-          <SettingTile
-            darkModeSwitch={true}
-            settingTitle={'DarkMode'}
-            renderIconLeft={() => <MoonIconSvg />}
-          />
-          <SettingTile
-            onPress={handleSettingPressed}
-            settingTitle={'Setting'}
-            renderIconLeft={() => <SettingIconSvg />}
-          />
-          <SettingTile
-            settingTitle={'Help and Support'}
-            renderIconLeft={() => <HelpIconSvg />}
-          />
-          <SettingTile
-            onPress={() => AuthController.handleLogoutUser()}
-            settingTitle={'LogOut'}
-            renderIconLeft={() => <AboutIconSvg />}
-          />
-        </View>
+          ]}></View>
       </View>
     </View>
   );
 };
 
-export default MoreScreen;
+export default Setting;
 
 const styles = StyleSheet.create({
   main: {

@@ -7,7 +7,7 @@ import AbstractButton from '../Components/Abstract/abstractButton';
 import AuthController from '../Controller/authController';
 import {useTheme} from '@react-navigation/native';
 import ThemeController from '../Controller/themeController';
-
+import AbstaractRadioButton from '../Components/Abstract/abstractRadioButton';
 const SignUpScreen = ({navigation}) => {
   const [user, SetUser] = useState({
     name: '',
@@ -16,7 +16,20 @@ const SignUpScreen = ({navigation}) => {
     emailError: '',
     password: '',
     passwordError: '',
+    role: 'admin',
   });
+  const [options, SetOptions] = useState([
+    {
+      title: 'admin',
+      id: 1,
+      pressed: true,
+    },
+    {
+      title: 'user',
+      id: 2,
+      pressed: false,
+    },
+  ]);
   const [validate, setValidate] = useState(false);
   const [resError, setResError] = useState('');
 
@@ -74,17 +87,18 @@ const SignUpScreen = ({navigation}) => {
   };
   const onSignUpButtonPressed = () => {
     setValidate(true);
-
-    // if (
-    //   user.nameError == '' &&
-    //   user.emailError == '' &&
-    //   user.passwordError == '' &&
-    //   user.name != '' &&
-    //   user.email != '' &&
-    //   user.password != ''
-    // ) {
-    AuthController.handleSignupUser(e => setResError(e));
-    // }
+    setResError('');
+    if (
+      resError == '' &&
+      user.nameError == '' &&
+      user.emailError == '' &&
+      user.passwordError == '' &&
+      user.name != '' &&
+      user.email != '' &&
+      user.password != ''
+    ) {
+      AuthController.handleSignupUser(user, e => setResError(e));
+    }
   };
 
   return (
@@ -155,6 +169,38 @@ const SignUpScreen = ({navigation}) => {
             errorMessage={user.passwordError}
             validations={e => ValidatePassword(e)}
           />
+          <View
+            style={{
+              flexDirection: 'row',
+              width: '100%',
+              // backgroundColor: 'yellow',
+              // justifyContent: 'space-between',
+              marginTop: 15,
+            }}>
+            <Text
+              style={[
+                styles.labelStyle,
+                {fontSize: 15, color: colors.grey1, marginLeft: 15},
+              ]}>
+              Role
+            </Text>
+            <View
+              style={{
+                flexDirection: 'row',
+                width: '60%',
+                justifyContent: 'space-between',
+                paddingHorizontal: 20,
+                // backgroundColor: 'green',
+              }}>
+              <AbstaractRadioButton
+                flexDirection={'row'}
+                options={options}
+                setOPtions={SetOptions}
+                onPress={title => SetUser(prev => ({...prev, role: title}))}
+              />
+            </View>
+          </View>
+
           <AbstractButton
             backgroundColor={lightThemeColors.red1}
             height={50}
@@ -204,13 +250,13 @@ const styles = StyleSheet.create({
   middleContainer: {
     flex: 0.55,
     // backgroundColor: 'red',
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
   },
   containerHorizontal: {
-    height: 290,
+    height: 330,
     width: '100%',
     // backgroundColor: 'green',
-    alignItems: 'flex-end',
+    // alignItems: 'flex-end',
     justifyContent: 'space-between',
   },
   titleStyle: {

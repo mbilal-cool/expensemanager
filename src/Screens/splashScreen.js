@@ -1,34 +1,45 @@
-import {StyleSheet, Text, View, useEffect} from 'react-native';
-import React from 'react';
+import {StyleSheet, Text, View, Image} from 'react-native';
+import React, {useEffect} from 'react';
 import AuthController from '../Controller/authController';
 import {navigate} from '../Navigation/mainNavigation';
+import RNBootSplash from 'react-native-bootsplash';
 
 const SplashScreen = () => {
   useEffect(() => {
     AuthController.handleRestoreUserAndAuthenticate()
       .then(res => {
-        if (res.status) {
+        if (res) {
           RNBootSplash.hide({fade: true});
-          navigate('home');
+          navigate('AppStack');
         } else {
           RNBootSplash.hide({fade: true});
-          navigate('auth');
+          navigate('LogInScreen');
         }
       })
       .catch(err => {
         RNBootSplash.hide({fade: true});
         console.log(err);
-        navigate('auth');
+        navigate('AuthStack');
       });
   }, []);
 
   return (
-    <View>
-      <Text>splashScreen</Text>
+    <View style={styles.main}>
+      <Image
+        source={require('../Assets/Images/logo.png')}
+        style={{height: 170, width: 170}}
+      />
     </View>
   );
 };
 
 export default SplashScreen;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  main: {
+    flex: 1,
+    backgroundColor: '#293151',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});

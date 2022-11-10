@@ -14,11 +14,21 @@ import RecurringExpense from '../Screens/recurringExpense.js';
 import EntryDetails from '../Screens/detailEntry';
 import ExpenseType from '../Screens/expenseType';
 import ShowAllExpenses from '../Screens/showAllExpenses';
+import Setting from '../Screens/setting';
 const AppStack = () => {
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
       <Stack.Screen component={CustomBottomTabNavigation} name={'BottomTabs'} />
 
+      <Stack.Screen
+        component={Setting}
+        name={'Setting'}
+        options={{
+          cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+          gestureEnabled: true,
+          gestureDirection: 'horizontal',
+        }}
+      />
       <Stack.Screen
         component={Search}
         name={'Search'}

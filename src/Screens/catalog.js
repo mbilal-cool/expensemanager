@@ -9,7 +9,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {useTheme} from '@react-navigation/native';
 import ContainerElement from '../Components/Abstract/containerElement';
 import {lightThemeColors, Fonts} from '../theme';
-import ExpenseDetailItemList from '../Components/Module/expenseDetailItemList';
+// import ExpenseDetailItem from '../Components/Module/expenseDetailItem';
 import FocusAwareStatusBar from '../Components/Abstract/focusAwareStatusBar';
 import AbstractHeader from '../Components/Abstract/abstractHeader';
 import SearchBar from '../Components/Module/searchBar';
@@ -128,14 +128,14 @@ const Catalog = ({navigation}) => {
             <ExpenseDetailHeader height={24} backgroundColor={'transparent'} />
           </View>
           <ContainerElement>
-            <ExpenseDetailItemList
+            {/* <ExpenseDetailItemList
               noOfPlaceHolders={[0, 0, 0]}
               date={'2022-11-02'}
               borderRadius={6}
               marginBottom={5}
               navigation={navigation}
               showAllButton={true}
-            />
+            /> */}
           </ContainerElement>
         </View>
         <ContainerElement>
