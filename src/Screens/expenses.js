@@ -8,14 +8,14 @@ import {
 } from 'react-native';
 import DatePicker from 'react-native-date-picker';
 import {lightThemeColors, Fonts} from '../theme';
-// import ExpenseDetailItemList from '../Components/Module/expenseDetailItemList';
+import ExpenseDetailItem from '../Components/Module/expenseDetailItem';
 import {SheetManager} from 'react-native-actions-sheet';
 import FocusAwareStatusBar from '../Components/Abstract/focusAwareStatusBar';
 import AbstractHeader from '../Components/Abstract/abstractHeader';
 import {useTheme} from '@react-navigation/native';
 import SearchBar from '../Components/Module/searchBar';
 import ExpenseDetailHeader from '../Components/Module/expenseDetailHeader';
-import {expenseList} from '../mockData';
+
 import DateRange from '../Components/Module/dateRange';
 import AbstractButton from '../Components/Abstract/abstractButton';
 import ArrowDownIconSvg from '../Assets/Icons/arrowDownSvg';
@@ -25,8 +25,15 @@ import AbstractModal from '../Components/Abstract/abstractModal';
 import ContainerElement from '../Components/Abstract/containerElement';
 import {useState, useEffect} from 'react';
 import ThemeController from '../Controller/themeController';
+import ExpenseController from '../Controller/expenseController';
+import {useSelector} from 'react-redux';
+import {useGetSingleExpenceCategory} from '../Controller/expenseController';
+import ArrowRightIconSvg from '../Assets/Icons/arrowRightsvg';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 const {height, width} = Dimensions.get('window');
-const Expenses = ({navigation}) => {
+const Expenses = ({route, navigation}) => {
+  const allExpenses = useSelector(state => state.expense.allExpenses);
+  const [loading, setLoading] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
   const [filter, setFilter] = useState('All');
   const [dateType, setDateType] = useState('start');
@@ -38,6 +45,8 @@ const Expenses = ({navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalData, setModalData] = useState({});
   const [sheetType, SetSheetType] = useState('reportDuration');
+  const [type, SetType] = useState('all');
+  const noOfPlaceHolders = [0, 0, 0];
   const expenseDetails = [
     {
       name: 'Salary Expenses',
@@ -115,21 +124,34 @@ const Expenses = ({navigation}) => {
   const onPressSector = (value, selectedSectorData) => {
     setModalData(selectedSectorData);
   };
-  const [expenses, SetExpenses] = useState(expenseList);
+  const onPressSingleExpenseItem = item => {
+    navigation.navigate('EntryDetails', {
+      singleExpense: item,
+      screenName: route.name,
+    });
+  };
+  const [expenses, SetExpenses] = useState(allExpenses);
   useEffect(() => {
+    ExpenseController.findAllExpensesHandler(res => console.log('response')),
+      setLoading(false);
     ThemeController.checkAsyncAndSetPreviousMode();
     ThemeController.listeningToChange(data => {
       setDarkMode(data);
     });
+
     return () => {
       ThemeController.removingListener();
     };
   }, []);
+  // useEffect(() => {
+  //   SetExpenses(allExpenses);
+  // }, [allExpenses]);
+
   const openExpensesBottomSheet = () => {
     SheetManager.show('expenses');
   };
   const onViewAllpress = () => {
-    navigation.navigate('ShowAllExpenses');
+    navigation.navigate('ShowAllExpenses', {viewAllType: type});
   };
   const closeExpensesBottomSheet = () => {
     SheetManager.hide('expenses');
@@ -163,6 +185,24 @@ const Expenses = ({navigation}) => {
   };
   const filterTitle = title => {
     setFilter(title);
+  };
+
+  const ExpenseDetailItemListPlacehlder = () => {
+    return (
+      <SkeletonPlaceholder
+        borderRadius={4}
+        backgroundColor={colors.white}
+        highlightColor={'#F4f4f9'}
+        speed={1200}>
+        <SkeletonPlaceholder.Item alignItems="center">
+          <SkeletonPlaceholder.Item
+            width={'100%'}
+            height={26}
+            marginBottom={5}
+          />
+        </SkeletonPlaceholder.Item>
+      </SkeletonPlaceholder>
+    );
   };
   return (
     <View style={[styles.main, {backgroundColor: colors.defaultBackground}]}>
@@ -245,24 +285,72 @@ const Expenses = ({navigation}) => {
         ]}>
         <ScrollView bounces={false} showsVerticalScrollIndicator={false}>
           <ContainerElement>
-            {/* <ExpenseDetailItemList
-              noOfPlaceHolders={[0, 0, 0]}
-              onPress={handleEntryDeatilPressed}
-              date={'2022-11-02'}
-              borderRadius={6}
-              marginBottom={5}
-              showAllButton={true}
-              onViewAllpress={onViewAllpress}
-              navigation={navigation}
-            /> */}
-
+            {loading ? (
+              <>
+                {noOfPlaceHolders.map((item, index) => (
+                  <ExpenseDetailItemListPlacehlder key={index} />
+                ))}
+                <SkeletonPlaceholder
+                  borderRadius={4}
+                  backgroundColor={colors.white}
+                  highlightColor={'#F4f4f9'}
+                  speed={1200}>
+                  <View
+                    style={{
+                      height: 28,
+                      width: 69,
+                      backgroundColor: 'green',
+                      alignSelf: 'flex-end',
+                    }}></View>
+                </SkeletonPlaceholder>
+              </>
+            ) : (
+              <>
+                {allExpenses.slice(0, 3)?.map((item, index) => {
+                  return (
+                    <ExpenseDetailItem
+                      key={index}
+                      item={item}
+                      onPress={item => onPressSingleExpenseItem(item)}
+                    />
+                  );
+                })}
+                <View style={{width: '100%', alignItems: 'flex-end'}}>
+                  <AbstractButton
+                    backgroundColor={colors.white}
+                    height={32}
+                    title={'View All'}
+                    titleStyle={{
+                      color: lightThemeColors.red1,
+                      fontFamily: Fonts.interBold,
+                      fontWeight: '500',
+                      fontSize: 10,
+                    }}
+                    renderRightIcon={() => (
+                      <View style={{flexDirection: 'row'}}>
+                        <ArrowRightIconSvg />
+                        <ArrowRightIconSvg />
+                      </View>
+                    )}
+                    iconMargin={3.5}
+                    width={69}
+                    borderRadius={5}
+                    onPress={onViewAllpress}
+                  />
+                </View>
+              </>
+            )}
             <View
               style={{
                 justifyContent: 'center',
                 // backgroundColor: 'green',
                 paddingRight: 80,
               }}>
-              <PieGraphV2 onPressSector={onPressSector} data={expenseDetails} />
+              <PieGraphV2
+                onPressSector={onPressSector}
+                data={expenseDetails}
+                loading={loading}
+              />
 
               <AbstractModal isVisible={modalVisible}>
                 <View

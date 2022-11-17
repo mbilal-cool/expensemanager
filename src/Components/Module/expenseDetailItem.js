@@ -14,15 +14,15 @@ import PdfIconSvg from '../../Assets/Icons/pdfSvg';
 import ArrowRightIconSvg from '../../Assets/Icons/arrowRightsvg';
 import ArrowUpIconSvg from '../../Assets/Icons/arrowUpWithTailSvg';
 import {useTheme} from '@react-navigation/native';
-import ExpenseController from '../../Controller/expenseController';
+import ExpenseController, {
+  useGetSingleExpenceCategory,
+} from '../../Controller/expenseController';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import {useSelector} from 'react-redux';
 
 const ExpenseDetailItem = ({
+  onPress = () => false,
   item,
-  showAllButton,
-  noOfPlaceHolders,
-  date,
   borderRadius,
   borderBottomWidth,
   marginBottom,
@@ -30,7 +30,6 @@ const ExpenseDetailItem = ({
   width,
   backgroundColor,
   status,
-  navigation,
 }) => {
   const [expenseList, SetExpenseList] = useState();
   const [loading, setLoading] = useState(true);
@@ -40,18 +39,27 @@ const ExpenseDetailItem = ({
     ? backgroundColor
     : colors.white;
   const defaultHeight = height ? height : 32;
-  const defaultMarginBottom = marginBottom ? marginBottom : 0;
+  const defaultMarginBottom = marginBottom ? marginBottom : 10;
   const defaultBorderBottomWidth = borderBottomWidth ? borderBottomWidth : 0;
+
+  const categorySelector = cat_id => {
+    const allCategories = useSelector(state => state.expense.expenseCategories);
+    const newArr = [...allCategories];
+    const newObj = newArr.find(item => item._id == cat_id);
+    return newObj?.name;
+  };
+
+  useEffect(() => {}, []);
 
   return (
     <TouchableOpacity
-      onPress={() => handleOnpress(item.id)}
+      onPress={() => onPress(item)}
       style={[
         styles.Tile,
         {
           height: defaultHeight,
           backgroundColor: defaultBackgroundColor,
-          borderRadius: borderRadius ? borderRadius : 0,
+          borderRadius: borderRadius ? borderRadius : 5,
           borderBottomWidth: defaultBorderBottomWidth,
           marginBottom: defaultMarginBottom,
         },
@@ -60,7 +68,7 @@ const ExpenseDetailItem = ({
       <View
         style={[styles.col, {justifyContent: 'flex-start', paddingLeft: 10}]}>
         <Text style={[styles.itemTextStyle, {color: colors.black}]}>
-          {item.createdAt}
+          {ExpenseController.dateSlicer(item.createdAt)}
         </Text>
       </View>
       <View style={styles.col}>
@@ -70,7 +78,7 @@ const ExpenseDetailItem = ({
       </View>
       <View style={[styles.col]}>
         <Text style={[styles.itemTextStyle, {color: colors.black}]}>
-          {item.expenseCategory}
+          {categorySelector(item.expenseCategory)}
         </Text>
       </View>
       <View style={[styles.col]}>

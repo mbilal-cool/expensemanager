@@ -10,12 +10,9 @@ import React, {useEffect, useRef, useState} from 'react';
 import SearchSugesstionItem from '../Components/Module/searchSuggestionitem';
 import {useTheme} from '@react-navigation/native';
 import {lightThemeColors, Fonts} from '../theme';
-
 import FocusAwareStatusBar from '../Components/Abstract/focusAwareStatusBar';
 import AbstractHeader from '../Components/Abstract/abstractHeader';
-
 import SearchBar from '../Components/Module/searchBar';
-
 import ExpenseDetailHeader from '../Components/Module/expenseDetailHeader';
 import {expenseList} from '../mockData';
 import AbstractButton from '../Components/Abstract/abstractButton';
@@ -25,16 +22,68 @@ import ArrowDownIconSvg from '../Assets/Icons/arrowDownSvg';
 import ArrowLeftTailSvg from '../Assets/Icons/arrowleftTailSvg';
 import ArrowUpIconSvg from '../Assets/Icons/BottomTabSvgs/arrowUpSvg';
 import ThemeController from '../Controller/themeController';
+import {useSelector} from 'react-redux';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import ExpenseDetailItem from '../Components/Module/expenseDetailItem';
+import ArrowRightIconSvg from '../Assets/Icons/arrowRightsvg';
+import ExpenseController, {
+  useFilteredMostRecent,
+} from '../Controller/expenseController';
 const {height, width} = Dimensions.get('window');
-
-const Search = ({navigation}) => {
+const ExpenseDetailItemListPlacehlder = ({showAllButton}) => {
   const {colors} = useTheme();
-  const [expenses, SetExpenses] = useState(expenseList);
+  return (
+    <SkeletonPlaceholder
+      borderRadius={4}
+      backgroundColor={colors.white}
+      highlightColor={'#F4f4f9'}
+      speed={1200}>
+      <SkeletonPlaceholder.Item alignItems="center">
+        <SkeletonPlaceholder.Item width={'100%'} height={26} marginBottom={5} />
+      </SkeletonPlaceholder.Item>
+    </SkeletonPlaceholder>
+  );
+};
+
+const convertDate = inputDate => {
+  let date, month, year;
+  date = inputDate.getDate();
+  month = inputDate.getMonth() + 1;
+  year = inputDate.getFullYear();
+  date = date.toString().padStart(2, '0');
+
+  month = month.toString().padStart(2, '0');
+
+  let result = `${year}-${month}-${date}`;
+  return result.toString();
+};
+const Search = ({route, navigation}) => {
+  const {allExpenses, loading} = useFilteredMostRecent(convertDate(new Date()));
+
+  const {colors} = useTheme();
+
   const [searchDropDown, setSearchDropDown] = useState(false);
   const [darkMode, setDarkMode] = useState();
-
+  const [noOfPlaceHolders, setNoOfPlaceHolders] = useState([0, 0, 0, 0]);
   const [input, setInput] = useState('');
   useEffect(() => {
+    // ExpenseController.findAllExpensesHandler(res => {
+    //   console.log('response');
+    //   let filtered = allExpenses.filter(
+    //     singleExpense =>
+    //       ExpenseController.dateSlicer(singleExpense.createdAt) == currentDate,
+    //   );
+    //   SetAllreadyAddedExpenses(filtered);
+    //   // console.log(
+    //   //   'filtered: ',
+    //   //   filtered,
+    //   //   'all expensssss',
+    //   //   currentDate,
+    //   //   allExpenses,
+    //   // );
+    //   setLoading(false);
+    // });
+
     ThemeController.checkAsyncAndSetPreviousMode();
     ThemeController.listeningToChange(data => {
       setDarkMode(data);
@@ -43,12 +92,18 @@ const Search = ({navigation}) => {
       ThemeController.removingListener();
     };
   }, []);
+  const onPressSingleExpenseItem = item => {
+    navigation.navigate('EntryDetails', {
+      singleExpense: item,
+      screenName: route.name,
+    });
+  };
   const addOneTimePresss = () => {
-    navigation.navigate('OneTimeExpense', {});
+    navigation.navigate('OneTimeExpense', {type: 'add'});
   };
   const addRecurringPress = () => {
     navigation.navigate('RecurringExpense', {
-      recurringExpenseID: '63625be0bec8a249188c9be2',
+      type: 'add',
     });
   };
   const handleLeftArrowPressed = () => {
@@ -196,12 +251,38 @@ const Search = ({navigation}) => {
             paddingVertical: 10,
             // backgroundColor: 'green',
           }}>
-          {/* <ExpenseDetailItemList
-            noOfPlaceHolders={[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}
-            navigation={navigation}
-            borderRadius={6}
-            marginBottom={5}
-          /> */}
+          {loading ? (
+            <>
+              {noOfPlaceHolders.map((item, index) => (
+                <ExpenseDetailItemListPlacehlder key={index} />
+              ))}
+              <SkeletonPlaceholder
+                borderRadius={4}
+                backgroundColor={colors.white}
+                highlightColor={'#F4f4f9'}
+                speed={1200}>
+                <View
+                  style={{
+                    height: 28,
+                    width: 69,
+                    backgroundColor: 'green',
+                    alignSelf: 'flex-end',
+                  }}></View>
+              </SkeletonPlaceholder>
+            </>
+          ) : (
+            <>
+              {allExpenses.slice(0, 7)?.map((item, index) => {
+                return (
+                  <ExpenseDetailItem
+                    key={index}
+                    item={item}
+                    onPress={item => onPressSingleExpenseItem(item)}
+                  />
+                );
+              })}
+            </>
+          )}
         </View>
       </View>
     </View>

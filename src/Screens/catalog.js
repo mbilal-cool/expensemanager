@@ -9,35 +9,77 @@ import React, {useEffect, useRef, useState} from 'react';
 import {useTheme} from '@react-navigation/native';
 import ContainerElement from '../Components/Abstract/containerElement';
 import {lightThemeColors, Fonts} from '../theme';
-// import ExpenseDetailItem from '../Components/Module/expenseDetailItem';
 import FocusAwareStatusBar from '../Components/Abstract/focusAwareStatusBar';
 import AbstractHeader from '../Components/Abstract/abstractHeader';
 import SearchBar from '../Components/Module/searchBar';
-import {expenseList, expenseTypes} from '../mockData';
 import AbstractButton from '../Components/Abstract/abstractButton';
 import ArrowLeftTailSvg from '../Assets/Icons/arrowleftTailSvg';
 import ArrowRightIconSvg from '../Assets/Icons/arrowRightsvg';
 import ExpenseDetailHeader from '../Components/Module/expenseDetailHeader';
 import PlusIconSvg from '../Assets/Icons/plusSvg';
 import ThemeController from '../Controller/themeController';
-const Catalog = ({navigation}) => {
+import {useSelector} from 'react-redux';
+import ExpenseController from '../Controller/expenseController';
+import ExpenseDetailItem from '../Components/Module/expenseDetailItem';
+import {FlatList} from 'react-native-gesture-handler';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+const ExpenseDetailItemListPlacehlder = ({showAllButton}) => {
+  const {colors} = useTheme();
+
+  return (
+    <SkeletonPlaceholder
+      borderRadius={4}
+      backgroundColor={colors.white}
+      highlightColor={'#F4f4f9'}
+      speed={1200}>
+      <SkeletonPlaceholder.Item alignItems="center">
+        <SkeletonPlaceholder.Item width={'100%'} height={27} marginBottom={5} />
+      </SkeletonPlaceholder.Item>
+    </SkeletonPlaceholder>
+  );
+};
+const Catalog = ({route, navigation}) => {
+  const {previousRoute} = route.params;
+  const catalogueExpenses = useSelector(
+    state => state.expense.catalogueExpenses,
+  );
+  // console.log('allcatalog:', catalogueExpenses, catalogueExpenses.length);
+  const [loading, setLoading] = useState(true);
+  const [noOfPlaceHolders, setNoOfPlaceHolders] = useState([
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  ]);
+  // console.log('catalogueExpenses', previousRoute);
   const {colors} = useTheme();
   const [darkMode, setDarkMode] = useState();
-  const [expenses, SetExpenses] = useState(expenseList);
+
   useEffect(() => {
     ThemeController.checkAsyncAndSetPreviousMode();
     ThemeController.listeningToChange(data => {
       setDarkMode(data);
+      ExpenseController.getAllExpenseCatalogue(res => {
+        setLoading(false);
+        console.log('res in catalogue Screen');
+      });
     });
     return () => {
       ThemeController.removingListener();
     };
   }, []);
+  const onPressSingleExpenseItem = item => {
+    navigation.navigate('EntryDetails', {
+      singleExpense: item,
+      screenName: route.name,
+      previousRoute,
+    });
+  };
   const handleEntryDeatilPressed = () => {
-    navigation.navigate('EntryDetails');
+    navigation.navigate('EntryDetails', {
+      singleExpense: item,
+      screenName: route.name,
+    });
   };
   const onCreatePress = () => {
-    navigation.navigate('AddCatelog');
+    navigation.navigate('AddCatalog', {type: 'add'});
   };
   const handleLeftArrowPressed = () => {
     navigation.goBack();
@@ -128,14 +170,31 @@ const Catalog = ({navigation}) => {
             <ExpenseDetailHeader height={24} backgroundColor={'transparent'} />
           </View>
           <ContainerElement>
-            {/* <ExpenseDetailItemList
-              noOfPlaceHolders={[0, 0, 0]}
-              date={'2022-11-02'}
-              borderRadius={6}
-              marginBottom={5}
-              navigation={navigation}
-              showAllButton={true}
-            /> */}
+            {loading ? (
+              <>
+                {noOfPlaceHolders.map((item, index) => (
+                  <ExpenseDetailItemListPlacehlder key={index} />
+                ))}
+              </>
+            ) : (
+              <>
+                <FlatList
+                  showsVerticalScrollIndicator={false}
+                  bounces={false}
+                  data={catalogueExpenses}
+                  keyExtractor={(item, index) => index.toString()}
+                  renderItem={({item, index}) => {
+                    return (
+                      <ExpenseDetailItem
+                        key={index}
+                        item={item}
+                        onPress={item => onPressSingleExpenseItem(item)}
+                      />
+                    );
+                  }}
+                />
+              </>
+            )}
           </ContainerElement>
         </View>
         <ContainerElement>

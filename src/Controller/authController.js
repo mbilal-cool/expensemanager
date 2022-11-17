@@ -14,6 +14,7 @@ class AuthController {
       .then(res => {
         console.log(res.data);
         if (res.data.success) {
+          _call_back(res);
           navigate('LogInScreen');
         } else {
           _call_back(res.data.message);

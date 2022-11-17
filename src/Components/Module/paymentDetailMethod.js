@@ -3,6 +3,7 @@ import React, {useState} from 'react';
 import {lightThemeColors, Fonts} from '../../theme';
 import PaymentMethodIconSvg from '../../Assets/Icons/paymentMethodIconSvg';
 import AbstaractRadioButton from '../Abstract/abstractRadioButton';
+import {useEffect} from 'react';
 const PaymentDetailMethod = ({
   onPress = () => false,
   Height,
@@ -17,6 +18,7 @@ const PaymentDetailMethod = ({
   labelStyle,
   defaultCheckedItem,
 }) => {
+  console.log('medium', defaultCheckedItem);
   const [options, SetOptions] = useState([
     {
       title: 'Online',

@@ -26,10 +26,9 @@ import ExpenseController, {
   categorySelector,
 } from '../Controller/expenseController';
 import {useSelector} from 'react-redux';
-const RecurringExpense = ({route, navigation}) => {
+const AddCatalog = ({route, navigation}) => {
   const userId = useSelector(state => state.user.user.id);
   const {editExpense, type, expensCategoryItem} = route.params;
-  console.log('recurringEdit....', editExpense);
   const [loading, setLoading] = useState(false);
   const [recurringExpenseID, SetoneTimeExpenseID] = useState(
     '63625be0bec8a249188c9be2',
@@ -50,11 +49,7 @@ const RecurringExpense = ({route, navigation}) => {
   const [darkMode, setDarkMode] = useState(false);
   const {colors} = useTheme();
   useEffect(() => {
-    if (editExpense) {
-      const {_id, __v, ...res} = editExpense ? editExpense : null;
-      setExpense(res);
-    }
-
+    setExpense(editExpense ? editExpense : expense);
     ThemeController.checkAsyncAndSetPreviousMode();
     ThemeController.listeningToChange(data => {
       setDarkMode(data);
@@ -63,10 +58,7 @@ const RecurringExpense = ({route, navigation}) => {
     return () => {
       ThemeController.removingListener();
     };
-  }, [editExpense]);
-  const onAddfromCatalogPress = () => {
-    navigation.navigate('Catalog', {previousRoute: route.name});
-  };
+  }, []);
   const handleExpenseTypePressed = () => {
     navigation.navigate('ExpenseType', {
       type,
@@ -96,10 +88,20 @@ const RecurringExpense = ({route, navigation}) => {
   };
   const handleSavePress = () => {
     setLoading(true);
-    ExpenseController.handleAddExpense(expense, res => {
-      setLoading(false),
-        ExpenseController.findAllExpensesHandler(res => navigation.goBack());
-    });
+    if (type == 'edit') {
+      ExpenseController.updateCatalogExpence(
+        expense,
+
+        call_back => {
+          setLoading(false);
+        },
+      ),
+        navigation.navigate('EntryDetails', {singleExpense: expense});
+    } else {
+      ExpenseController.addCatalogueExpense(expense, res => {
+        setLoading(false), navigation.goBack();
+      });
+    }
   };
 
   return (
@@ -128,7 +130,7 @@ const RecurringExpense = ({route, navigation}) => {
                   styles.titleStyle,
                   {color: colors.black, fontSize: 20},
                 ]}>
-                Recurring Expense
+                Add Catalog
               </Text>
             </View>
           )}
@@ -154,7 +156,7 @@ const RecurringExpense = ({route, navigation}) => {
             style={[
               styles.horizontalContainer,
               {
-                // backgroundColor: colors.white,
+                backgroundColor: colors.white,
                 // backgroundColor: 'tomato',
               },
             ]}>
@@ -254,38 +256,6 @@ const RecurringExpense = ({route, navigation}) => {
               )}
             />
           </View>
-
-          <View
-            style={[
-              styles.horizontalContainer,
-              {
-                flex: 1,
-                width: '100%',
-                // backgroundColor: 'red',
-                paddingHorizontal: 0,
-                paddingVertical: 0,
-                flexDirection: 'row',
-              },
-            ]}>
-            <AbstractButton
-              backgroundColor={'transparent'}
-              height={20}
-              title={'Add From Catalog'}
-              titleStyle={{
-                color: colors.black,
-                fontFamily: Fonts.interBold,
-                fontWeight: '600',
-                fontSize: 13,
-                fontStyle: 'italic',
-
-                textDecorationLine: 'underline',
-              }}
-              iconMargin={10}
-              width={'43%'}
-              borderRadius={30}
-              onPress={onAddfromCatalogPress}
-            />
-          </View>
           <View
             style={[
               styles.horizontalContainer,
@@ -301,7 +271,7 @@ const RecurringExpense = ({route, navigation}) => {
             <AbstractButton
               backgroundColor={lightThemeColors.red1}
               height={40}
-              title={type == 'edit' ? 'Done' : 'Save'}
+              title={loading ? null : 'Save'}
               titleStyle={{
                 color: colors.white,
                 fontFamily: Fonts.interBold,
@@ -361,7 +331,7 @@ const RecurringExpense = ({route, navigation}) => {
   );
 };
 
-export default RecurringExpense;
+export default AddCatalog;
 
 const styles = StyleSheet.create({
   main: {

@@ -1,4 +1,10 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {Fonts, lightThemeColors} from '../theme';
 import AbstractTextInput from '../Components/Abstract/abstractTextInput';
@@ -8,6 +14,7 @@ import AuthController from '../Controller/authController';
 import {useTheme} from '@react-navigation/native';
 import ThemeController from '../Controller/themeController';
 import AbstaractRadioButton from '../Components/Abstract/abstractRadioButton';
+import ArrowLeftTailSvg from '../Assets/Icons/arrowleftTailSvg';
 const SignUpScreen = ({navigation}) => {
   const [user, SetUser] = useState({
     name: '',
@@ -32,7 +39,7 @@ const SignUpScreen = ({navigation}) => {
   ]);
   const [validate, setValidate] = useState(false);
   const [resError, setResError] = useState('');
-
+  const [loading, setLoading] = useState(false);
   const [darkMode, setDarkMode] = useState();
   const {colors} = useTheme();
   useEffect(() => {
@@ -86,7 +93,6 @@ const SignUpScreen = ({navigation}) => {
     }
   };
   const onSignUpButtonPressed = () => {
-    setValidate(true);
     setResError('');
     if (
       resError == '' &&
@@ -97,143 +103,169 @@ const SignUpScreen = ({navigation}) => {
       user.email != '' &&
       user.password != ''
     ) {
-      AuthController.handleSignupUser(user, e => setResError(e));
+      setLoading(true);
+      AuthController.handleSignupUser(
+        user,
+
+        e => {
+          setLoading(false), setResError(e);
+        },
+      );
     }
   };
 
   return (
-    <View style={[styles.main, {backgroundColor: colors.defaultBackground}]}>
-      <FocusAwareStatusBar
-        barStyle={darkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={colors.defaultBackground}
-        translucent={true}
-      />
-      <View
-        style={[
-          styles.containerHorizontal,
-          {
-            // backgroundColor: 'yellow',
-            flex: 0.12,
-            alignItems: 'center',
-            justifyContent: 'flex-end',
-            paddingBottom: 0,
-          },
-        ]}>
-        <Text
+    <>
+      <View style={[styles.main, {backgroundColor: colors.defaultBackground}]}>
+        <FocusAwareStatusBar
+          barStyle={darkMode ? 'light-content' : 'dark-content'}
+          backgroundColor={colors.defaultBackground}
+          translucent={true}
+        />
+        <View
           style={[
-            styles.labelStyle,
-            {color: colors.black, fontWeight: '900', fontSize: 20},
-          ]}>
-          SignUp
-        </Text>
-      </View>
-      <View style={styles.middleContainer}>
-        <View style={[styles.containerHorizontal]}>
-          <AbstractTextInput
-            borderWidth={1}
-            borderColor={lightThemeColors.grey}
-            placeHolderTextStyle={[styles.labelStyle, {color: colors.black}]}
-            type={'simple'}
-            PlaceHolder={'Name'}
-            placeholderTextColor={lightThemeColors.grey}
-            Value={user.name}
-            onChangeText={e => onChangeText(e, 'name')}
-            validate={validate}
-            validations={e => nvalidations(e)}
-            errorMessage={user.nameError}
-          />
-          <AbstractTextInput
-            borderWidth={1}
-            borderColor={lightThemeColors.grey}
-            placeHolderTextStyle={[styles.labelStyle, {color: colors.black}]}
-            type={'simple'}
-            PlaceHolder={'Email'}
-            placeholderTextColor={lightThemeColors.grey}
-            Value={user.email}
-            onChangeText={e => onChangeText(e, 'email')}
-            validate={validate}
-            validations={e => ValidateEmail(e)}
-            errorMessage={user.emailError}
-          />
-          <AbstractTextInput
-            password={true}
-            borderWidth={1}
-            borderColor={lightThemeColors.grey}
-            placeHolderTextStyle={[styles.labelStyle, {color: colors.black}]}
-            type={'simple'}
-            PlaceHolder={'Password'}
-            placeholderTextColor={lightThemeColors.grey}
-            Value={user.password}
-            onChangeText={e => onChangeText(e, 'password')}
-            validate={validate}
-            errorMessage={user.passwordError}
-            validations={e => ValidatePassword(e)}
-          />
-          <View
-            style={{
-              flexDirection: 'row',
-              width: '100%',
+            styles.containerHorizontal,
+            {
               // backgroundColor: 'yellow',
-              // justifyContent: 'space-between',
-              marginTop: 15,
+              flex: 0.12,
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              paddingBottom: 0,
+            },
+          ]}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={{
+              width: '100%',
+              height: '100%',
+              // backgroundColor: 'green',
+              justifyContent: 'flex-end',
+              //   alignItems: 'center',
+              paddingBottom: 20,
+              paddingHorizontal: 10,
             }}>
-            <Text
-              style={[
-                styles.labelStyle,
-                {fontSize: 15, color: colors.grey1, marginLeft: 15},
-              ]}>
-              Role
-            </Text>
+            <ArrowLeftTailSvg color={colors.black} />
+          </TouchableOpacity>
+          <Text
+            style={[
+              styles.labelStyle,
+              {color: colors.black, fontWeight: '900', fontSize: 20},
+            ]}>
+            SignUp
+          </Text>
+        </View>
+        <View style={styles.middleContainer}>
+          <View style={[styles.containerHorizontal]}>
+            <AbstractTextInput
+              borderWidth={1}
+              borderColor={lightThemeColors.grey}
+              placeHolderTextStyle={[styles.labelStyle, {color: colors.black}]}
+              type={'simple'}
+              PlaceHolder={'Name'}
+              placeholderTextColor={lightThemeColors.grey}
+              Value={user.name}
+              onChangeText={e => onChangeText(e, 'name')}
+              validate={validate}
+              validations={e => nvalidations(e)}
+              errorMessage={user.nameError}
+            />
+            <AbstractTextInput
+              borderWidth={1}
+              borderColor={lightThemeColors.grey}
+              placeHolderTextStyle={[styles.labelStyle, {color: colors.black}]}
+              type={'simple'}
+              PlaceHolder={'Email'}
+              placeholderTextColor={lightThemeColors.grey}
+              Value={user.email}
+              onChangeText={e => onChangeText(e, 'email')}
+              validate={validate}
+              validations={e => ValidateEmail(e)}
+              errorMessage={user.emailError}
+            />
+            <AbstractTextInput
+              password={true}
+              borderWidth={1}
+              borderColor={lightThemeColors.grey}
+              placeHolderTextStyle={[styles.labelStyle, {color: colors.black}]}
+              type={'simple'}
+              PlaceHolder={'Password'}
+              placeholderTextColor={lightThemeColors.grey}
+              Value={user.password}
+              onChangeText={e => onChangeText(e, 'password')}
+              validate={validate}
+              errorMessage={user.passwordError}
+              validations={e => ValidatePassword(e)}
+            />
             <View
               style={{
                 flexDirection: 'row',
-                width: '60%',
-                justifyContent: 'space-between',
-                paddingHorizontal: 20,
-                // backgroundColor: 'green',
+                width: '100%',
+                // backgroundColor: 'yellow',
+                // justifyContent: 'space-between',
+                marginTop: 15,
               }}>
-              <AbstaractRadioButton
-                flexDirection={'row'}
-                options={options}
-                setOPtions={SetOptions}
-                onPress={title => SetUser(prev => ({...prev, role: title}))}
-              />
+              <Text
+                style={[
+                  styles.labelStyle,
+                  {fontSize: 15, color: colors.grey1, marginLeft: 15},
+                ]}>
+                Role
+              </Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  width: '60%',
+                  justifyContent: 'space-between',
+                  paddingHorizontal: 20,
+                  // backgroundColor: 'green',
+                }}>
+                <AbstaractRadioButton
+                  flexDirection={'row'}
+                  options={options}
+                  setOPtions={SetOptions}
+                  onPress={title => SetUser(prev => ({...prev, role: title}))}
+                />
+              </View>
             </View>
-          </View>
 
-          <AbstractButton
-            backgroundColor={lightThemeColors.red1}
-            height={50}
-            title={'SignUp'}
-            titleStyle={{
-              color: colors.white,
-              fontFamily: Fonts.interBold,
-              fontWeight: '600',
-              fontSize: 16,
-            }}
-            iconMargin={10}
-            width={'100%'}
-            borderRadius={30}
-            onPress={onSignUpButtonPressed}
-          />
-          {resError != '' ? (
-            <Text
-              style={[
-                styles.labelStyle,
-                {
-                  color: colors.red1,
-                  position: 'absolute',
-                  bottom: -20,
-                  left: 17,
-                  fontSize: 14,
-                },
-              ]}>
-              Network Error, Try Again !
-            </Text>
-          ) : null}
+            <AbstractButton
+              backgroundColor={lightThemeColors.red1}
+              height={50}
+              title={loading ? null : 'SignUp'}
+              titleStyle={{
+                color: colors.white,
+                fontFamily: Fonts.interBold,
+                fontWeight: '600',
+                fontSize: 16,
+              }}
+              renderRightIcon={() =>
+                loading ? (
+                  <ActivityIndicator size="small" color={colors.white} />
+                ) : null
+              }
+              width={'100%'}
+              borderRadius={30}
+              onPress={onSignUpButtonPressed}
+            />
+            {resError != '' ? (
+              <Text
+                style={[
+                  styles.labelStyle,
+                  {
+                    color: colors.red1,
+                    position: 'absolute',
+                    bottom: -20,
+                    left: 17,
+                    fontSize: 14,
+                  },
+                ]}>
+                Network Error, Try Again !
+              </Text>
+            ) : null}
+          </View>
         </View>
       </View>
-    </View>
+    </>
   );
 };
 

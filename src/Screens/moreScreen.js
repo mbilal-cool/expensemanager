@@ -13,7 +13,12 @@ import {useTheme} from '@react-navigation/native';
 import ThemeController from '../Controller/themeController';
 import {useEffect} from 'react';
 import AuthController from '../Controller/authController';
-const MoreScreen = ({navigation}) => {
+import {useSelector} from 'react-redux';
+import {roundToNearestPixel} from 'react-native/Libraries/Utilities/PixelRatio';
+const MoreScreen = ({route, navigation}) => {
+  const user = useSelector(state => state.user.user.username);
+  console.log('userinredux', user);
+
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
@@ -28,7 +33,7 @@ const MoreScreen = ({navigation}) => {
   const {colors} = useTheme();
 
   const handleCatalogPressed = () => {
-    navigation.navigate('Catalog');
+    navigation.navigate('Catalog', {previousRoute: route.name});
   };
   const handleSettingPressed = () => {
     navigation.navigate('Setting');
@@ -51,7 +56,7 @@ const MoreScreen = ({navigation}) => {
               justifyContent: 'space-between',
             },
           ]}>
-          <ProfileDetailTile />
+          <ProfileDetailTile userName={user} />
           <SettingTile
             onPress={handleCatalogPressed}
             settingTitle={'Catalog'}

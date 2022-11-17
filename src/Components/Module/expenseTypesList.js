@@ -56,7 +56,7 @@ const ExpenseTypesList = ({
     })
   ) : (
     <>
-      {expensesCategories.data?.map((item, index) => {
+      {expensesCategories?.map((item, index) => {
         var matches = item.name.match(/\b(\w)/g);
         var acronym = matches.join(''); // JSON
         var sf = acronym.slice(0, 2);

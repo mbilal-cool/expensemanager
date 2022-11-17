@@ -22,35 +22,42 @@ import ClipBoardIconSvg from '../Assets/Icons/clipboardSvg';
 import ExpenseTypeTile from '../Components/Module/expenseTypeTile';
 import {useTheme} from '@react-navigation/native';
 import ThemeController from '../Controller/themeController';
-import ExpenseController from '../Controller/expenseController';
-
-const AddCatelog = ({route, navigation}) => {
-  const {editExpense} = route.params ? route.params : '';
-
+import ExpenseController, {
+  categorySelector,
+} from '../Controller/expenseController';
+import {useSelector} from 'react-redux';
+const EditExpense = ({route, navigation}) => {
+  const userId = useSelector(state => state.user.user.id);
+  const {editExpense, type, expensCategoryItem, screenName} = route.params;
+  // console.log(
+  //   'Type',
+  //   type,
+  //   '----editExpense???',
+  //   editExpense,
+  //   'screenName: ',
+  //   screenName,
+  // );
   const [loading, setLoading] = useState(false);
-  const idGenerator = () => {
-    return Math.floor((1 + Math.random()) * 0x1000);
-  };
+  const [oneTimeExpenseID, SetoneTimeExpenseID] = useState(
+    '63625be0bec8a249188c9be1',
+  );
   const [expense, setExpense] = useState({
-    id: idGenerator(),
-    amount: '',
-    expenseName: '',
-    note: '',
-    createdAt: '',
-    deletedAt: '10/09/22',
-    paymentMedium: '',
-    createdBy: '',
-    expenseType: 'onTime expense',
-    expenseCategory: '',
+    amount: 3500,
+    expenseName: 'Office Expense',
+    note: 'Lorem Ipsum has been the industrys ',
+    createdAt: '2022-11-14',
+    deletedAt: '2022-11-14',
+    paymentMedium: 'Cash',
+    createdBy: userId,
+    expenseType: oneTimeExpenseID,
+    expenseCategory: '63625be1bec8a249188c9be7',
   });
-  const [edit, setEdit] = useState({obj: '', id: ''});
   const [date, setDate] = useState(new Date());
   const [open, setOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState('05,May,2022');
   const [darkMode, setDarkMode] = useState(false);
   const {colors} = useTheme();
-
   useEffect(() => {
+    setExpense(editExpense ? editExpense : expense);
     ThemeController.checkAsyncAndSetPreviousMode();
     ThemeController.listeningToChange(data => {
       setDarkMode(data);
@@ -59,9 +66,13 @@ const AddCatelog = ({route, navigation}) => {
     return () => {
       ThemeController.removingListener();
     };
-  }, []);
+  }, [editExpense]);
   const handleExpenseTypePressed = () => {
-    navigation.navigate('ExpenseType', {setSelectedExpenseType: setExpense});
+    navigation.navigate('ExpenseType', {
+      type,
+      screenName: route.name,
+      editExpense,
+    });
   };
   const handleLeftArrowPressed = () => {
     navigation.goBack();
@@ -74,7 +85,7 @@ const AddCatelog = ({route, navigation}) => {
     year = inputDate.getFullYear();
 
     date = date.toString().padStart(2, '0');
-    year = year.toString().substr(2, 3);
+
     month = month.toString().padStart(2, '0');
 
     let result = `${year}-${month}-${date}`;
@@ -85,14 +96,23 @@ const AddCatelog = ({route, navigation}) => {
   };
   const handleSavePress = () => {
     setLoading(true);
-    letprepareObj = editExpense ? {obj: expense, id: editExpense.id} : null;
-    editExpense
-      ? (ExpenseController.updateExpenceItem(letprepareObj),
-        setLoading(false),
-        navigation.goBack())
-      : ExpenseController.handleAddExpense(expense, res => {
-          setLoading(false), navigation.goBack();
+    if (type == 'edit') {
+      if (screenName == 'Home') {
+        ExpenseController.updateTodayExpenceItem(expense, call_back => {
+          setLoading(false),
+            navigation.navigate('EntryDetails', {singleExpense: expense});
         });
+      }
+      ExpenseController.updateExpenceItem(expense, call_back => {
+        setLoading(false);
+        navigation.navigate('EntryDetails', {singleExpense: expense});
+      });
+    } else {
+      ExpenseController.handleAddExpense(expense, res => {
+        setLoading(false),
+          ExpenseController.findAllExpensesHandler(res => navigation.goBack());
+      });
+    }
   };
 
   return (
@@ -121,7 +141,7 @@ const AddCatelog = ({route, navigation}) => {
                   styles.titleStyle,
                   {color: colors.black, fontSize: 20},
                 ]}>
-                Add Catelog
+                Edit Expense
               </Text>
             </View>
           )}
@@ -152,10 +172,8 @@ const AddCatelog = ({route, navigation}) => {
               },
             ]}>
             <AbstractTextInput
-              PlaceHolder={editExpense ? editExpense.amount : '3500'}
-              placeholderTextColor={colors.black}
               onChangeText={e => setExpense(prev => ({...prev, amount: e}))}
-              Value={expense.amount}
+              Value={expense.amount.toString()}
               backgroundColor={'transparent'}
               borderBottomWidth={1}
               borderColor={colors.grey2}
@@ -203,30 +221,27 @@ const AddCatelog = ({route, navigation}) => {
               backgroundColor={'transparent'}
               borderBottomWidth={1}
               Label={'ExpenseType'}
-              placeHolder={
-                expense.expenseCategory == ''
-                  ? editExpense
-                    ? editExpense.expenseCategory
-                    : 'Office Expense'
-                  : expense.expenseCategory
-              }
+              placeHolder={categorySelector(
+                expensCategoryItem
+                  ? expensCategoryItem._id
+                  : expense.expenseCategory,
+              )}
               borderColor={colors.grey2}
               onPress={handleExpenseTypePressed}
             />
 
             <ExpenseDateTile
-              placeHolder={editExpense ? editExpense.createdAt : '31/10/22'}
               backgroundColor={'transparent'}
               borderBottomWidth={1}
               Label={'Date'}
               borderColor={colors.grey2}
               onPress={handleDatePress}
-              selectedDate={expense.createdAt}
+              selectedDate={ExpenseController.dateSlicer(expense.createdAt)}
             />
 
             <PaymentDetailMethod
               defaultCheckedItem={
-                editExpense ? editExpense.paymentMedium : 'Cash'
+                editExpense ? editExpense.paymentMedium : expense.paymentMedium
               }
               Label={'Payment'}
               backgroundColor={'transparent'}
@@ -329,7 +344,7 @@ const AddCatelog = ({route, navigation}) => {
   );
 };
 
-export default AddCatelog;
+export default EditExpense;
 
 const styles = StyleSheet.create({
   main: {

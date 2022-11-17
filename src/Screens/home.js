@@ -25,6 +25,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Fonts, lightThemeColors} from '../theme';
 import {useSelector} from 'react-redux';
 import ExpenseDetailItem from '../Components/Module/expenseDetailItem';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import AbstractButton from '../Components/Abstract/abstractButton';
+import ArrowRightIconSvg from '../Assets/Icons/arrowRightsvg';
 const ExpenseDetailItemListPlacehlder = ({showAllButton}) => {
   const {colors} = useTheme();
   return (
@@ -52,13 +55,33 @@ const convertDate = inputDate => {
   let result = `${year}-${month}-${date}`;
   return result.toString();
 };
-const Home = ({navigation}) => {
-  const expenses = useSelector(state => state.expense.expenses);
-  const [expenseList, SetExpenseList] = useState();
-  const [loading, setLoading] = useState(true);
+const convertPreviousDate = inputDate => {
+  let date, month, year;
+  date = inputDate.getDate() - 1;
+  month = inputDate.getMonth() + 1;
+  year = inputDate.getFullYear();
+  date = date.toString().padStart(2, '0');
 
+  month = month.toString().padStart(2, '0');
+
+  let result = `${year}-${month}-${date}`;
+  return result.toString();
+};
+const Home = ({route, navigation}) => {
+  const todayExpenses = useSelector(state => state.expense.todayExpenses);
+  const previousDayExpenses = useSelector(
+    state => state.expense.previousdayExpenses,
+  );
+  // console.log('today expenses', todayExpenses);
+  const [expenseList, SetExpenseList] = useState();
+
+  const [loading, setLoading] = useState(true);
+  const noOfPlaceHolders = [0, 0, 0];
   const [todayDate, SetTodayDate] = useState();
   const [currentDate, setCurrentDate] = useState(convertDate(new Date()));
+  const [previousDate, setPreviousDate] = useState(
+    convertPreviousDate(new Date()),
+  );
 
   const {colors} = useTheme();
   const [date, setDate] = useState({
@@ -109,12 +132,23 @@ const Home = ({navigation}) => {
     return `${date}th\u0020${modifymonth(month)}`;
   };
   useEffect(() => {
+    ExpenseController.handlegetExpenseCategories(res => {
+      console.log('categories response');
+    });
     SetTodayDate(convertTodayDateTitle(new Date()));
     ExpenseController.handletodayExpenseList(currentDate, res => {
-      setLoading(res), console.log('res', res);
+      setLoading(res);
+    });
+    ExpenseController.handlePreviousDayExpenseList(previousDate, res => {
+      setLoading(res);
     });
   }, []);
-
+  const onPressSingleExpenseItem = item => {
+    navigation.navigate('EntryDetails', {
+      singleExpense: item,
+      screenName: route.name,
+    });
+  };
   const onFocusSearchInput = () => {
     navigation.navigate('Search');
   };
@@ -122,10 +156,12 @@ const Home = ({navigation}) => {
     setSheetType('selectDate');
     SheetManager.show('Home');
   };
-  const onViewAllpress = () => {
-    navigation.navigate('ShowAllExpenses');
+  const onViewAllpressToday = () => {
+    navigation.navigate('ShowAllExpenses', {viewAllType: 'today'});
   };
-
+  const onViewAllPressPrevious = () => {
+    navigation.navigate('ShowAllExpenses', {viewAllType: 'previous'});
+  };
   const handleOnpress = id => {
     navigation.navigate('EntryDetails', {id});
   };
@@ -178,9 +214,61 @@ const Home = ({navigation}) => {
             backgroundColor={'transparent'}
           />
           <View style={{paddingHorizontal: 20, paddingVertical: 10}}>
-            {expenseList?.map((item, index) => {
-              return <ExpenseDetailItem key={index} item={item} />;
-            })}
+            {loading ? (
+              <>
+                {noOfPlaceHolders.map((item, index) => (
+                  <ExpenseDetailItemListPlacehlder key={index} />
+                ))}
+                <SkeletonPlaceholder
+                  borderRadius={4}
+                  backgroundColor={colors.white}
+                  highlightColor={'#F4f4f9'}
+                  speed={1200}>
+                  <View
+                    style={{
+                      height: 28,
+                      width: 69,
+                      backgroundColor: 'green',
+                      alignSelf: 'flex-end',
+                    }}></View>
+                </SkeletonPlaceholder>
+              </>
+            ) : (
+              <>
+                {todayExpenses.slice(0, 3)?.map((item, index) => {
+                  return (
+                    <ExpenseDetailItem
+                      key={index}
+                      item={item}
+                      onPress={item => onPressSingleExpenseItem(item)}
+                    />
+                  );
+                })}
+                <View style={{width: '100%', alignItems: 'flex-end'}}>
+                  <AbstractButton
+                    backgroundColor={colors.white}
+                    height={32}
+                    title={'View All'}
+                    titleStyle={{
+                      color: lightThemeColors.red1,
+                      fontFamily: Fonts.interBold,
+                      fontWeight: '500',
+                      fontSize: 10,
+                    }}
+                    renderRightIcon={() => (
+                      <View style={{flexDirection: 'row'}}>
+                        <ArrowRightIconSvg />
+                        <ArrowRightIconSvg />
+                      </View>
+                    )}
+                    iconMargin={3.5}
+                    width={69}
+                    borderRadius={5}
+                    onPress={onViewAllpressToday}
+                  />
+                </View>
+              </>
+            )}
           </View>
 
           <ExpenseDetailHeader
@@ -189,14 +277,61 @@ const Home = ({navigation}) => {
             backgroundColor={'transparent'}
           />
           <View style={{paddingHorizontal: 20, paddingVertical: 10}}>
-            {/* <ExpenseDetailItemList
-              noOfPlaceHolders={[0, 0, 0]}
-              date={'2022-11-02'}
-              borderRadius={6}
-              marginBottom={5}
-              navigation={navigation}
-              showAllButton={true}
-            /> */}
+            {loading ? (
+              <>
+                {noOfPlaceHolders.map((item, index) => (
+                  <ExpenseDetailItemListPlacehlder key={index} />
+                ))}
+                <SkeletonPlaceholder
+                  borderRadius={4}
+                  backgroundColor={colors.white}
+                  highlightColor={'#F4f4f9'}
+                  speed={1200}>
+                  <View
+                    style={{
+                      height: 28,
+                      width: 69,
+                      backgroundColor: 'green',
+                      alignSelf: 'flex-end',
+                    }}></View>
+                </SkeletonPlaceholder>
+              </>
+            ) : (
+              <>
+                {previousDayExpenses.slice(0, 3)?.map((item, index) => {
+                  return (
+                    <ExpenseDetailItem
+                      key={index}
+                      item={item}
+                      onPress={item => onPressSingleExpenseItem(item)}
+                    />
+                  );
+                })}
+                <View style={{width: '100%', alignItems: 'flex-end'}}>
+                  <AbstractButton
+                    backgroundColor={colors.white}
+                    height={32}
+                    title={'View All'}
+                    titleStyle={{
+                      color: lightThemeColors.red1,
+                      fontFamily: Fonts.interBold,
+                      fontWeight: '500',
+                      fontSize: 10,
+                    }}
+                    renderRightIcon={() => (
+                      <View style={{flexDirection: 'row'}}>
+                        <ArrowRightIconSvg />
+                        <ArrowRightIconSvg />
+                      </View>
+                    )}
+                    iconMargin={3.5}
+                    width={69}
+                    borderRadius={5}
+                    onPress={onViewAllPressPrevious}
+                  />
+                </View>
+              </>
+            )}
           </View>
         </ScrollView>
         {/* )} */}
@@ -241,142 +376,3 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
 });
-{
-  /* <>
-{expenseList.map((item, index) => {
-  return (
-    <TouchableOpacity
-      key={index}
-      onPress={() => handleOnpress(item.id)}
-      style={[
-        styles.Tile,
-        {
-          height: defaultHeight,
-          backgroundColor: defaultBackgroundColor,
-          borderRadius: borderRadius ? borderRadius : 0,
-          borderBottomWidth: defaultBorderBottomWidth,
-          marginBottom: defaultMarginBottom,
-        },
-        styles.shadowProp,
-      ]}>
-      <View
-        style={[
-          styles.col,
-          {justifyContent: 'flex-start', paddingLeft: 10},
-        ]}>
-        <Text style={[styles.itemTextStyle, {color: colors.black}]}>
-          {item.createdAt}
-        </Text>
-      </View>
-      <View style={styles.col}>
-        <Text style={[styles.itemTextStyle, {color: colors.black}]}>
-          {item.expenseName}
-        </Text>
-      </View>
-      <View style={[styles.col]}>
-        <Text style={[styles.itemTextStyle, {color: colors.black}]}>
-          {item.expenseCategory}
-        </Text>
-      </View>
-      <View style={[styles.col]}>
-        <Text style={[styles.itemTextStyle, {color: colors.black}]}>
-          {item.amount}
-        </Text>
-        {status ? (
-          <View style={{marginLeft: 10}}>
-            <ArrowUpIconSvg />
-          </View>
-        ) : (
-          <View style={{marginLeft: 10}}>
-            <ArrowRightIconSvg color={colors.red1} />
-          </View>
-        )}
-      </View>
-    </TouchableOpacity>
-  );
-})}
-<View style={{width: '100%', alignItems: 'flex-end'}}>
-  <AbstractButton
-    backgroundColor={colors.white}
-    height={32}
-    title={'View All'}
-    titleStyle={{
-      color: lightThemeColors.red1,
-      fontFamily: Fonts.interBold,
-      fontWeight: '500',
-      fontSize: 10,
-    }}
-    renderRightIcon={() => (
-      <View style={{flexDirection: 'row'}}>
-        <ArrowRightIconSvg />
-        <ArrowRightIconSvg />
-      </View>
-    )}
-    iconMargin={3.5}
-    width={69}
-    borderRadius={5}
-    onPress={onViewAllpress}
-  />
-</View>
-</>
-) : (
-<FlatList
-showsVerticalScrollIndicator={false}
-bounces={false}
-data={expenseList}
-keyExtractor={(item, index) => index.toString()}
-renderItem={({item, index}) => {
-  return (
-    <TouchableOpacity
-      onPress={() => handleOnpress(item.id)}
-      style={[
-        styles.Tile,
-        {
-          height: defaultHeight,
-          backgroundColor: defaultBackgroundColor,
-          borderRadius: borderRadius ? borderRadius : 0,
-          borderBottomWidth: defaultBorderBottomWidth,
-          marginBottom: defaultMarginBottom,
-        },
-        styles.shadowProp,
-      ]}>
-      <View
-        style={[
-          styles.col,
-          {justifyContent: 'flex-start', paddingLeft: 10},
-        ]}>
-        <Text style={[styles.itemTextStyle, {color: colors.black}]}>
-          {item.createdAt}
-        </Text>
-      </View>
-      <View style={styles.col}>
-        <Text style={[styles.itemTextStyle, {color: colors.black}]}>
-          {item.expenseName}
-        </Text>
-      </View>
-      <View style={[styles.col]}>
-        <Text style={[styles.itemTextStyle, {color: colors.black}]}>
-          {item.expenseCategory}
-        </Text>
-      </View>
-      <View style={[styles.col]}>
-        <Text style={[styles.itemTextStyle, {color: colors.black}]}>
-          {item.amount}
-        </Text>
-        {status ? (
-          <View style={{marginLeft: 10}}>
-            <ArrowUpIconSvg />
-          </View>
-        ) : (
-          <View style={{marginLeft: 10}}>
-            <ArrowRightIconSvg color={colors.red1} />
-          </View>
-        )}
-      </View>
-    </TouchableOpacity>
-  );
-}}
-/>
-)}
-</> */
-}

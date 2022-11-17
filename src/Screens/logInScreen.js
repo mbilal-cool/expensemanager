@@ -141,14 +141,21 @@ const LoginScreen = ({navigation}) => {
             <AbstractButton
               backgroundColor={lightThemeColors.red1}
               height={50}
-              title={'LogIn'}
+              title={loading ? null : 'LogIn'}
               titleStyle={{
                 color: colors.white,
                 fontFamily: Fonts.interBold,
                 fontWeight: '600',
                 fontSize: 16,
               }}
-              iconMargin={10}
+              renderRightIcon={() =>
+                loading ? (
+                  <ActivityIndicator size="small" color={colors.white} />
+                ) : (
+                  false
+                )
+              }
+              // iconMargin={10}
               width={'100%'}
               borderRadius={30}
               onPress={onLoginButtonPressed}
@@ -194,7 +201,7 @@ const LoginScreen = ({navigation}) => {
                 fontWeight: '600',
                 fontSize: 13,
               }}
-              iconMargin={10}
+              // iconMargin={10}
               width={'20%'}
               borderRadius={30}
               onPress={() => navigation.navigate('SignUpScreen')}
@@ -202,19 +209,6 @@ const LoginScreen = ({navigation}) => {
           </View>
         </View>
       </SafeAreaView>
-      {loading ? (
-        <View
-          style={{
-            ...StyleSheet.absoluteFillObject,
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: 'rgba(0,0,0,0.3)',
-          }}>
-          <ActivityIndicator size="large" color={colors.black} />
-        </View>
-      ) : (
-        false
-      )}
     </>
   );
 };

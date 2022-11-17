@@ -22,42 +22,34 @@ import ClipBoardIconSvg from '../Assets/Icons/clipboardSvg';
 import ExpenseTypeTile from '../Components/Module/expenseTypeTile';
 import {useTheme} from '@react-navigation/native';
 import ThemeController from '../Controller/themeController';
-import ExpenseController from '../Controller/expenseController';
+import ExpenseController, {
+  categorySelector,
+} from '../Controller/expenseController';
 import {useSelector} from 'react-redux';
-
 const OneTimeExpense = ({route, navigation}) => {
   const userId = useSelector(state => state.user.user.id);
-  const token = useSelector(state => state.user.user);
-
-  const {editExpense} = route.params ? route.params : '';
-  const {expensCategoryItem} = route.params ? route.params : '';
+  const {editExpense, type, expensCategoryItem} = route.params;
   const [loading, setLoading] = useState(false);
   const [oneTimeExpenseID, SetoneTimeExpenseID] = useState(
     '63625be0bec8a249188c9be1',
   );
-  const idGenerator = () => {
-    return Math.floor((1 + Math.random()) * 0x1000);
-  };
   const [expense, setExpense] = useState({
-    id: idGenerator(),
-    amount: '',
-    expenseName: '',
-    note: '',
-    createdAt: '',
-    deletedAt: '10/09/22',
-    paymentMedium: '',
-    createdBy: '',
-    expenseType: 'onTime expense',
-    expenseCategory: null,
+    amount: 3500,
+    expenseName: 'Office Expense',
+    note: 'Lorem Ipsum has been the industrys ',
+    createdAt: '2022-11-14',
+    deletedAt: '2022-11-14',
+    paymentMedium: 'Cash',
+    createdBy: userId,
+    expenseType: oneTimeExpenseID,
+    expenseCategory: '63625be1bec8a249188c9be7',
   });
-  const [edit, setEdit] = useState({obj: '', id: ''});
   const [date, setDate] = useState(new Date());
   const [open, setOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState('05,May,2022');
   const [darkMode, setDarkMode] = useState(false);
   const {colors} = useTheme();
-
   useEffect(() => {
+    setExpense(editExpense ? editExpense : expense);
     ThemeController.checkAsyncAndSetPreviousMode();
     ThemeController.listeningToChange(data => {
       setDarkMode(data);
@@ -66,9 +58,13 @@ const OneTimeExpense = ({route, navigation}) => {
     return () => {
       ThemeController.removingListener();
     };
-  }, []);
+  }, [editExpense]);
   const handleExpenseTypePressed = () => {
-    navigation.navigate('ExpenseType');
+    navigation.navigate('ExpenseType', {
+      type,
+      screenName: route.name,
+      editExpense,
+    });
   };
   const handleLeftArrowPressed = () => {
     navigation.goBack();
@@ -92,39 +88,20 @@ const OneTimeExpense = ({route, navigation}) => {
   };
   const handleSavePress = () => {
     setLoading(true);
-    if (editExpense) {
-      let prepareObj = {
-        amount: expense.amount,
-        expenseName: expense.expenseName,
-        note: expense.note,
-        createdAt: expense.createdAt,
-        deletedAt: expense.createdAt,
-        paymentMedium: expense.paymentMedium,
-        createdBy: userId,
-        expenseType: oneTimeExpenseID,
-        expenseCategory: expensCategoryItem.id,
-      }(
-        ExpenseController.updateExpenceItem(prepareObj),
-        setLoading(false),
-        navigation.goBack(),
-      );
+    if (type == 'edit') {
+      ExpenseController.updateExpenceItem(
+        expense,
+
+        call_back => {
+          setLoading(false);
+        },
+      ),
+        navigation.navigate('EntryDetails', {singleExpense: expense});
     } else {
-      ExpenseController.handleAddExpense(
-        {
-          amount: parseInt(expense.amount),
-          expenseName: expense.expenseName,
-          note: expense.note,
-          createdAt: expense.createdAt,
-          deletedAt: expense.createdAt,
-          paymentMedium: expense.paymentMedium,
-          createdBy: userId,
-          expenseType: oneTimeExpenseID,
-          expenseCategory: expensCategoryItem._id,
-        },
-        res => {
-          setLoading(false), navigation.goBack();
-        },
-      );
+      ExpenseController.handleAddExpense(expense, res => {
+        setLoading(false),
+          ExpenseController.findAllExpensesHandler(res => navigation.goBack());
+      });
     }
   };
 
@@ -185,10 +162,8 @@ const OneTimeExpense = ({route, navigation}) => {
               },
             ]}>
             <AbstractTextInput
-              PlaceHolder={editExpense ? editExpense.amount : '3500'}
-              placeholderTextColor={colors.black}
               onChangeText={e => setExpense(prev => ({...prev, amount: e}))}
-              Value={expense.amount}
+              Value={expense.amount.toString()}
               backgroundColor={'transparent'}
               borderBottomWidth={1}
               borderColor={colors.grey2}
@@ -236,31 +211,26 @@ const OneTimeExpense = ({route, navigation}) => {
               backgroundColor={'transparent'}
               borderBottomWidth={1}
               Label={'ExpenseType'}
-              placeHolder={
-                expensCategoryItem == undefined
-                  ? editExpense
-                    ? editExpense.expenseCategory
-                    : 'Office Expense'
-                  : expensCategoryItem.name
-              }
+              placeHolder={categorySelector(
+                expensCategoryItem
+                  ? expensCategoryItem._id
+                  : expense.expenseCategory,
+              )}
               borderColor={colors.grey2}
               onPress={handleExpenseTypePressed}
             />
 
             <ExpenseDateTile
-              placeHolder={editExpense ? editExpense.createdAt : '31/10/22'}
               backgroundColor={'transparent'}
               borderBottomWidth={1}
               Label={'Date'}
               borderColor={colors.grey2}
               onPress={handleDatePress}
-              selectedDate={expense.createdAt}
+              selectedDate={ExpenseController.dateSlicer(expense.createdAt)}
             />
 
             <PaymentDetailMethod
-              defaultCheckedItem={
-                editExpense ? editExpense.paymentMedium : 'Cash'
-              }
+              defaultCheckedItem={expense.paymentMedium}
               Label={'Payment'}
               backgroundColor={'transparent'}
               borderBottomWidth={1}

@@ -24,7 +24,7 @@ const AbstractTextInput = ({
   password,
   validate,
   alignIcon,
-  defaultValue,
+  DefaultValue,
   errorMessage,
 }) => {
   const {colors} = useTheme();
@@ -171,9 +171,8 @@ const AbstractTextInput = ({
                 {defaultLabel ? defaultLabel : 'textInput'}
               </Text>
               <TextInput
-                defaultValue={defaultValue}
-                placeholderTextColor={placeholderTextColor}
-                placeholder={PlaceHolder}
+                // placeholderTextColor={placeholderTextColor}
+                // placeholder={PlaceHolder}
                 style={[
                   [
                     styles.textInput,

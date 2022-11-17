@@ -16,12 +16,13 @@ import {useSelector} from 'react-redux';
 import {expenseList} from '../../mockData';
 const {height} = Dimensions.get('window');
 const {width} = Dimensions.get('window');
-const PieGraphV2 = ({onPressSector, data}) => {
-  const expenses = useSelector(state => state.expense.expenses);
+const PieGraphV2 = ({onPressSector, data, loading}) => {
+  console.log('loading', loading);
+  const expenses = useSelector(state => state.expense.allExpenses);
 
   const {colors} = useTheme();
   const [dataPieChart, setDataPieChart] = useState(data);
-  const [loading, setLoading] = useState(true);
+
   const colorArray = [
     '#BF4344',
     '#EF5455',
@@ -45,10 +46,9 @@ const PieGraphV2 = ({onPressSector, data}) => {
     '#EF5455',
   ];
   useEffect(() => {
-    ExpenseController.handleExpenseList(res => setLoading(false));
     let preparedArray = undefined;
     preparedArray = expenses.map((item, index) => {
-      const sectorPercentage = (item.amount / 10000) * 100;
+      const sectorPercentage = Math.round((item.amount / 100000) * 100);
       return {
         x: item.amount <= 200 ? null : index,
         y: sectorPercentage,
@@ -59,7 +59,7 @@ const PieGraphV2 = ({onPressSector, data}) => {
     });
 
     setDataPieChart(preparedArray);
-  }, []);
+  }, [expenses]);
 
   return (
     <View
@@ -71,7 +71,7 @@ const PieGraphV2 = ({onPressSector, data}) => {
         marginRight: 50,
         justifyContent: 'center',
       }}>
-      {loading ? (
+      {loading === true ? (
         <SkeletonPlaceholder
           borderRadius={4}
           backgroundColor={colors.white}

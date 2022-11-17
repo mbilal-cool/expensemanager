@@ -8,8 +8,9 @@ const Stack = createStackNavigator();
 import CustomBottomTabNavigation from './customBottomTabNavigation';
 import Search from '../Screens/search';
 import OneTimeExpense from '../Screens/oneTimeExpense';
+import EditExpense from '../Screens/editExpense';
 import Catalog from '../Screens/catalog';
-import AddCatelog from '../Screens/addCatlog';
+import AddCatalog from '../Screens/addcatalog';
 import RecurringExpense from '../Screens/recurringExpense.js';
 import EntryDetails from '../Screens/detailEntry';
 import ExpenseType from '../Screens/expenseType';
@@ -41,6 +42,15 @@ const AppStack = () => {
       <Stack.Screen
         component={OneTimeExpense}
         name={'OneTimeExpense'}
+        options={{
+          cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+          gestureEnabled: true,
+          gestureDirection: 'horizontal',
+        }}
+      />
+      <Stack.Screen
+        component={EditExpense}
+        name={'EditExpense'}
         options={{
           cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
           gestureEnabled: true,
@@ -93,8 +103,8 @@ const AppStack = () => {
         }}
       />
       <Stack.Screen
-        component={AddCatelog}
-        name={'AddCatelog'}
+        component={AddCatalog}
+        name={'AddCatalog'}
         options={{
           cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
           gestureEnabled: true,

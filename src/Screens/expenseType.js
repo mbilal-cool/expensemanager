@@ -29,7 +29,9 @@ import ThemeController from '../Controller/themeController';
 import HomeBottomSheet from '../Components/Module/homeBottomSheet';
 
 const ExpenseType = ({route, navigation}) => {
-  const {height, width} = Dimensions.get('window');
+  const {type, screenName, editExpense} = route.params ? route.params : '';
+  console.log('type in expence type:', type, screenName);
+
   const {colors} = useTheme();
   const [types, SetTypes] = useState(expenseTypes);
   const [darkMode, setDarkMode] = useState(expenseTypes);
@@ -44,12 +46,7 @@ const ExpenseType = ({route, navigation}) => {
       },
     ]);
   };
-  const handleEntryDeatilPressed = () => {
-    navigation.navigate('EntryDetails');
-  };
-  const onFocusSearchInput = () => {
-    navigation.navigate('Search');
-  };
+
   const openHomeBottomSheet = () => {
     setSheetType('addExpenseType');
     SheetManager.show('etype');
@@ -65,8 +62,10 @@ const ExpenseType = ({route, navigation}) => {
     };
   }, []);
   const handleExpenseTypePressed = item => {
-    navigation.navigate('OneTimeExpense', {
+    navigation.navigate(screenName, {
       expensCategoryItem: item,
+      type,
+      editExpense,
     });
   };
   const handleLeftArrowPressed = () => {

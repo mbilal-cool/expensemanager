@@ -11,6 +11,7 @@ import {useTheme} from '@react-navigation/native';
 import {lightThemeColors, Fonts} from '../../theme';
 
 const ProfileDetailTile = ({
+  userName,
   height,
 
   backgroundColor,
@@ -38,7 +39,7 @@ const ProfileDetailTile = ({
           style={styles.circle}></Image>
       </View>
       <Text style={[styles.itemTextStyle, {color: colors.black}]}>
-        Frank Castle
+        {userName}
       </Text>
     </TouchableOpacity>
   );

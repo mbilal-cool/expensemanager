@@ -11,15 +11,38 @@ import FocusAwareStatusBar from '../Components/Abstract/focusAwareStatusBar';
 import ThemeController from '../Controller/themeController';
 
 import AbstractHeader from '../Components/Abstract/abstractHeader';
-
+import {useGetExpensesDetails} from '../Controller/expenseController';
 import ArrowLeftTailSvg from '../Assets/Icons/arrowleftTailSvg';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import {useSelector} from 'react-redux';
+import {FlatList} from 'react-native-gesture-handler';
+import ExpenseDetailItem from '../Components/Module/expenseDetailItem';
+const ExpenseDetailItemListPlacehlder = ({showAllButton}) => {
+  const {colors} = useTheme();
 
-export default function ShowAllExpenses({navigation}) {
+  return (
+    <SkeletonPlaceholder
+      borderRadius={4}
+      backgroundColor={colors.white}
+      highlightColor={'#F4f4f9'}
+      speed={1200}>
+      <SkeletonPlaceholder.Item alignItems="center">
+        <SkeletonPlaceholder.Item width={'100%'} height={27} marginBottom={5} />
+      </SkeletonPlaceholder.Item>
+    </SkeletonPlaceholder>
+  );
+};
+export default function ShowAllExpenses({route, navigation}) {
+  const {viewAllType} = route.params;
+  const allExpenses = useGetExpensesDetails(viewAllType);
+  console.log('allexp', viewAllType);
   const {colors} = useTheme();
   const [expenses, SetExpenses] = useState(expenseList);
   const [darkMode, setDarkMode] = useState();
-
+  const [noOfPlaceHolders, setNoOfPlaceHolders] = useState([0, 0, 0, 0]);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
+    setLoading(false);
     ThemeController.checkAsyncAndSetPreviousMode();
     ThemeController.listeningToChange(data => {
       setDarkMode(data);
@@ -28,8 +51,15 @@ export default function ShowAllExpenses({navigation}) {
       ThemeController.removingListener();
     };
   }, []);
+
   const reportDetailItemPressed = () => {
     navigation.navigate('EntryDetails');
+  };
+  const onPressSingleExpenseItem = item => {
+    navigation.navigate('EntryDetails', {
+      singleExpense: item,
+      screenName: route.name,
+    });
   };
   const handleLeftArrowPressed = () => {
     navigation.goBack();
@@ -74,12 +104,44 @@ export default function ShowAllExpenses({navigation}) {
       />
       <ExpenseDetailHeader />
       <View style={styles.itemWrapper}>
-        {/* <ExpenseDetailItemList
-          noOfPlaceHolders={[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}
-          borderRadius={6}
-          marginBottom={5}
-          navigation={navigation}
-        /> */}
+        {loading ? (
+          <>
+            {noOfPlaceHolders.map((item, index) => (
+              <ExpenseDetailItemListPlacehlder key={index} />
+            ))}
+            <SkeletonPlaceholder
+              borderRadius={4}
+              backgroundColor={colors.white}
+              highlightColor={'#F4f4f9'}
+              speed={1200}>
+              <View
+                style={{
+                  height: 28,
+                  width: 69,
+                  backgroundColor: 'green',
+                  alignSelf: 'flex-end',
+                }}></View>
+            </SkeletonPlaceholder>
+          </>
+        ) : (
+          <>
+            <FlatList
+              showsVerticalScrollIndicator={false}
+              bounces={false}
+              data={allExpenses}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({item, index}) => {
+                return (
+                  <ExpenseDetailItem
+                    key={index}
+                    item={item}
+                    onPress={item => onPressSingleExpenseItem(item)}
+                  />
+                );
+              }}
+            />
+          </>
+        )}
       </View>
     </View>
   );
