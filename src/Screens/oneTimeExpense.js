@@ -24,6 +24,7 @@ import {useTheme} from '@react-navigation/native';
 import ThemeController from '../Controller/themeController';
 import ExpenseController, {
   categorySelector,
+  dateConverter,
 } from '../Controller/expenseController';
 import {useSelector} from 'react-redux';
 const OneTimeExpense = ({route, navigation}) => {
@@ -37,14 +38,14 @@ const OneTimeExpense = ({route, navigation}) => {
     amount: 3500,
     expenseName: 'Office Expense',
     note: 'Lorem Ipsum has been the industrys ',
-    createdAt: '2022-11-14',
+    createdAt: dateConverter(new Date()),
     deletedAt: '2022-11-14',
     paymentMedium: 'Cash',
     createdBy: userId,
     expenseType: oneTimeExpenseID,
     expenseCategory: '63625be1bec8a249188c9be7',
   });
-  const [date, setDate] = useState(new Date());
+
   const [open, setOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const {colors} = useTheme();
@@ -69,19 +70,13 @@ const OneTimeExpense = ({route, navigation}) => {
   const handleLeftArrowPressed = () => {
     navigation.goBack();
   };
-  const convertDate = inputDate => {
-    let date, month, year;
 
-    date = inputDate.getDate();
-    month = inputDate.getMonth() + 1;
-    year = inputDate.getFullYear();
-
-    date = date.toString().padStart(2, '0');
-
-    month = month.toString().padStart(2, '0');
-
-    let result = `${year}-${month}-${date}`;
-    setExpense(prev => ({...prev, createdAt: result}));
+  const onConfirmDate = inputDate => {
+    setExpense(prev => ({
+      ...prev,
+      createdAt: dateConverter(new Date(inputDate)),
+    }));
+    setOpen(false);
   };
   const handleDatePress = () => {
     setOpen(true);
@@ -305,11 +300,8 @@ const OneTimeExpense = ({route, navigation}) => {
         <DatePicker
           modal
           open={open}
-          date={date}
-          onConfirm={date => {
-            convertDate(new Date(date));
-            setOpen(false);
-          }}
+          date={new Date()}
+          onConfirm={date => onConfirmDate(date)}
           onCancel={() => {
             setOpen(false);
           }}

@@ -96,6 +96,10 @@ const expenseSlice = createSlice({
     setExpenseCategories: (state, action) => {
       state.expenseCategories = action.payload.data;
     },
+    addExpenseCategories: (state, action) => {
+      console.log('actionpaload of categories', action.payload);
+      state.expenseCategories.push(action.payload);
+    },
   },
 });
 
@@ -109,6 +113,7 @@ export const {
   updateSingleExpense,
   deleteSingleExpense,
   setExpenseCategories,
+  addExpenseCategories,
   setAllExpenses,
   setCatalogueExpenses,
   addCatalogueExpenses,

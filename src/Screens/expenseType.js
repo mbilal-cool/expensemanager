@@ -1,57 +1,36 @@
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  Dimensions,
-} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
-import SearchSugesstionItem from '../Components/Module/searchSuggestionitem';
 import {useTheme} from '@react-navigation/native';
 import {lightThemeColors, Fonts} from '../theme';
-
 import FocusAwareStatusBar from '../Components/Abstract/focusAwareStatusBar';
 import AbstractHeader from '../Components/Abstract/abstractHeader';
-
 import SearchBar from '../Components/Module/searchBar';
-
 import {expenseTypes} from '../mockData';
 import AbstractButton from '../Components/Abstract/abstractButton';
-
 import ArrowLeftTailSvg from '../Assets/Icons/arrowleftTailSvg';
-
-import AddExpenseTypeBotttomSheet from '../Components/Module/AddExpenseTypeBottomSheet';
 import {SheetManager} from 'react-native-actions-sheet';
 import ExpenseTypesList from '../Components/Module/expenseTypesList';
 import AbstractNoData from '../Components/Abstract/abstractNoData';
 import ThemeController from '../Controller/themeController';
 import HomeBottomSheet from '../Components/Module/homeBottomSheet';
-
+import ExpenseController from '../Controller/expenseController';
 const ExpenseType = ({route, navigation}) => {
   const {type, screenName, editExpense} = route.params ? route.params : '';
   console.log('type in expence type:', type, screenName);
-
   const {colors} = useTheme();
   const [types, SetTypes] = useState(expenseTypes);
   const [darkMode, setDarkMode] = useState(expenseTypes);
   const [sheetType, setSheetType] = useState('addExpenseType');
   const onAddTypePressed = type => {
-    SetTypes(prev => [
-      ...prev,
-      {
-        id: 1,
-        title: type,
-        sf: 'OE',
-      },
-    ]);
+    ExpenseController.addExpenseCategories(type, call_back => {
+      console.log('add categories response', call_back);
+    });
   };
 
   const openHomeBottomSheet = () => {
     setSheetType('addExpenseType');
     SheetManager.show('etype');
   };
-
   useEffect(() => {
     ThemeController.checkAsyncAndSetPreviousMode();
     ThemeController.listeningToChange(data => {

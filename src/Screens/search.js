@@ -64,7 +64,7 @@ const Search = ({route, navigation}) => {
 
   const [searchDropDown, setSearchDropDown] = useState(false);
   const [darkMode, setDarkMode] = useState();
-  const [noOfPlaceHolders, setNoOfPlaceHolders] = useState([0, 0, 0, 0]);
+  const [noOfPlaceHolders, setNoOfPlaceHolders] = useState([0, 0, 0, 0, 0, 0]);
   const [input, setInput] = useState('');
   useEffect(() => {
     // ExpenseController.findAllExpensesHandler(res => {
@@ -256,19 +256,6 @@ const Search = ({route, navigation}) => {
               {noOfPlaceHolders.map((item, index) => (
                 <ExpenseDetailItemListPlacehlder key={index} />
               ))}
-              <SkeletonPlaceholder
-                borderRadius={4}
-                backgroundColor={colors.white}
-                highlightColor={'#F4f4f9'}
-                speed={1200}>
-                <View
-                  style={{
-                    height: 28,
-                    width: 69,
-                    backgroundColor: 'green',
-                    alignSelf: 'flex-end',
-                  }}></View>
-              </SkeletonPlaceholder>
             </>
           ) : (
             <>
@@ -277,7 +264,7 @@ const Search = ({route, navigation}) => {
                   <ExpenseDetailItem
                     key={index}
                     item={item}
-                    onPress={item => onPressSingleExpenseItem(item)}
+                    // onPress={item => onPressSingleExpenseItem(item)}
                   />
                 );
               })}

@@ -78,7 +78,6 @@ class ExpenseController {
       })
       .catch(err => console.log(err));
   };
-
   static todayExpenseRequest = currentDate => {
     // console.log('date today', typeof currentDate);
     return new Promise((resolve, reject) => {
@@ -408,6 +407,40 @@ class ExpenseController {
         });
     });
   };
+  static addExpenseCategories = (exp_category, call_back) => {
+    ExpenseController.addExpenseCategoryRequest(exp_category)
+      .then(res => {
+        if (res) {
+          ReduxDispatchController.Expense.addExpenseCategoriesInRedux(
+            exp_category,
+          ),
+            call_back(res.data.message);
+        }
+      })
+      .catch(err => console.log(err));
+  };
+  static addExpenseCategoryRequest = exp_category => {
+    return new Promise((resolve, reject) => {
+      axios
+        .post(
+          'https://expensemanagementsys.herokuapp.com/expApi/addExpCategory',
+          {
+            name: 'newSalary',
+          },
+        )
+        .then(response => {
+          if (response.data.success) {
+            resolve(response.data);
+          } else {
+            reject(response.data.message);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+          reject('Network Error');
+        });
+    });
+  };
   static dateSlicer = date => {
     return date.slice(0, 10);
   };
@@ -477,4 +510,14 @@ export const useFilteredMostRecent = currentDate => {
   );
 
   return {allExpenses: filtered, loading};
+};
+export const dateConverter = inputDate => {
+  let date, month, year;
+  date = inputDate.getDate();
+  month = inputDate.getMonth() + 1;
+  year = inputDate.getFullYear();
+  date = date.toString().padStart(2, '0');
+  month = month.toString().padStart(2, '0');
+  let result = `${year}-${month}-${date}`;
+  return result.toString();
 };

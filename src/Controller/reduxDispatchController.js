@@ -10,6 +10,7 @@ import {
   updateSingletodayExpense,
   deleteSingleExpense,
   setExpenseCategories,
+  addExpenseCategories,
   setAllExpenses,
   setCatalogueExpenses,
   addCatalogueExpenses,
@@ -64,6 +65,9 @@ class ReduxDispatchController {
     },
     saveExpenseCategoriesInRedux: categories => {
       store.dispatch(setExpenseCategories(categories));
+    },
+    addExpenseCategoriesInRedux: res => {
+      store.dispatch(addExpenseCategories(res));
     },
   };
 }

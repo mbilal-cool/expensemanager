@@ -77,19 +77,12 @@ const EditExpense = ({route, navigation}) => {
   const handleLeftArrowPressed = () => {
     navigation.goBack();
   };
-  const convertDate = inputDate => {
-    let date, month, year;
-
-    date = inputDate.getDate();
-    month = inputDate.getMonth() + 1;
-    year = inputDate.getFullYear();
-
-    date = date.toString().padStart(2, '0');
-
-    month = month.toString().padStart(2, '0');
-
-    let result = `${year}-${month}-${date}`;
-    setExpense(prev => ({...prev, createdAt: result}));
+  const onConfirmDate = inputDate => {
+    setExpense(prev => ({
+      ...prev,
+      createdAt: dateConverter(new Date(inputDate)),
+    }));
+    setOpen(false);
   };
   const handleDatePress = () => {
     setOpen(true);
@@ -317,11 +310,8 @@ const EditExpense = ({route, navigation}) => {
         <DatePicker
           modal
           open={open}
-          date={date}
-          onConfirm={date => {
-            convertDate(new Date(date));
-            setOpen(false);
-          }}
+          date={new Date()}
+          onConfirm={date => onConfirmDate(date)}
           onCancel={() => {
             setOpen(false);
           }}

@@ -15,7 +15,7 @@ import AbstractHeader from '../Components/Abstract/abstractHeader';
 import {useTheme} from '@react-navigation/native';
 import SearchBar from '../Components/Module/searchBar';
 import ExpenseDetailHeader from '../Components/Module/expenseDetailHeader';
-
+import {dateConverter} from '../Controller/expenseController';
 import DateRange from '../Components/Module/dateRange';
 import AbstractButton from '../Components/Abstract/abstractButton';
 import ArrowDownIconSvg from '../Assets/Icons/arrowDownSvg';
@@ -27,7 +27,6 @@ import {useState, useEffect} from 'react';
 import ThemeController from '../Controller/themeController';
 import ExpenseController from '../Controller/expenseController';
 import {useSelector} from 'react-redux';
-import {useGetSingleExpenceCategory} from '../Controller/expenseController';
 import ArrowRightIconSvg from '../Assets/Icons/arrowRightsvg';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 const {height, width} = Dimensions.get('window');
@@ -39,7 +38,6 @@ const Expenses = ({route, navigation}) => {
   const [dateType, setDateType] = useState('start');
   const [startDate, setStartDate] = useState('Start Date');
   const [endDate, setEndDate] = useState('End Date');
-  const [date, setDate] = useState(new Date());
   const [open, setOpen] = useState(false);
   const {colors} = useTheme();
   const [modalVisible, setModalVisible] = useState(false);
@@ -121,16 +119,12 @@ const Expenses = ({route, navigation}) => {
       amount: 8000,
     },
   ];
-  const onPressSector = (value, selectedSectorData) => {
-    setModalData(selectedSectorData);
-  };
   const onPressSingleExpenseItem = item => {
     navigation.navigate('EntryDetails', {
       singleExpense: item,
       screenName: route.name,
     });
   };
-  const [expenses, SetExpenses] = useState(allExpenses);
   useEffect(() => {
     ExpenseController.findAllExpensesHandler(res => console.log('response')),
       setLoading(false);
@@ -143,37 +137,19 @@ const Expenses = ({route, navigation}) => {
       ThemeController.removingListener();
     };
   }, []);
-  // useEffect(() => {
-  //   SetExpenses(allExpenses);
-  // }, [allExpenses]);
-
   const openExpensesBottomSheet = () => {
     SheetManager.show('expenses');
   };
   const onViewAllpress = () => {
     navigation.navigate('ShowAllExpenses', {viewAllType: type});
   };
-  const closeExpensesBottomSheet = () => {
-    SheetManager.hide('expenses');
-    navigation.navigate('EntryDetails');
-  };
-  const handleEntryDeatilPressed = () => {
-    navigation.navigate('EntryDetails');
-  };
-
-  const convertDate = inputDate => {
-    let date, month, year;
-
-    date = inputDate.getDate();
-    month = inputDate.getMonth() + 1;
-    year = inputDate.getFullYear();
-
-    date = date.toString().padStart(2, '0');
-
-    month = month.toString().padStart(2, '0');
-
-    let result = `${year}-${month}-${date}`;
-    dateType == 'start' ? setStartDate(result) : setEndDate(result);
+  const onConfirmDate = inputDate => {
+    if (dateType == 'start') {
+      setStartDate(dateConverter(new Date(inputDate)));
+    } else {
+      setEndDate(dateConverter(new Date(inputDate)));
+    }
+    setOpen(false);
   };
   const handleStartDatePress = () => {
     setDateType('start');
@@ -186,7 +162,6 @@ const Expenses = ({route, navigation}) => {
   const filterTitle = title => {
     setFilter(title);
   };
-
   const ExpenseDetailItemListPlacehlder = () => {
     return (
       <SkeletonPlaceholder
@@ -278,11 +253,7 @@ const Expenses = ({route, navigation}) => {
       <View style={styles.horizontalContainer}>
         <ExpenseDetailHeader height={24} backgroundColor={'transparent'} />
       </View>
-      <View
-        style={[
-          styles.middleContainer,
-          // {backgroundColor: colors.defaultBackground},
-        ]}>
+      <View style={[styles.middleContainer]}>
         <ScrollView bounces={false} showsVerticalScrollIndicator={false}>
           <ContainerElement>
             {loading ? (
@@ -346,11 +317,7 @@ const Expenses = ({route, navigation}) => {
                 // backgroundColor: 'green',
                 paddingRight: 80,
               }}>
-              <PieGraphV2
-                onPressSector={onPressSector}
-                data={expenseDetails}
-                loading={loading}
-              />
+              <PieGraphV2 data={expenseDetails} loading={loading} />
 
               <AbstractModal isVisible={modalVisible}>
                 <View
@@ -381,12 +348,8 @@ const Expenses = ({route, navigation}) => {
       <DatePicker
         modal
         open={open}
-        date={date}
-        onConfirm={date => {
-          convertDate(new Date(date));
-          setOpen(false);
-          setDate(date);
-        }}
+        date={new Date()}
+        onConfirm={date => onConfirmDate(date)}
         onCancel={() => {
           setOpen(false);
         }}

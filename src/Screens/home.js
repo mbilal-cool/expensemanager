@@ -28,6 +28,7 @@ import ExpenseDetailItem from '../Components/Module/expenseDetailItem';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import AbstractButton from '../Components/Abstract/abstractButton';
 import ArrowRightIconSvg from '../Assets/Icons/arrowRightsvg';
+import {dateConverter} from '../Controller/expenseController';
 const ExpenseDetailItemListPlacehlder = ({showAllButton}) => {
   const {colors} = useTheme();
   return (
@@ -41,19 +42,6 @@ const ExpenseDetailItemListPlacehlder = ({showAllButton}) => {
       </SkeletonPlaceholder.Item>
     </SkeletonPlaceholder>
   );
-};
-
-const convertDate = inputDate => {
-  let date, month, year;
-  date = inputDate.getDate();
-  month = inputDate.getMonth() + 1;
-  year = inputDate.getFullYear();
-  date = date.toString().padStart(2, '0');
-
-  month = month.toString().padStart(2, '0');
-
-  let result = `${year}-${month}-${date}`;
-  return result.toString();
 };
 const convertPreviousDate = inputDate => {
   let date, month, year;
@@ -73,16 +61,12 @@ const Home = ({route, navigation}) => {
     state => state.expense.previousdayExpenses,
   );
   // console.log('today expenses', todayExpenses);
-  const [expenseList, SetExpenseList] = useState();
-
   const [loading, setLoading] = useState(true);
   const noOfPlaceHolders = [0, 0, 0];
   const [todayDate, SetTodayDate] = useState();
-  const [currentDate, setCurrentDate] = useState(convertDate(new Date()));
   const [previousDate, setPreviousDate] = useState(
     convertPreviousDate(new Date()),
   );
-
   const {colors} = useTheme();
   const [date, setDate] = useState({
     month: 'May',
@@ -90,15 +74,11 @@ const Home = ({route, navigation}) => {
     suggestedYear: 2022,
   });
   const [sheetType, setSheetType] = useState('selectDate');
-
   const convertTodayDateTitle = inputDate => {
     let date, month, year;
-
     date = inputDate.getDate();
     month = inputDate.getMonth() + 1;
-
     month = month.toString().padStart(2, '0');
-
     let modifymonth = month => {
       switch (month) {
         case '01':
@@ -136,7 +116,7 @@ const Home = ({route, navigation}) => {
       console.log('categories response');
     });
     SetTodayDate(convertTodayDateTitle(new Date()));
-    ExpenseController.handletodayExpenseList(currentDate, res => {
+    ExpenseController.handletodayExpenseList(dateConverter(new Date()), res => {
       setLoading(res);
     });
     ExpenseController.handlePreviousDayExpenseList(previousDate, res => {
