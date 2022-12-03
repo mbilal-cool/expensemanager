@@ -29,6 +29,7 @@ const AuthStack = () => {
           gestureDirection: 'horizontal',
         }}
       />
+
       <Stack.Screen
         component={SignUpScreen}
         name={'SignUpScreen'}

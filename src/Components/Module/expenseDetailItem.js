@@ -8,7 +8,6 @@ import {
   FlatList,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
-import AbstractButton from '../Abstract/abstractButton';
 import {lightThemeColors, Fonts} from '../../theme';
 import PdfIconSvg from '../../Assets/Icons/pdfSvg';
 import ArrowRightIconSvg from '../../Assets/Icons/arrowRightsvg';
@@ -31,9 +30,6 @@ const ExpenseDetailItem = ({
   backgroundColor,
   status,
 }) => {
-  const [expenseList, SetExpenseList] = useState();
-  const [loading, setLoading] = useState(true);
-  const expenses = useSelector(state => state.expense.expenses);
   const {colors} = useTheme();
   const defaultBackgroundColor = backgroundColor
     ? backgroundColor
@@ -48,9 +44,6 @@ const ExpenseDetailItem = ({
     const newObj = newArr.find(item => item._id == cat_id);
     return newObj?.name;
   };
-
-  useEffect(() => {}, []);
-
   return (
     <TouchableOpacity
       onPress={() => onPress(item)}

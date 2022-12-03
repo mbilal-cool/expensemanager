@@ -1,61 +1,69 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  TouchableOpacity,
-  ImageBackground,
-} from 'react-native';
-import React from 'react';
+import {StyleSheet, Text, View, TouchableOpacity, Image} from 'react-native';
+import React, {useState, useEffect} from 'react';
 import {useTheme} from '@react-navigation/native';
 import {lightThemeColors, Fonts} from '../../theme';
-const SearchResultItem = ({
+const ExpenseTypeItem = ({
   item,
   height,
-
   backgroundColor,
-
   onPress = () => false,
 }) => {
   const {colors} = useTheme();
+  const defaultHeight = height ? height : 50;
   const defaultBackgroundColor = backgroundColor
     ? backgroundColor
     : 'transparent';
-  const defaultHeight = height ? height : 32;
+  var matches = item.name.match(/\b(\w)/g);
+  var acronym = matches.join(''); // JSON
+  var sf = acronym.slice(0, 2);
   return (
     <TouchableOpacity
-      onPress={() => onPress(item)}
+      key={item._id}
+      onPress={() => {
+        onPress(item);
+      }}
       style={[
         styles.Tile,
         {
           height: defaultHeight,
           backgroundColor: defaultBackgroundColor,
+          borderBottomWidth: 1,
           borderColor: colors.grey2,
         },
       ]}>
+      <View style={[styles.circle, {backgroundColor: colors.black1}]}>
+        <Text
+          style={[styles.itemTextStyle, {color: colors.white, marginLeft: 0}]}>
+          {sf}
+        </Text>
+      </View>
       <Text style={[styles.itemTextStyle, {color: colors.black}]}>
-        {item ? item.expenseName : 'Salary Alex'}
+        {item.name}
       </Text>
     </TouchableOpacity>
   );
 };
-
-export default SearchResultItem;
+export default ExpenseTypeItem;
 const styles = StyleSheet.create({
   Tile: {
     flexDirection: 'row',
     width: '100%',
-    backgroundColor: lightThemeColors.white,
     flexDirection: 'row',
     alignItems: 'center',
-    borderBottomWidth: 1,
-    borderColor: lightThemeColors.grey2,
   },
-
   itemTextStyle: {
     fontFamily: Fonts.interBold,
     fontWeight: '500',
     fontSize: 14,
     color: lightThemeColors.black,
+    marginLeft: 15,
+  },
+  circle: {
+    height: 30,
+    width: 30,
+    borderRadius: 15,
+    backgroundColor: lightThemeColors.black,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

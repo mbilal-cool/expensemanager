@@ -23,9 +23,9 @@ import ExpenseController from '../Controller/expenseController';
 import ExpenseDetailItem from '../Components/Module/expenseDetailItem';
 import {FlatList} from 'react-native-gesture-handler';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import AbstractNoData from '../Components/Abstract/abstractNoData';
 const ExpenseDetailItemListPlacehlder = ({showAllButton}) => {
   const {colors} = useTheme();
-
   return (
     <SkeletonPlaceholder
       borderRadius={4}
@@ -39,26 +39,28 @@ const ExpenseDetailItemListPlacehlder = ({showAllButton}) => {
   );
 };
 const Catalog = ({route, navigation}) => {
+  const inputRef = useRef();
+  const [input, setInput] = useState('');
+  const [searchedData, SetSearchData] = useState([]);
   const {previousRoute} = route.params;
   const catalogueExpenses = useSelector(
     state => state.expense.catalogueExpenses,
   );
-  // console.log('allcatalog:', catalogueExpenses, catalogueExpenses.length);
+  // console.log('allcatalog:', catalogueExpenses, catalogueExpenses.length);ore
   const [loading, setLoading] = useState(true);
   const [noOfPlaceHolders, setNoOfPlaceHolders] = useState([
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   ]);
   // console.log('catalogueExpenses', previousRoute);
   const {colors} = useTheme();
   const [darkMode, setDarkMode] = useState();
-
   useEffect(() => {
     ThemeController.checkAsyncAndSetPreviousMode();
     ThemeController.listeningToChange(data => {
       setDarkMode(data);
       ExpenseController.getAllExpenseCatalogue(res => {
         setLoading(false);
-        console.log('res in catalogue Screen');
+        // console.log('res in catalogue Screen');
       });
     });
     return () => {
@@ -72,12 +74,10 @@ const Catalog = ({route, navigation}) => {
       previousRoute,
     });
   };
-  const handleEntryDeatilPressed = () => {
-    navigation.navigate('EntryDetails', {
-      singleExpense: item,
-      screenName: route.name,
-    });
+  onSubmitText = () => {
+    inputRef.current.blur();
   };
+
   const onCreatePress = () => {
     navigation.navigate('AddCatalog', {type: 'add'});
   };
@@ -87,6 +87,21 @@ const Catalog = ({route, navigation}) => {
   const onExpensesPress = () => {
     navigation.navigate('Expenses');
   };
+  const searchFilterFunction = txt => {
+    setInput(txt);
+    if (txt) {
+      const newData = catalogueExpenses.filter(function (item) {
+        const itemData = item.expenseName
+          ? item.expenseName.toUpperCase()
+          : ''.toUpperCase();
+        const textData = txt.toUpperCase();
+        return itemData.indexOf(textData) > -1;
+      });
+      console.log('newData', newData);
+      SetSearchData(newData);
+    }
+  };
+  console.log('searchData??', searchedData);
   return (
     <View style={[styles.main, {backgroundColor: colors.defaultBackground}]}>
       <FocusAwareStatusBar
@@ -101,7 +116,7 @@ const Catalog = ({route, navigation}) => {
             style={{
               width: '100%',
               height: '100%',
-              //   backgroundColor: 'green',
+              // backgroundColor: 'green',
               justifyContent: 'flex-end',
               paddingBottom: 15,
               alignItems: 'center',
@@ -153,71 +168,125 @@ const Catalog = ({route, navigation}) => {
           </View>
         )}
       />
-
-      <View style={styles.middleContainer}>
-        <View>
-          <ContainerElement>
-            <SearchBar
-              searchBarPlaceHolderStyle={[styles.titleStyle, {fontSize: 16}]}
-              searchBarPlaceHolder={'Search '}
-              searchBarplaceholderTextColor={colors.grey}
-              backgroundColor={colors.white}
-              borderWidth={1}
-              borderColor={colors.grey2}
-            />
-          </ContainerElement>
-          <View style={{paddingVertical: 10}}>
-            <ExpenseDetailHeader height={24} backgroundColor={'transparent'} />
-          </View>
-          <ContainerElement>
-            {loading ? (
-              <>
-                {noOfPlaceHolders.map((item, index) => (
-                  <ExpenseDetailItemListPlacehlder key={index} />
-                ))}
-              </>
-            ) : (
-              <>
-                <FlatList
-                  showsVerticalScrollIndicator={false}
-                  bounces={false}
-                  data={catalogueExpenses}
-                  keyExtractor={(item, index) => index.toString()}
-                  renderItem={({item, index}) => {
-                    return (
-                      <ExpenseDetailItem
-                        key={index}
-                        item={item}
-                        onPress={item => onPressSingleExpenseItem(item)}
-                      />
-                    );
-                  }}
-                />
-              </>
-            )}
-          </ContainerElement>
-        </View>
-        <ContainerElement>
-          <AbstractButton
-            backgroundColor={colors.red1}
-            height={50}
-            title={'Create'}
-            titleStyle={{
-              color: colors.white,
-              fontFamily: Fonts.interBold,
-              fontWeight: '600',
-              fontSize: 16,
-            }}
-            renderRightIcon={() => (
-              <PlusIconSvg height={12} width={12} color={colors.white} />
-            )}
-            iconMargin={10}
-            width={'100%'}
-            borderRadius={30}
-            onPress={onCreatePress}
-          />
-        </ContainerElement>
+      <ContainerElement>
+        <SearchBar
+          searchBarPlaceHolderStyle={[styles.titleStyle, {fontSize: 16}]}
+          searchBarPlaceHolder={'Search '}
+          searchBarplaceholderTextColor={colors.grey}
+          backgroundColor={colors.white}
+          borderWidth={1}
+          borderColor={colors.grey2}
+          onSubmitEditing={onSubmitText}
+          inputRef={inputRef}
+          // onFocus={onFocus}
+          Value={input}
+          onChangeText={e => {
+            searchFilterFunction(e);
+          }}
+        />
+      </ContainerElement>
+      <View style={{paddingVertical: 10}}>
+        <ExpenseDetailHeader height={24} backgroundColor={'transparent'} />
       </View>
+      {
+        <View style={styles.middleContainer}>
+          {input ? (
+            <>
+              {loading ? (
+                <>
+                  {noOfPlaceHolders.map((item, index) => (
+                    <ExpenseCategoryListPlacehlder key={index} />
+                  ))}
+                </>
+              ) : (
+                <>
+                  {searchedData != 0 ? (
+                    <FlatList
+                      contentContainerStyle={{paddingBottom: 20}}
+                      showsVerticalScrollIndicator={false}
+                      bounces={false}
+                      data={searchedData}
+                      keyExtractor={(item, index) => index.toString()}
+                      renderItem={({item, index}) => {
+                        return (
+                          <ExpenseDetailItem
+                            key={index}
+                            item={item}
+                            onPress={item => onPressSingleExpenseItem(item)}
+                          />
+                        );
+                      }}
+                    />
+                  ) : (
+                    <View
+                      style={{
+                        height: '100%',
+                        // backgroundColor: 'tomato',
+                        justifyContent: 'center',
+                      }}>
+                      <AbstractNoData
+                        caption={"Sorry we couldn't find any results! "}
+                      />
+                    </View>
+                  )}
+                </>
+              )}
+            </>
+          ) : (
+            <>
+              {loading ? (
+                <>
+                  {noOfPlaceHolders.map((item, index) => (
+                    <ExpenseDetailItemListPlacehlder key={index} />
+                  ))}
+                </>
+              ) : (
+                <>
+                  {catalogueExpenses.length != 0 ? (
+                    <FlatList
+                      showsVerticalScrollIndicator={false}
+                      bounces={false}
+                      data={catalogueExpenses}
+                      keyExtractor={(item, index) => index.toString()}
+                      renderItem={({item, index}) => {
+                        return (
+                          <ExpenseDetailItem
+                            key={index}
+                            item={item}
+                            onPress={item => onPressSingleExpenseItem(item)}
+                          />
+                        );
+                      }}
+                    />
+                  ) : (
+                    <AbstractNoData caption={'No Catalog found'} />
+                  )}
+                </>
+              )}
+            </>
+          )}
+        </View>
+      }
+      <ContainerElement>
+        <AbstractButton
+          backgroundColor={colors.red1}
+          height={50}
+          title={'Create'}
+          titleStyle={{
+            color: colors.white,
+            fontFamily: Fonts.interBold,
+            fontWeight: '600',
+            fontSize: 16,
+          }}
+          renderRightIcon={() => (
+            <PlusIconSvg height={12} width={12} color={colors.white} />
+          )}
+          iconMargin={10}
+          width={'100%'}
+          borderRadius={30}
+          onPress={onCreatePress}
+        />
+      </ContainerElement>
     </View>
   );
 };
@@ -239,13 +308,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   middleContainer: {
-    flex: 1,
+    flex: 0.95,
     width: '100%',
     // backgroundColor: 'orange',
-    zIndex: -1,
-    // paddingHorizontal: 20,
-    justifyContent: 'space-between',
-    paddingBottom: 30,
+
+    paddingHorizontal: 20,
+    justifyContent: 'center',
+    paddingBottom: 10,
   },
   horizontalContainer: {
     height: 50,

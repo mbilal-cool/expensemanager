@@ -8,16 +8,16 @@ const setUserinRedux = user => {
 class AuthController {
   static USER_ASYNC_KEY = 'STORAGE_KEY';
   static bearerToken = '';
+
   static handleSignupUser = (user, _call_back) => {
     AuthController.signUpRequest(user)
-
       .then(res => {
-        console.log(res.data);
+        // console.log(res.data);
         if (res.data.success) {
-          _call_back(res);
+          _call_back(res.data);
           navigate('LogInScreen');
         } else {
-          _call_back(res.data.message);
+          _call_back(res.data.error.message);
         }
       })
       .catch(err => {
@@ -25,17 +25,12 @@ class AuthController {
         _call_back(err);
       });
   };
+
   static signUpRequest = user => {
-    const obj = {
-      username: user.name,
-      email: user.email,
-      password: user.password,
-      roles: [user.role],
-    };
     // console.log(obj);
     return new Promise((resolve, reject) => {
       axios
-        .post('https://expensemanagementsys.herokuapp.com/authApi/signup', obj)
+        .post('https://expensemanagementsys.herokuapp.com/authApi/signup', user)
         .then(response => {
           resolve(response);
         })
@@ -44,26 +39,27 @@ class AuthController {
         });
     });
   };
-
-  static handleLogin = (obj, call_back, _call_back) => {
+  static handleLogin = (obj, _call_back) => {
     AuthController.requestLogin(obj)
       .then(res => {
+        // console.log(res.data);
         if (res.data.success) {
-          call_back(false);
-
           AuthController.persistUserAndAuthenticate(res.data)
             .then(dataIsSaved => {
-              console.log(dataIsSaved, '??????');
+              // console.log(dataIsSaved, '??????');
+              _call_back(res.data);
 
               navigate('AppStack');
             })
             .catch(err => _call_back(err));
         } else {
-          _call_back(res.data.message);
+          _call_back(res.data.error.message);
         }
       })
       .catch(err => {
-        console.log(err), _call_back(err);
+        console.log(err);
+
+        _call_back(err);
       });
   };
 
@@ -75,7 +71,7 @@ class AuthController {
           resolve(response);
         })
         .catch(error => {
-          reject('Network Error');
+          reject('NetworkError');
         });
     });
   };
@@ -101,9 +97,7 @@ class AuthController {
             let parsedUserObject = JSON.parse(res);
             axios.defaults.headers.common['Authorization'] =
               parsedUserObject.data.accessToken;
-
             setUserinRedux(JSON.parse(res));
-            navigate('AppStack');
             resolve(true);
           } else {
             resolve(false);

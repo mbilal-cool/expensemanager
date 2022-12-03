@@ -14,13 +14,11 @@ import {useTheme} from '@react-navigation/native';
 import ThemeController from '../Controller/themeController';
 import AuthController from '../Controller/authController';
 const LoginScreen = ({navigation}) => {
-  const [user, SetUser] = useState({
-    name: '',
-    nameError: '',
-    password: '',
-    passwordError: '',
-  });
-  const [resError, setResError] = useState('error');
+  const [username, setUserName] = useState('');
+  const [nameError, setNameError] = useState('');
+  const [password, setPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [resError, setResError] = useState('');
   const [loading, setLoading] = useState(false);
   const [darkMode, setDarkMode] = useState();
   const {colors} = useTheme();
@@ -37,10 +35,10 @@ const LoginScreen = ({navigation}) => {
   const onChangeText = (e, type) => {
     switch (type) {
       case 'name':
-        return SetUser(prev => ({...prev, name: e})), nameValidations(e);
+        return setUserName(e), nameValidations(e);
 
       case 'password':
-        return SetUser(prev => ({...prev, password: e})), ValidatePassword(e);
+        return setPassword(e), ValidatePassword(e);
 
       default:
         return;
@@ -50,39 +48,45 @@ const LoginScreen = ({navigation}) => {
   const nameValidations = e => {
     let res = /^[a-z A-Z]+$/.test(e);
     if (res) {
-      SetUser(prev => ({...prev, nameError: ''}));
+      setNameError('');
     } else {
-      SetUser(prev => ({...prev, nameError: 'Enter Valid Name'}));
+      setNameError('Enter Valid Name');
     }
   };
   const ValidatePassword = e => {
     if (e.length < 6) {
-      SetUser(prev => ({
-        ...prev,
-        passwordError: 'password should be 6 character long ',
-      }));
+      setPasswordError('password should be 6 character long ');
     } else {
-      SetUser(prev => ({...prev, passwordError: ''}));
+      setPasswordError('');
     }
   };
 
   const onLoginButtonPressed = () => {
-    if (
-      user.nameError == '' &&
-      user.passwordError == '' &&
-      user.name != '' &&
-      user.password != ''
-    ) {
-      setLoading(true);
-
-      AuthController.handleLogin(
-        {username: user.name, password: user.password},
-        res => {
-          SetUser(prev => ({...prev, name: '', password: ''}));
-          setLoading(res);
-        },
-        reserror => setResError(reserror),
-      );
+    setResError('');
+    if (!username && !password) {
+      setNameError('*required feild!');
+      setPasswordError('*required feild!');
+    } else if (!username) {
+      setNameError('*required feild!');
+    } else if (!password) {
+      setPasswordError('*required feild!');
+    } else if (username != '' && password != '') {
+      if (!/^[a-z A-Z]+$/.test(username)) {
+        setNameError('Enter Valid Name');
+      } else if (password.length < 6) {
+        setPasswordError('password should be 6 character long ');
+      } else {
+        setLoading(true);
+        AuthController.handleLogin({username, password}, res => {
+          setLoading(false);
+          if (res.success) {
+            setUserName('');
+            setPassword('');
+          } else {
+            setResError(res);
+          }
+        });
+      }
     }
   };
   return (
@@ -114,78 +118,75 @@ const LoginScreen = ({navigation}) => {
           </Text>
         </View>
         <View style={styles.middleContainer}>
-          <View style={[styles.containerHorizontal]}>
-            <AbstractTextInput
-              borderWidth={1}
-              borderColor={lightThemeColors.grey}
-              placeHolderTextStyle={[styles.labelStyle, {color: colors.black}]}
-              type={'simple'}
-              PlaceHolder={'Name'}
-              placeholderTextColor={lightThemeColors.grey}
-              Value={user.name}
-              onChangeText={e => onChangeText(e, 'name')}
-              errorMessage={user.nameError}
-            />
-            <AbstractTextInput
-              password={true}
-              borderWidth={1}
-              borderColor={lightThemeColors.grey}
-              placeHolderTextStyle={[styles.labelStyle, {color: colors.black}]}
-              type={'simple'}
-              PlaceHolder={'Password'}
-              placeholderTextColor={lightThemeColors.grey}
-              Value={user.password}
-              onChangeText={e => onChangeText(e, 'password')}
-              errorMessage={user.passwordError}
-            />
-            <AbstractButton
-              backgroundColor={lightThemeColors.red1}
-              height={50}
-              title={loading ? null : 'LogIn'}
-              titleStyle={{
-                color: colors.white,
-                fontFamily: Fonts.interBold,
-                fontWeight: '600',
-                fontSize: 16,
-              }}
-              renderRightIcon={() =>
-                loading ? (
-                  <ActivityIndicator size="small" color={colors.white} />
-                ) : (
-                  false
-                )
-              }
-              // iconMargin={10}
-              width={'100%'}
-              borderRadius={30}
-              onPress={onLoginButtonPressed}
-            />
-            {/* {resError != '' ? (
-      <Text
-        style={[
-          styles.labelStyle,
-          {
-            color: colors.red1,
-            position: 'absolute',
-            bottom: -20,
-            left: 17,
-            fontSize: 14,
-          },
-        ]}>
-        Network Error, Try Again !
-      </Text>
-    ) : null} */}
-          </View>
+          {/* <View style={[styles.containerHorizontal]}> */}
+          <AbstractTextInput
+            borderWidth={1}
+            borderColor={lightThemeColors.grey}
+            placeHolderTextStyle={[styles.labelStyle, {color: colors.black}]}
+            type={'simple'}
+            PlaceHolder={'Name'}
+            placeholderTextColor={lightThemeColors.grey}
+            Value={username}
+            onChangeText={e => onChangeText(e, 'name')}
+            errorMessage={nameError}
+          />
+          <AbstractTextInput
+            password={true}
+            borderWidth={1}
+            borderColor={lightThemeColors.grey}
+            placeHolderTextStyle={[styles.labelStyle, {color: colors.black}]}
+            type={'simple'}
+            PlaceHolder={'Password'}
+            placeholderTextColor={lightThemeColors.grey}
+            Value={password}
+            onChangeText={e => onChangeText(e, 'password')}
+            errorMessage={passwordError}
+          />
+          <AbstractButton
+            backgroundColor={lightThemeColors.red1}
+            height={50}
+            title={loading ? null : 'LogIn'}
+            titleStyle={{
+              color: colors.white,
+              fontFamily: Fonts.interBold,
+              fontWeight: '600',
+              fontSize: 16,
+            }}
+            renderRightIcon={() =>
+              loading ? (
+                <ActivityIndicator size="small" color={colors.white} />
+              ) : (
+                false
+              )
+            }
+            width={'100%'}
+            borderRadius={30}
+            onPress={onLoginButtonPressed}
+          />
+          {resError ? (
+            <Text
+              style={[
+                styles.labelStyle,
+                {
+                  color: colors.red1,
+                  fontSize: 14,
+                  alignSelf: 'center',
+                  marginTop: 8,
+                },
+              ]}>
+              {resError}
+            </Text>
+          ) : null}
+          {/* </View> */}
           <View
             style={[
-              styles.containerHorizontal,
+              // styles.containerHorizontal,
               {
-                // backgroundColor: 'yellow',
-                height: 60,
                 alignItems: 'center',
                 flexDirection: 'row',
                 justifyContent: 'flex-start',
                 paddingLeft: 15,
+                paddingTop: 8,
               },
             ]}>
             <Text style={[styles.labelStyle, {color: colors.grey1}]}>
@@ -223,17 +224,19 @@ const styles = StyleSheet.create({
     // paddingHorizontal: 20,
   },
   middleContainer: {
-    flex: 0.45,
+    flex: 1,
+    paddingTop: 50,
     // backgroundColor: 'red',
-    justifyContent: 'center',
+    // justifyContent: 'center',
     paddingHorizontal: 20,
   },
   containerHorizontal: {
-    height: 230,
-    width: '100%',
+    // height: 230,
+    // width: '100%',
+    flex: 1,
     // backgroundColor: 'green',
-    alignItems: 'flex-end',
-    justifyContent: 'space-between',
+    // alignItems: 'flex-end',
+    // justifyContent: 'space-between',
   },
   titleStyle: {
     fontFamily: Fonts.interBold,

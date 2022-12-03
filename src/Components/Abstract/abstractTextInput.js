@@ -40,15 +40,11 @@ const AbstractTextInput = ({
     : colors.white;
   const [errorMsg, setErrorMsg] = useState('*Required Field!');
   const defaultLabelStyle = labelStyle ? labelStyle : styles.labelStyle;
-  const handleErrorMessage = () => {
-    if (Value == '') {
-      return '*Required Field!';
-    } else return errorMessage;
-  };
+
   switch (type) {
     case 'simple':
       return (
-        <View>
+        <View style={{marginVertical: 10, width: '100%'}}>
           {Label ? (
             <View style={[styles.tile, {height: 25}]}>
               <Text
@@ -63,8 +59,8 @@ const AbstractTextInput = ({
 
           <View
             style={[
-              styles.inputBox,
               {
+                backgroundColor: 'red',
                 justifyContent: 'center',
                 paddingHorizontal: 15,
                 height: defaultHeight,
@@ -75,48 +71,31 @@ const AbstractTextInput = ({
                 borderColor: defaultBorderColor,
               },
             ]}>
-            <View style={[styles.tile, {height: 25}]}>
-              <View
-                style={[
-                  styles.col,
-                  {
-                    // backgroundColor: 'red',
-                    width: '100%',
-                    // paddingBottom: 8,
-                    borderBottomWidth: defaultBorderBottomWidth,
-                    borderColor: defaultBorderColor,
-                  },
-                ]}>
-                <TextInput
-                  placeholder={PlaceHolder}
-                  style={[
-                    [styles.textInput, {height: 50}],
-                    placeHolderTextStyle,
-                    {
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                    },
-                  ]}
-                  placeholderTextColor={placeholderTextColor}
-                  value={Value}
-                  onChangeText={e => {
-                    onChangeText(e);
-                  }}
-                  secureTextEntry={password ? true : false}
-                />
-                <Text
-                  style={{
-                    color: colors.red1,
-                    fontSize: 12,
-                    position: 'absolute',
-                    bottom: -30,
-                    left: 0,
-                  }}>
-                  {handleErrorMessage()}
-                </Text>
-              </View>
-            </View>
+            <TextInput
+              placeholder={PlaceHolder}
+              style={[
+                placeHolderTextStyle,
+                {
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                },
+              ]}
+              placeholderTextColor={placeholderTextColor}
+              value={Value}
+              onChangeText={e => {
+                onChangeText(e);
+              }}
+              secureTextEntry={password ? true : false}
+            />
           </View>
+          <Text
+            style={{
+              color: colors.red1,
+              fontSize: 12,
+              marginLeft: 12,
+            }}>
+            {errorMessage}
+          </Text>
         </View>
       );
     default:
@@ -233,7 +212,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     height: 30,
-    width: '100%',
+    // width: '100%',
     // justifyContent: 'flex-end',
 
     // backgroundColor: 'blue',

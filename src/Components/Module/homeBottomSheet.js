@@ -18,6 +18,11 @@ import ArrowDownIconSvg from '../../Assets/Icons/arrowDownSvg';
 import ArrowUpIconSvg from '../../Assets/Icons/arrowUpSvg';
 import AbstractTextInput from '../Abstract/abstractTextInput';
 import {ScrollView} from 'react-native-gesture-handler';
+import ReduxDispatchController from '../../Controller/reduxDispatchController';
+import ExpenseController, {
+  useDateQuery,
+} from '../../Controller/expenseController';
+const {height, width} = Dimensions.get('window');
 const HomeBottomSheet = ({
   id,
   type,
@@ -28,33 +33,27 @@ const HomeBottomSheet = ({
   onPress = () => false,
 }) => {
   let allTime = {id: 1, title: 'All Time', pressed: false};
-
-  const {height, width} = Dimensions.get('window');
+  const selectedDateQuery = useDateQuery();
+  const [Tougle, SetTougle] = useState(false);
   const [inputExpenseType, setInputExpenseType] = useState('');
 
   const {colors} = useTheme();
   const [buttonTitle, setButtonTitle] = useState(buttontitle);
   const [inputYear, SetInputYear] = useState('2022');
-
-  const [isVisible, setDropDownVisible] = useState(false);
-  useEffect(() => {
-    setButtonTitle(buttonTitle);
-  }, []);
   const [options, SetOptions] = useState([
-    {id: 1, title: 'Whole Year', pressed: true},
-
+    {id: 0, title: 'Whole Year', pressed: false},
     {id: 1, title: 'January', pressed: false},
-    {id: 1, title: 'Feburary', pressed: false},
-    {id: 1, title: 'March', pressed: false},
-    {id: 1, title: 'April', pressed: false},
-    {id: 1, title: 'May', pressed: false},
-    {id: 1, title: 'June', pressed: false},
-    {id: 1, title: 'July', pressed: false},
-    {id: 1, title: 'August', pressed: false},
-    {id: 1, title: 'September', pressed: false},
-    {id: 1, title: 'Octobor', pressed: false},
-    {id: 1, title: 'November', pressed: false},
-    {id: 1, title: 'December', pressed: false},
+    {id: 2, title: 'Feburary', pressed: false},
+    {id: 3, title: 'March', pressed: false},
+    {id: 4, title: 'April', pressed: false},
+    {id: 5, title: 'May', pressed: false},
+    {id: 6, title: 'June', pressed: false},
+    {id: 7, title: 'July', pressed: false},
+    {id: 8, title: 'August', pressed: false},
+    {id: 9, title: 'September', pressed: false},
+    {id: 10, title: 'Octobor', pressed: false},
+    {id: 11, title: 'November', pressed: false},
+    {id: 12, title: 'December', pressed: false},
   ]);
   const [yearList, SetYearList] = useState([
     {id: 1, title: 2022, pressed: false},
@@ -77,13 +76,25 @@ const HomeBottomSheet = ({
     {id: 1, title: 2029, pressed: false},
     {id: 1, title: 2030, pressed: false},
   ]);
-  const prepareYear = () => {
-    let digit = addNewYear[addNewYear.length - 1].title;
-    let n = digit.toString();
-    n.slice(0.2);
-    console.log(addNewYear[addNewYear.length - 1].title, n);
-    return `20${n}`;
-  };
+
+  const [isVisible, setDropDownVisible] = useState(false);
+  useEffect(() => {
+    setButtonTitle(buttonTitle);
+  }, []);
+
+  useEffect(() => {
+    let mArray = options.map(item => {
+      if (item.title == selectedDateQuery.month) {
+        return {...item, pressed: true};
+      }
+      if (item.id == selectedDateQuery.month) {
+        return {...item, pressed: true};
+      } else {
+        return {...item, pressed: false};
+      }
+    });
+    SetOptions(mArray);
+  }, [selectedDateQuery.month]);
 
   const onClose = () => {
     setType(type);
@@ -100,25 +111,30 @@ const HomeBottomSheet = ({
         [...prev, {id: 1, title: Date.suggestedYear, pressed: false}, allTime]
       ),
     );
-    let mod = addNewYear.filter(item => item.title != Date.suggestedYear);
-    SetAddNewYear(mod);
-    SetAddNewYear(prev => [
-      ...prev,
-      {id: 1, title: prepareYear(), pressed: false},
-    ]);
 
     setDropDownVisible(false);
   };
   const onInputAddYear = () => {
-    SetYearList(prev => [...prev, {id: 1, title: inputYear, pressed: false}]);
+    SetAddNewYear(prev => [...prev, {id: 1, title: inputYear, pressed: false}]);
   };
+
   const handleYearPressed = year => {
-    setDate(prev => ({...prev, year: year}));
+    ReduxDispatchController.Expense.updatedDateQueryInStore('year', year);
+    ReduxDispatchController.Expense.updatedDateQueryInStore('toggle', true);
+    ExpenseController.handleFindExpenseByMonthWithYear(
+      {month: selectedDateQuery.month, year},
+      callback => console.log('ddres??', callback),
+    );
     setDropDownVisible(false);
+    SheetManager.hide(id);
   };
   const handleMonthPressed = month => {
-    setDate(prev => ({...prev, month: month}));
-
+    ReduxDispatchController.Expense.updatedDateQueryInStore('month', month);
+    ReduxDispatchController.Expense.updatedDateQueryInStore('toggle', true);
+    ExpenseController.handleFindExpenseByMonthWithYear(
+      {month, year: selectedDateQuery.year},
+      callback => console.log('ddres??', callback),
+    );
     SheetManager.hide(id);
   };
   const handleSuggestedYearPressed = suggestedYear => {
@@ -164,12 +180,11 @@ const HomeBottomSheet = ({
                       flexDirection: 'row',
                       height: '100%',
                       width: '100%',
-                      // backgroundColor: 'green',
                       justifyContent: 'space-between',
                       alignItems: 'center',
                     }}>
                     <Text style={[styles.titleStyle, {color: colors.black}]}>
-                      {Date.year}
+                      {selectedDateQuery.year}
                     </Text>
                     <ArrowDownIconSvg
                       height={12}
@@ -178,32 +193,6 @@ const HomeBottomSheet = ({
                     />
                   </View>
                 </TouchableOpacity>
-                {isVisible ? (
-                  <View
-                    style={[
-                      styles.dropDown,
-                      {
-                        backgroundColor: colors.skyBlueLight,
-                        height: height * 0.5,
-                      },
-                      styles.shadow,
-                    ]}>
-                    <ScrollView showsVerticalScrollIndicator={false}>
-                      <AbstaractRadioButton
-                        onPress={year => handleYearPressed(year)}
-                        justifyContent={'space-between'}
-                        reverse={true}
-                        options={yearList}
-                        setOPtions={SetYearList}
-                        width={'100%'}
-                        titleStyle={[
-                          styles.titleStyle,
-                          {fontSize: 14, marginLeft: 13},
-                        ]}
-                      />
-                    </ScrollView>
-                  </View>
-                ) : null}
               </View>
             </View>
 
@@ -213,7 +202,6 @@ const HomeBottomSheet = ({
                 {
                   flex: 1,
                   alignItems: 'flex-start',
-                  // backgroundColor: 'red',
                   justifyContent: 'space-between',
                   paddingHorizontal: 20,
                   // paddingBottom: 10,
@@ -221,16 +209,44 @@ const HomeBottomSheet = ({
               ]}>
               <View style={styles.radioContainerColumn}>
                 <AbstaractRadioButton
-                  onPress={handleMonthPressed}
+                  onPress={month => handleMonthPressed(month)}
                   options={options}
                   setOPtions={SetOptions}
-                  width={90}
+                  width={110}
                   titleStyle={[
                     styles.titleStyle,
                     {fontSize: 14, marginLeft: 13},
                   ]}
                 />
               </View>
+              {isVisible ? (
+                <View
+                  style={[
+                    {
+                      // backgroundColor: 'green',
+                      backgroundColor: colors.skyBlueLight,
+                      height: height * 0.5,
+                    },
+                    styles.dropDown,
+                    styles.shadow,
+                  ]}>
+                  <ScrollView showsVerticalScrollIndicator={false}>
+                    <AbstaractRadioButton
+                      onPress={year => handleYearPressed(year)}
+                      justifyContent={'space-between'}
+                      reverse={true}
+                      options={yearList}
+                      setOPtions={SetYearList}
+                      width={'100%'}
+                      // height={100}
+                      titleStyle={[
+                        styles.titleStyle,
+                        {fontSize: 14, marginLeft: 13},
+                      ]}
+                    />
+                  </ScrollView>
+                </View>
+              ) : null}
             </View>
           </View>
         );
@@ -412,13 +428,12 @@ const HomeBottomSheet = ({
       setButtonTitle('Add');
     } else if (type == 'addNewYear') {
       onInputAddYear();
-      SheetManager.hide(id);
+      setType('suggestNewYear');
     } else if (type == 'addExpenseType') {
       onPress(inputExpenseType);
       SheetManager.hide(id);
     }
   };
-
   return (
     <View>
       <AbstractBottomSheet
@@ -446,7 +461,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 70,
     width: '100%',
-    // backgroundColor: 'green',
     alignItems: 'flex-end',
     // justifyContent: 'center',
     paddingHorizontal: 20,
@@ -466,22 +480,19 @@ const styles = StyleSheet.create({
   dropDownContainerStyle: {
     width: 140,
     height: 40,
-    backgroundColor: 'red',
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 40,
     paddingHorizontal: 20,
   },
   dropDown: {
-    // height: 300,
-    width: '74%',
-
+    width: width * 0.37,
+    top: 10,
+    right: 10,
     borderRadius: 13,
-    position: 'absolute',
-    top: 50,
-    right: 0,
     paddingHorizontal: 10,
     paddingVertical: 10,
+    zIndex: 1,
   },
   shadow: {
     shadowColor: '#000',
@@ -491,7 +502,6 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-
     elevation: 5,
   },
   dropUp: {

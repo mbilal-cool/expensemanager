@@ -18,7 +18,7 @@ const PaymentDetailMethod = ({
   labelStyle,
   defaultCheckedItem,
 }) => {
-  console.log('medium', defaultCheckedItem);
+  // console.log('medium', defaultCheckedItem);
   const [options, SetOptions] = useState([
     {
       title: 'Online',

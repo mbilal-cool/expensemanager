@@ -57,7 +57,9 @@ const DateRange = ({
         }}
         style={styles.tile}>
         <CalenderIconSvg />
-        <Text style={styles.labelStyle}>{startDate}</Text>
+        <Text style={styles.labelStyle}>
+          {startDate ? startDate : 'Start Date'}
+        </Text>
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() => {
@@ -65,7 +67,7 @@ const DateRange = ({
         }}
         style={[styles.tile, {borderRightWidth: 0, paddingLeft: 13}]}>
         <CalenderIconSvg />
-        <Text style={styles.labelStyle}>{endDate}</Text>
+        <Text style={styles.labelStyle}>{endDate ? endDate : 'End Date'}</Text>
       </TouchableOpacity>
     </View>
   );

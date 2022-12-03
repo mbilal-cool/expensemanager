@@ -25,11 +25,13 @@ import ThemeController from '../Controller/themeController';
 import ExpenseController, {
   categorySelector,
   dateConverter,
+  getMinimumDate,
 } from '../Controller/expenseController';
 import {useSelector} from 'react-redux';
 const AddCatalog = ({route, navigation}) => {
   const userId = useSelector(state => state.user.user.id);
   const {editExpense, type, expensCategoryItem} = route.params;
+  // console.log('categoryItemtttt', expensCategoryItem);
   const [loading, setLoading] = useState(false);
   const [recurringExpenseID, SetoneTimeExpenseID] = useState(
     '63625be0bec8a249188c9be2',
@@ -43,12 +45,19 @@ const AddCatalog = ({route, navigation}) => {
     paymentMedium: 'Cash',
     createdBy: userId,
     expenseType: recurringExpenseID,
-    expenseCategory: '63625be1bec8a249188c9be7',
+    expenseCategory: expensCategoryItem
+      ? expensCategoryItem._id
+      : '6376256871e7fe0016d3c6bc',
   });
   const [date, setDate] = useState(new Date());
   const [open, setOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const {colors} = useTheme();
+  useEffect(() => {
+    if (expensCategoryItem) {
+      setExpense({...expense, expenseCategory: expensCategoryItem._id});
+    }
+  }, [expensCategoryItem]);
   useEffect(() => {
     setExpense(editExpense ? editExpense : expense);
     ThemeController.checkAsyncAndSetPreviousMode();
@@ -296,7 +305,10 @@ const AddCatalog = ({route, navigation}) => {
           </View>
         </View>
         <DatePicker
+          minimumDate={new Date(getMinimumDate(new Date()))}
+          maximumDate={new Date()}
           modal
+          mode="date"
           open={open}
           date={new Date()}
           onConfirm={date => onConfirmDate(date)}

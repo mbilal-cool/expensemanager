@@ -3,27 +3,21 @@ import React, {useState, useEffect} from 'react';
 import {SheetManager} from 'react-native-actions-sheet';
 import AbstractBottomSheet from '../Abstract/abstractBottomSheet';
 import {Fonts, lightThemeColors} from '../../theme';
-
 import AbstractButton from '../Abstract/abstractButton';
 import AbstaractRadioButton from '../Abstract/abstractRadioButton';
 import {useTheme} from '@react-navigation/native';
-import {expenseList} from '../../mockData';
-
 const ExpensesBottomSheet = ({onPress, id, reportType, setReportType}) => {
   const {colors} = useTheme();
-
   const [options, SetOptions] = useState([
-    {id: 1, title: 'All', pressed: true},
+    {id: 1, title: 'All', pressed: false},
     {id: 1, title: 'Today', pressed: false},
     {id: 1, title: 'This Week', pressed: false},
     {id: 1, title: 'Last Week', pressed: false},
   ]);
-
   const onReportDurationRadioPressed = title => {
     onPress(title);
     SheetManager.hide(id);
   };
-
   const onClose = () => {
     setReportType('reportDuration');
   };

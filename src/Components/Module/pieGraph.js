@@ -8,21 +8,17 @@ import {
 } from 'victory-native';
 import {Fonts} from '../../theme';
 import {useTheme} from '@react-navigation/native';
-
 import {ScrollView} from 'react-native-gesture-handler';
-import ExpenseController from '../../Controller/expenseController';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import {useSelector} from 'react-redux';
 import {expenseList} from '../../mockData';
 const {height} = Dimensions.get('window');
 const {width} = Dimensions.get('window');
 const PieGraphV2 = ({onPressSector, data, loading}) => {
-  console.log('loading', loading);
   const expenses = useSelector(state => state.expense.allExpenses);
-
   const {colors} = useTheme();
+  const [padAngle, setPadAngle] = useState();
   const [dataPieChart, setDataPieChart] = useState(data);
-
   const colorArray = [
     '#BF4344',
     '#EF5455',
@@ -49,6 +45,7 @@ const PieGraphV2 = ({onPressSector, data, loading}) => {
     let preparedArray = undefined;
     preparedArray = expenses.map((item, index) => {
       const sectorPercentage = Math.round((item.amount / 100000) * 100);
+      // const sectorPercentage = item.amount;
       return {
         x: item.amount <= 200 ? null : index,
         y: sectorPercentage,
@@ -57,10 +54,8 @@ const PieGraphV2 = ({onPressSector, data, loading}) => {
         color: colorArray[index],
       };
     });
-
     setDataPieChart(preparedArray);
   }, [expenses]);
-
   return (
     <View
       style={{
@@ -108,23 +103,23 @@ const PieGraphV2 = ({onPressSector, data, loading}) => {
               },
               parent: {border: '1px solid #ccc'},
             }}
-            events={[
-              {
-                target: 'data',
-                eventHandlers: {
-                  onPress: () => {
-                    return [
-                      {
-                        target: 'data',
-                        mutation: props => {
-                          onPressSector(true, props.datum);
-                        },
-                      },
-                    ];
-                  },
-                },
-              },
-            ]}
+            // events={[
+            //   {
+            //     target: 'data',
+            //     eventHandlers: {
+            //       onPress: () => {
+            //         return [
+            //           {
+            //             target: 'data',
+            //             mutation: props => {
+            //               onPressSector(true, props.datum);
+            //             },
+            //           },
+            //         ];
+            //       },
+            //     },
+            //   },
+            // ]}
           />
         </>
       )}

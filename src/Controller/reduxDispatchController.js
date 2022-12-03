@@ -6,6 +6,10 @@ import {
   setPrevioousdayExpenses,
   setTotalExpense,
   setExpense,
+  setFiltersWithDateRange,
+  setFiltersWithLastWeek,
+  setFiltersMonthWithYear,
+  setFiltersWithThisWeek,
   updateSingleExpense,
   updateSingletodayExpense,
   deleteSingleExpense,
@@ -16,6 +20,9 @@ import {
   addCatalogueExpenses,
   deleteCatalogExpense,
   updateSingleCatalogExpense,
+  updateDateQuery,
+  saveSearchResultsFromCatalog,
+  addInSearchResultsFromCatalog,
 } from '../utils/Redux/Slices/expenseSlice';
 class ReduxDispatchController {
   static Auth = {
@@ -29,6 +36,12 @@ class ReduxDispatchController {
   static Expense = {
     saveAllExpensesInRedux: res => {
       store.dispatch(setAllExpenses(res));
+    },
+    saveSearchResultsFromCatalogInRedux: res => {
+      store.dispatch(saveSearchResultsFromCatalog(res));
+    },
+    addInSearchResultsFromCatalogInRedux: res => {
+      store.dispatch(addInSearchResultsFromCatalog(res));
     },
     saveTodayExpensesInRedux: res => {
       store.dispatch(setTodayExpenses(res));
@@ -47,6 +60,18 @@ class ReduxDispatchController {
     },
     setExpenseList: obj => {
       store.dispatch(setExpense(obj));
+    },
+    setFiltersMonthWithYearInRedux: obj => {
+      store.dispatch(setFiltersMonthWithYear(obj));
+    },
+    setFiltersWithThisWeekInRedux: obj => {
+      store.dispatch(setFiltersWithThisWeek(obj));
+    },
+    setFiltersWithLastWeekInRedux: obj => {
+      store.dispatch(setFiltersWithLastWeek(obj));
+    },
+    setFiltersWithDateRangeInRedux: obj => {
+      store.dispatch(setFiltersWithDateRange(obj));
     },
     updateExpense: obj => {
       store.dispatch(updateSingleExpense(obj));
@@ -68,6 +93,10 @@ class ReduxDispatchController {
     },
     addExpenseCategoriesInRedux: res => {
       store.dispatch(addExpenseCategories(res));
+    },
+
+    updatedDateQueryInStore: (type, value) => {
+      store.dispatch(updateDateQuery({type, value}));
     },
   };
 }

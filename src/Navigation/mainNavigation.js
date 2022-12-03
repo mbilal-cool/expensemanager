@@ -17,6 +17,7 @@ const Stack = createStackNavigator();
 import AppStack from './appStack';
 import AuthStack from './authStack';
 import {lightThemeColors, darkThemeColors} from '../theme';
+import {useSelector} from 'react-redux';
 
 const MyDarkTheme = {
   ...DefaultTheme,

@@ -3,6 +3,11 @@ import React from 'react';
 import {Fonts, lightThemeColors} from '../../theme';
 import ArrowDownIconSvg from '../../Assets/Icons/arrowDownSvg';
 import {useTheme} from '@react-navigation/native';
+import {
+  convertTodayDateTitle,
+  getMonthName,
+  useDateQuery,
+} from '../../Controller/expenseController';
 const HeaderDropDown = ({
   Height,
   Width,
@@ -13,9 +18,9 @@ const HeaderDropDown = ({
   onPress = () => false,
 }) => {
   const {colors} = useTheme();
+  const selectedDateQuery = useDateQuery();
   const defaultHeight = Height ? Height : 25;
   const defaultWidth = Width ? Width : 115;
-
   const defaultBorderWidth = borderWidth ? borderWidth : 0;
   const defaultBorderColor = borderColor ? borderColor : 0;
 
@@ -29,16 +34,16 @@ const HeaderDropDown = ({
       style={[
         styles.dropDownContainer,
         {
+          // backgroundColor: 'green',
           height: defaultHeight,
           minWidth: defaultWidth,
-          // backgroundColor: 'green',
-          // backgroundColor: defaultBackgroundColor,
           borderWidth: defaultBorderWidth,
           borderColor: defaultBorderColor,
         },
       ]}>
-      <Text
-        style={styles.labelStyle}>{`${title.month},\u0020 ${title.year}`}</Text>
+      <Text style={styles.labelStyle}>{`${getMonthName(
+        selectedDateQuery.month.toString(),
+      )},\u0020 ${selectedDateQuery.year}`}</Text>
       <View
         style={{
           paddingTop: 3,

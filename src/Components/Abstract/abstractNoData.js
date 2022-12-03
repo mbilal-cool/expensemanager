@@ -14,6 +14,7 @@ const AbstractNoData = ({height, width, caption1, caption, captionStyle}) => {
     <View
       style={[styles.Wrapper, {height: defaultHeight, width: defaultWidth}]}>
       <Image
+        resizeMode="contain"
         style={styles.imageStyle}
         source={require('../../Assets/Images/noData.png')}></Image>
       <Text style={[defaultCaptionStyle, {color: colors.grey1}]}>
@@ -40,7 +41,7 @@ const styles = StyleSheet.create({
     color: lightThemeColors.grey1,
   },
   imageStyle: {
-    height: 133,
+    height: 125,
     width: 137,
   },
 });

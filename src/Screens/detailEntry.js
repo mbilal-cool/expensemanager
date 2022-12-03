@@ -7,14 +7,12 @@ import {
   View,
 } from 'react-native';
 import React, {useRef, useState} from 'react';
-
 import {lightThemeColors, Fonts} from '../theme';
 import FocusAwareStatusBar from '../Components/Abstract/focusAwareStatusBar';
 import AbstractHeader from '../Components/Abstract/abstractHeader';
 import {SheetManager} from 'react-native-actions-sheet';
 import ExpenseController from '../Controller/expenseController';
 import AbstractButton from '../Components/Abstract/abstractButton';
-
 import ArrowLeftTailSvg from '../Assets/Icons/arrowleftTailSvg';
 import ExpenseDetailScreenItem from '../Components/Module/expenseDetailScreenItem';
 import PencilIconSvg from '../Assets/Icons/pencilSvg';
@@ -22,7 +20,6 @@ import {useTheme} from '@react-navigation/native';
 import ExpensesBottomSheet from '../Components/Module/expensesBottomSheet';
 import {useGetSingleExpence} from '../Controller/expenseController';
 import {useSelector} from 'react-redux';
-
 const EntryDetails = ({navigation, route}) => {
   const [loading, setLoading] = useState();
   const [sheetType, SetSheetType] = useState('deleteEntry');
@@ -36,7 +33,6 @@ const EntryDetails = ({navigation, route}) => {
     previousRoute,
   );
   const {colors} = useTheme();
-
   const categorySelector = cat_id => {
     const allCategories = useSelector(state => state.expense.expenseCategories);
     const newArr = [...allCategories];
@@ -74,7 +70,7 @@ const EntryDetails = ({navigation, route}) => {
     SheetManager.hide('detail');
     setLoading(true);
     if (screenName == 'Catalog') {
-      console.log('delete catalog k saath call hua%%%%%%%%');
+      // console.log('delete catalog k saath call hua%%%%%%%%');
       ExpenseController.DeleteExpenceItemFromCatalog(
         singleExpense._id,
         res => {
@@ -242,7 +238,9 @@ const EntryDetails = ({navigation, route}) => {
               backgroundColor={'transparent'}
               height={40}
               title={
-                screenName == 'Catalog' && previousRoute == 'RecurringExpense'
+                (screenName == 'Catalog' &&
+                  previousRoute == 'RecurringExpense') ||
+                previousRoute == 'Search'
                   ? 'go with'
                   : 'Delete'
               }
@@ -252,32 +250,37 @@ const EntryDetails = ({navigation, route}) => {
                 fontWeight: '600',
                 fontSize: 16,
               }}
-              width={'48%'}
+              width={previousRoute == 'Search' ? '100%' : '48%'}
               borderRadius={30}
               onPress={
-                screenName == 'Catalog' && previousRoute == 'RecurringExpense'
+                screenName == 'Catalog' ||
+                (screenName == 'Search' &&
+                  previousRoute == 'RecurringExpense') ||
+                previousRoute == 'Search'
                   ? goWithButtonPressed
                   : openExpensesBottomSheet
               }
             />
-            <AbstractButton
-              borderWidth={1}
-              borderColor={colors.black}
-              backgroundColor={'transparent'}
-              height={40}
-              title={'Edit'}
-              titleStyle={{
-                color: colors.black,
-                fontFamily: Fonts.interBold,
-                fontWeight: '600',
-                fontSize: 16,
-              }}
-              iconMargin={10}
-              width={'48%'}
-              borderRadius={30}
-              onPress={handleEditPressed}
-              renderLeftIcon={() => <PencilIconSvg color={colors.black} />}
-            />
+            {screenName != 'Search' ? (
+              <AbstractButton
+                borderWidth={1}
+                borderColor={colors.black}
+                backgroundColor={'transparent'}
+                height={40}
+                title={'Edit'}
+                titleStyle={{
+                  color: colors.black,
+                  fontFamily: Fonts.interBold,
+                  fontWeight: '600',
+                  fontSize: 16,
+                }}
+                iconMargin={10}
+                width={'48%'}
+                borderRadius={30}
+                onPress={handleEditPressed}
+                renderLeftIcon={() => <PencilIconSvg color={colors.black} />}
+              />
+            ) : null}
           </View>
         </View>
         <ExpensesBottomSheet

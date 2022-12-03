@@ -1,5 +1,6 @@
 import {
   Dimensions,
+  FlatList,
   ScrollView,
   StyleSheet,
   Text,
@@ -23,27 +24,60 @@ import ExpensesBottomSheet from '../Components/Module/expensesBottomSheet';
 import PieGraphV2 from '../Components/Module/pieGraph';
 import AbstractModal from '../Components/Abstract/abstractModal';
 import ContainerElement from '../Components/Abstract/containerElement';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef} from 'react';
 import ThemeController from '../Controller/themeController';
 import ExpenseController from '../Controller/expenseController';
 import {useSelector} from 'react-redux';
 import ArrowRightIconSvg from '../Assets/Icons/arrowRightsvg';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import AbstractNoData from '../Components/Abstract/abstractNoData';
+import ReduxDispatchController from '../Controller/reduxDispatchController';
+import {getMinimumDate} from '../Controller/expenseController';
+const getDesiredWeek = (inputDate, type) => {
+  let count;
+  if (type == 'this') {
+    count = 7;
+  } else {
+    count = 14;
+  }
+  let date, month, year;
+  date = inputDate.getDate() - count;
+  month = inputDate.getMonth() + 1;
+  year = inputDate.getFullYear();
+  date = date.toString().padStart(2, '0');
+  month = month.toString().padStart(2, '0');
+  let result = `${year}-${month}-${date}`;
+  return result.toString();
+};
+
 const {height, width} = Dimensions.get('window');
 const Expenses = ({route, navigation}) => {
   const allExpenses = useSelector(state => state.expense.allExpenses);
+  const todayExpenses = useSelector(state => state.expense.todayExpenses);
+  const thisWeekExp = useSelector(state => state.expense.thisWeek);
+  const lastWeekExp = useSelector(state => state.expense.lastWeek);
+  const dateRangeExp = useSelector(state => state.expense.dateRange);
+  const categoryTitlesArray = useSelector(
+    state => state.expense.expenseCategories,
+  );
+
+  const [thisWeek, setThisWeek] = useState(getDesiredWeek(new Date(), 'this'));
+  const [LastWeek, setLastWeek] = useState(getDesiredWeek(new Date()), 'last');
   const [loading, setLoading] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
   const [filter, setFilter] = useState('All');
   const [dateType, setDateType] = useState('start');
-  const [startDate, setStartDate] = useState('Start Date');
-  const [endDate, setEndDate] = useState('End Date');
+  const [startDate, setStartDate] = useState();
+  const [input, setInput] = useState('');
+  const [endDate, setEndDate] = useState();
   const [open, setOpen] = useState(false);
   const {colors} = useTheme();
   const [modalVisible, setModalVisible] = useState(false);
   const [modalData, setModalData] = useState({});
   const [sheetType, SetSheetType] = useState('reportDuration');
   const [type, SetType] = useState('all');
+  const [search, SetSearch] = useState(false);
+  const [searchedData, SetSearchData] = useState();
   const noOfPlaceHolders = [0, 0, 0];
   const expenseDetails = [
     {
@@ -119,27 +153,102 @@ const Expenses = ({route, navigation}) => {
       amount: 8000,
     },
   ];
+
   const onPressSingleExpenseItem = item => {
     navigation.navigate('EntryDetails', {
       singleExpense: item,
       screenName: route.name,
     });
   };
+  const filterCategoryTitle = cat_id => {
+    const newArr = [...categoryTitlesArray];
+    const newObj = newArr.find(item => item._id == cat_id);
+    return newObj?.name;
+  };
   useEffect(() => {
-    ExpenseController.findAllExpensesHandler(res => console.log('response')),
-      setLoading(false);
+    ReduxDispatchController.Expense.updatedDateQueryInStore('toggle', false);
+    if (filter == 'All') {
+      setLoading(true);
+      console.log('All');
+      ExpenseController.findAllExpensesHandler(res => {
+        console.log('response');
+        setLoading(false);
+      });
+    } else if (filter == 'Today') {
+      setLoading(true);
+      console.log('today');
+      ExpenseController.handletodayExpenseList(
+        dateConverter(new Date()),
+        res => {
+          setLoading(false);
+        },
+      );
+    } else if (filter == 'This Week') {
+      setLoading(true);
+
+      console.log('this week ?????', thisWeek);
+      ExpenseController.handleFindExpenseByThisWeek(
+        {sDate: dateConverter(new Date()), eDate: thisWeek},
+        res => {
+          setLoading(false);
+        },
+      );
+    } else if (filter == 'Last Week') {
+      setLoading(true);
+
+      console.log('lst week ?????', lastWeekExp);
+      ExpenseController.handleFindExpenseByLastWeek(
+        {sDate: thisWeek, eDate: LastWeek},
+        res => {
+          setLoading(false);
+        },
+      );
+    } else if (filter == 'By Date') {
+      setLoading(true);
+
+      console.log('By Date', lastWeekExp);
+      ExpenseController.handleFindExpenseByLastWeek(
+        {sDate: thisWeek, eDate: LastWeek},
+        res => {
+          setLoading(false);
+        },
+      );
+    } else return;
     ThemeController.checkAsyncAndSetPreviousMode();
     ThemeController.listeningToChange(data => {
       setDarkMode(data);
     });
 
+    if (input) {
+      searchFilterFunction(input);
+    }
+
     return () => {
       ThemeController.removingListener();
     };
-  }, []);
+  }, [filter]);
+
+  useEffect(() => {
+    if (startDate && endDate) {
+      setFilter('By Date');
+      setLoading(true);
+      console.log('DateRange ?????', startDate, endDate, dateRangeExp);
+      ExpenseController.handleFindExpenseByDateRange(
+        {sDate: startDate, eDate: endDate},
+        res => {
+          setLoading(false);
+        },
+      );
+    }
+  }, [startDate, endDate]);
+  const inputRef = useRef();
   const openExpensesBottomSheet = () => {
+    inputRef.current.blur();
+    setStartDate('');
+    setEndDate('');
     SheetManager.show('expenses');
   };
+  useEffect(() => {}, [allExpenses]);
   const onViewAllpress = () => {
     navigation.navigate('ShowAllExpenses', {viewAllType: type});
   };
@@ -162,6 +271,12 @@ const Expenses = ({route, navigation}) => {
   const filterTitle = title => {
     setFilter(title);
   };
+  onSubmitText = () => {
+    inputRef.current.blur();
+  };
+  const onFocus = () => {
+    SetSearch(true);
+  };
   const ExpenseDetailItemListPlacehlder = () => {
     return (
       <SkeletonPlaceholder
@@ -179,6 +294,120 @@ const Expenses = ({route, navigation}) => {
       </SkeletonPlaceholder>
     );
   };
+  const searchFilterFunction = txt => {
+    setInput(txt);
+    if (txt) {
+      if (filter == 'All') {
+        SetSearchData([]);
+        const newData = allExpenses.filter(function (item) {
+          const itemData = item.expenseName
+            ? item.expenseName.toUpperCase()
+            : ''.toUpperCase();
+          const textData = txt.toUpperCase();
+          return itemData.indexOf(textData) > -1;
+        });
+        if (newData.length == 0) {
+          const newDataByType = allExpenses.filter(function (item) {
+            const itemData = item.expenseCategory
+              ? filterCategoryTitle(item.expenseCategory).toUpperCase()
+              : ''.toUpperCase();
+            const textData = txt.toUpperCase();
+            return itemData.indexOf(textData) > -1;
+          });
+          SetSearchData(newDataByType);
+        } else {
+          SetSearchData(newData);
+        }
+      } else if (filter == 'Today') {
+        SetSearchData([]);
+
+        const newData = todayExpenses.filter(function (item) {
+          const itemData = item.expenseName
+            ? item.expenseName.toUpperCase()
+            : ''.toUpperCase();
+          const textData = txt.toUpperCase();
+          return itemData.indexOf(textData) > -1;
+        });
+        if (newData.length == 0) {
+          const newDataByType = todayExpenses.filter(function (item) {
+            const itemData = item.expenseCategory
+              ? filterCategoryTitle(item.expenseCategory).toUpperCase()
+              : ''.toUpperCase();
+            const textData = txt.toUpperCase();
+            return itemData.indexOf(textData) > -1;
+          });
+          SetSearchData(newDataByType);
+        } else {
+          SetSearchData(newData);
+        }
+      } else if (filter == 'This Week') {
+        SetSearchData([]);
+
+        const newData = thisWeekExp.filter(function (item) {
+          const itemData = item.expenseName
+            ? item.expenseName.toUpperCase()
+            : ''.toUpperCase();
+          const textData = txt.toUpperCase();
+          return itemData.indexOf(textData) > -1;
+        });
+        if (newData.length == 0) {
+          const newDataByType = thisWeekExp.filter(function (item) {
+            const itemData = item.expenseCategory
+              ? filterCategoryTitle(item.expenseCategory).toUpperCase()
+              : ''.toUpperCase();
+            const textData = txt.toUpperCase();
+            return itemData.indexOf(textData) > -1;
+          });
+          SetSearchData(newDataByType);
+        } else {
+          SetSearchData(newData);
+        }
+      } else if (filter == 'Last Week') {
+        SetSearchData([]);
+        const newData = lastWeekExp.filter(function (item) {
+          const itemData = item.expenseName
+            ? item.expenseName.toUpperCase()
+            : ''.toUpperCase();
+          const textData = txt.toUpperCase();
+          return itemData.indexOf(textData) > -1;
+        });
+        if (newData.length == 0) {
+          const newDataByType = lastWeekExp.filter(function (item) {
+            const itemData = item.expenseCategory
+              ? filterCategoryTitle(item.expenseCategory).toUpperCase()
+              : ''.toUpperCase();
+            const textData = txt.toUpperCase();
+            return itemData.indexOf(textData) > -1;
+          });
+          SetSearchData(newDataByType);
+        } else {
+          SetSearchData(newData);
+        }
+      } else if (filter == 'By Date') {
+        SetSearchData([]);
+        const newData = dateRangeExp.filter(function (item) {
+          const itemData = item.expenseName
+            ? item.expenseName.toUpperCase()
+            : ''.toUpperCase();
+          const textData = txt.toUpperCase();
+          return itemData.indexOf(textData) > -1;
+        });
+        if (newData.length == 0) {
+          const newDataByType = dateRangeExp.filter(function (item) {
+            const itemData = item.expenseCategory
+              ? filterCategoryTitle(item.expenseCategory).toUpperCase()
+              : ''.toUpperCase();
+            const textData = txt.toUpperCase();
+            return itemData.indexOf(textData) > -1;
+          });
+          SetSearchData(newDataByType);
+        } else {
+          SetSearchData(newData);
+        }
+      }
+    }
+  };
+  console.log('dddd????', getMinimumDate(new Date()));
   return (
     <View style={[styles.main, {backgroundColor: colors.defaultBackground}]}>
       <FocusAwareStatusBar
@@ -215,6 +444,9 @@ const Expenses = ({route, navigation}) => {
         />
         <View style={{marginTop: 16}}>
           <SearchBar
+            onSubmitEditing={onSubmitText}
+            inputRef={inputRef}
+            onFocus={onFocus}
             expenses={true}
             renderIconRight={() => (
               <TouchableOpacity
@@ -243,8 +475,10 @@ const Expenses = ({route, navigation}) => {
                 <ArrowDownIconSvg height={9} width={14} />
               </TouchableOpacity>
             )}
-            // Value={input}
-            // onChangeText={setInput}
+            Value={input}
+            onChangeText={e => {
+              searchFilterFunction(e);
+            }}
             searchBarPlaceHolder={'Search with name, type'}
             searchBarplaceholderTextColor={colors.grey1}
           />
@@ -253,91 +487,357 @@ const Expenses = ({route, navigation}) => {
       <View style={styles.horizontalContainer}>
         <ExpenseDetailHeader height={24} backgroundColor={'transparent'} />
       </View>
-      <View style={[styles.middleContainer]}>
-        <ScrollView bounces={false} showsVerticalScrollIndicator={false}>
-          <ContainerElement>
+      {input ? (
+        <>
+          <View style={[styles.middleContainer, {paddingHorizontal: 20}]}>
             {loading ? (
               <>
                 {noOfPlaceHolders.map((item, index) => (
                   <ExpenseDetailItemListPlacehlder key={index} />
                 ))}
-                <SkeletonPlaceholder
-                  borderRadius={4}
-                  backgroundColor={colors.white}
-                  highlightColor={'#F4f4f9'}
-                  speed={1200}>
-                  <View
-                    style={{
-                      height: 28,
-                      width: 69,
-                      backgroundColor: 'green',
-                      alignSelf: 'flex-end',
-                    }}></View>
-                </SkeletonPlaceholder>
               </>
             ) : (
               <>
-                {allExpenses.slice(0, 3)?.map((item, index) => {
-                  return (
-                    <ExpenseDetailItem
-                      key={index}
-                      item={item}
-                      onPress={item => onPressSingleExpenseItem(item)}
-                    />
-                  );
-                })}
-                <View style={{width: '100%', alignItems: 'flex-end'}}>
-                  <AbstractButton
-                    backgroundColor={colors.white}
-                    height={32}
-                    title={'View All'}
-                    titleStyle={{
-                      color: lightThemeColors.red1,
-                      fontFamily: Fonts.interBold,
-                      fontWeight: '500',
-                      fontSize: 10,
+                {searchedData != 0 ? (
+                  <FlatList
+                    contentContainerStyle={{paddingBottom: 20}}
+                    showsVerticalScrollIndicator={false}
+                    bounces={false}
+                    data={searchedData}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={({item, index}) => {
+                      return (
+                        <ExpenseDetailItem
+                          key={index}
+                          item={item}
+                          onPress={item => onPressSingleExpenseItem(item)}
+                        />
+                      );
                     }}
-                    renderRightIcon={() => (
-                      <View style={{flexDirection: 'row'}}>
-                        <ArrowRightIconSvg />
-                        <ArrowRightIconSvg />
-                      </View>
-                    )}
-                    iconMargin={3.5}
-                    width={69}
-                    borderRadius={5}
-                    onPress={onViewAllpress}
                   />
-                </View>
+                ) : (
+                  <View
+                    style={[
+                      styles.middleContainer,
+                      {justifyContent: 'center'},
+                    ]}>
+                    <AbstractNoData
+                      caption={"Sorry we couldn't find any results! "}
+                    />
+                  </View>
+                )}
               </>
             )}
-            <View
-              style={{
-                justifyContent: 'center',
-                // backgroundColor: 'green',
-                paddingRight: 80,
-              }}>
-              <PieGraphV2 data={expenseDetails} loading={loading} />
+          </View>
+        </>
+      ) : (
+        <>
+          {startDate && endDate ? (
+            <>
+              <View style={[styles.middleContainer, {paddingHorizontal: 20}]}>
+                {loading ? (
+                  <>
+                    {noOfPlaceHolders.map((item, index) => (
+                      <ExpenseDetailItemListPlacehlder key={index} />
+                    ))}
+                  </>
+                ) : (
+                  <>
+                    {dateRangeExp != 0 ? (
+                      <FlatList
+                        contentContainerStyle={{paddingBottom: 20}}
+                        showsVerticalScrollIndicator={false}
+                        bounces={false}
+                        data={dateRangeExp}
+                        keyExtractor={(item, index) => index.toString()}
+                        renderItem={({item, index}) => {
+                          return (
+                            <ExpenseDetailItem
+                              key={index}
+                              item={item}
+                              onPress={item => onPressSingleExpenseItem(item)}
+                            />
+                          );
+                        }}
+                      />
+                    ) : (
+                      <View
+                        style={[
+                          styles.middleContainer,
+                          {justifyContent: 'center'},
+                        ]}>
+                        <AbstractNoData
+                          caption={"Sorry we couldn't find any results! "}
+                        />
+                      </View>
+                    )}
+                  </>
+                )}
+              </View>
+            </>
+          ) : (
+            <>
+              {filter == 'All' ? (
+                <>
+                  <View style={[styles.middleContainer]}>
+                    <ScrollView
+                      bounces={false}
+                      showsVerticalScrollIndicator={false}>
+                      <ContainerElement>
+                        {loading ? (
+                          <>
+                            {noOfPlaceHolders.map((item, index) => (
+                              <ExpenseDetailItemListPlacehlder key={index} />
+                            ))}
+                            <SkeletonPlaceholder
+                              borderRadius={4}
+                              backgroundColor={colors.white}
+                              highlightColor={'#F4f4f9'}
+                              speed={1200}>
+                              <View
+                                style={{
+                                  height: 28,
+                                  width: 69,
+                                  backgroundColor: 'green',
+                                  alignSelf: 'flex-end',
+                                }}></View>
+                            </SkeletonPlaceholder>
+                          </>
+                        ) : (
+                          <>
+                            {allExpenses?.length != 0 ? (
+                              <>
+                                {allExpenses.slice(0, 3)?.map((item, index) => {
+                                  return (
+                                    <ExpenseDetailItem
+                                      key={index}
+                                      item={item}
+                                      onPress={item =>
+                                        onPressSingleExpenseItem(item)
+                                      }
+                                    />
+                                  );
+                                })}
+                                {allExpenses.length >= 3 ? (
+                                  <View
+                                    style={{
+                                      width: '100%',
+                                      alignItems: 'flex-end',
+                                    }}>
+                                    <AbstractButton
+                                      backgroundColor={colors.white}
+                                      height={32}
+                                      title={'View All'}
+                                      titleStyle={{
+                                        color: lightThemeColors.red1,
+                                        fontFamily: Fonts.interBold,
+                                        fontWeight: '500',
+                                        fontSize: 10,
+                                      }}
+                                      renderRightIcon={() => (
+                                        <View style={{flexDirection: 'row'}}>
+                                          <ArrowRightIconSvg />
+                                          <ArrowRightIconSvg />
+                                        </View>
+                                      )}
+                                      iconMargin={3.5}
+                                      width={69}
+                                      borderRadius={5}
+                                      onPress={onViewAllpress}
+                                    />
+                                  </View>
+                                ) : null}
+                              </>
+                            ) : (
+                              <View
+                                style={[
+                                  styles.middleContainer,
+                                  {justifyContent: 'center'},
+                                ]}>
+                                <AbstractNoData
+                                  caption={
+                                    "Sorry we couldn't find any all expenses! "
+                                  }
+                                />
+                              </View>
+                            )}
+                          </>
+                        )}
 
-              <AbstractModal isVisible={modalVisible}>
-                <View
-                  style={{
-                    height: 100,
-                    width: 100,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}>
-                  <AbstractButton
-                    title={'close'}
-                    onPress={() => setModalVisible(false)}
-                  />
-                  <Text>{modalData?.label}</Text>
-                </View>
-              </AbstractModal>
-            </View>
-          </ContainerElement>
-        </ScrollView>
-      </View>
+                        <View
+                          style={{
+                            justifyContent: 'center',
+                            // backgroundColor: 'green',
+                            paddingRight: 80,
+                          }}>
+                          <PieGraphV2 data={expenseDetails} loading={loading} />
+
+                          <AbstractModal isVisible={modalVisible}>
+                            <View
+                              style={{
+                                height: 100,
+                                width: 100,
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                              }}>
+                              <AbstractButton
+                                title={'close'}
+                                onPress={() => setModalVisible(false)}
+                              />
+                              <Text>{modalData?.label}</Text>
+                            </View>
+                          </AbstractModal>
+                        </View>
+                      </ContainerElement>
+                    </ScrollView>
+                  </View>
+                </>
+              ) : filter == 'Today' ? (
+                <>
+                  <View
+                    style={[styles.middleContainer, {paddingHorizontal: 20}]}>
+                    {loading ? (
+                      <>
+                        {noOfPlaceHolders.map((item, index) => (
+                          <ExpenseDetailItemListPlacehlder key={index} />
+                        ))}
+                      </>
+                    ) : (
+                      <>
+                        {todayExpenses != 0 ? (
+                          <FlatList
+                            contentContainerStyle={{paddingBottom: 20}}
+                            showsVerticalScrollIndicator={false}
+                            bounces={false}
+                            data={todayExpenses}
+                            keyExtractor={(item, index) => index.toString()}
+                            renderItem={({item, index}) => {
+                              return (
+                                <ExpenseDetailItem
+                                  key={index}
+                                  item={item}
+                                  onPress={item =>
+                                    onPressSingleExpenseItem(item)
+                                  }
+                                />
+                              );
+                            }}
+                          />
+                        ) : (
+                          <View
+                            style={[
+                              styles.middleContainer,
+                              {justifyContent: 'center'},
+                            ]}>
+                            <AbstractNoData
+                              caption={
+                                "Sorry we couldn't find any today expenses! "
+                              }
+                            />
+                          </View>
+                        )}
+                      </>
+                    )}
+                  </View>
+                </>
+              ) : filter == 'This Week' ? (
+                <>
+                  <View
+                    style={[styles.middleContainer, {paddingHorizontal: 20}]}>
+                    {loading ? (
+                      <>
+                        {noOfPlaceHolders.map((item, index) => (
+                          <ExpenseDetailItemListPlacehlder key={index} />
+                        ))}
+                      </>
+                    ) : (
+                      <>
+                        {thisWeekExp != 0 ? (
+                          <FlatList
+                            contentContainerStyle={{paddingBottom: 20}}
+                            showsVerticalScrollIndicator={false}
+                            bounces={false}
+                            data={thisWeekExp}
+                            keyExtractor={(item, index) => index.toString()}
+                            renderItem={({item, index}) => {
+                              return (
+                                <ExpenseDetailItem
+                                  key={index}
+                                  item={item}
+                                  onPress={item =>
+                                    onPressSingleExpenseItem(item)
+                                  }
+                                />
+                              );
+                            }}
+                          />
+                        ) : (
+                          <View
+                            style={[
+                              styles.middleContainer,
+                              {justifyContent: 'center'},
+                            ]}>
+                            <AbstractNoData
+                              caption={"Sorry we couldn't find any results! "}
+                            />
+                          </View>
+                        )}
+                      </>
+                    )}
+                  </View>
+                </>
+              ) : filter == 'Last Week' ? (
+                <>
+                  <View
+                    style={[styles.middleContainer, {paddingHorizontal: 20}]}>
+                    {loading ? (
+                      <>
+                        {noOfPlaceHolders.map((item, index) => (
+                          <ExpenseDetailItemListPlacehlder key={index} />
+                        ))}
+                      </>
+                    ) : (
+                      <>
+                        {lastWeekExp != 0 ? (
+                          <FlatList
+                            contentContainerStyle={{paddingBottom: 20}}
+                            showsVerticalScrollIndicator={false}
+                            bounces={false}
+                            data={lastWeekExp}
+                            keyExtractor={(item, index) => index.toString()}
+                            renderItem={({item, index}) => {
+                              return (
+                                <ExpenseDetailItem
+                                  key={index}
+                                  item={item}
+                                  onPress={item =>
+                                    onPressSingleExpenseItem(item)
+                                  }
+                                />
+                              );
+                            }}
+                          />
+                        ) : (
+                          <View
+                            style={[
+                              styles.middleContainer,
+                              {justifyContent: 'center'},
+                            ]}>
+                            <AbstractNoData
+                              caption={"Sorry we couldn't find any results! "}
+                            />
+                          </View>
+                        )}
+                      </>
+                    )}
+                  </View>
+                </>
+              ) : null}
+            </>
+          )}
+        </>
+      )}
+
       <ExpensesBottomSheet
         id={'expenses'}
         // onPress={closeExpensesBottomSheet}
@@ -346,7 +846,10 @@ const Expenses = ({route, navigation}) => {
         onPress={title => filterTitle(title)}
       />
       <DatePicker
+        // minimumDate={new Date(getMinimumDate(new Date()))}
+        maximumDate={new Date()}
         modal
+        mode="date"
         open={open}
         date={new Date()}
         onConfirm={date => onConfirmDate(date)}

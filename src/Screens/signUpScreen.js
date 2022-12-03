@@ -1,30 +1,30 @@
 import {
-  ActivityIndicator,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
+  SafeAreaView,
+  ActivityIndicator,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {Fonts, lightThemeColors} from '../theme';
 import AbstractTextInput from '../Components/Abstract/abstractTextInput';
 import FocusAwareStatusBar from '../Components/Abstract/focusAwareStatusBar';
 import AbstractButton from '../Components/Abstract/abstractButton';
-import AuthController from '../Controller/authController';
 import {useTheme} from '@react-navigation/native';
 import ThemeController from '../Controller/themeController';
+import AuthController from '../Controller/authController';
 import AbstaractRadioButton from '../Components/Abstract/abstractRadioButton';
-import ArrowLeftTailSvg from '../Assets/Icons/arrowleftTailSvg';
 const SignUpScreen = ({navigation}) => {
-  const [user, SetUser] = useState({
-    name: '',
-    nameError: '',
-    email: '',
-    emailError: '',
-    password: '',
-    passwordError: '',
-    role: 'admin',
-  });
+  const [username, setUserName] = useState('');
+  const [nameError, setNameError] = useState('');
+  const [password, setPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [roles, setRoles] = useState(['admin']);
+  const [resError, setResError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [darkMode, setDarkMode] = useState();
   const [options, SetOptions] = useState([
     {
       title: 'admin',
@@ -37,10 +37,6 @@ const SignUpScreen = ({navigation}) => {
       pressed: false,
     },
   ]);
-  const [validate, setValidate] = useState(false);
-  const [resError, setResError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [darkMode, setDarkMode] = useState();
   const {colors} = useTheme();
   useEffect(() => {
     ThemeController.checkAsyncAndSetPreviousMode();
@@ -54,69 +50,85 @@ const SignUpScreen = ({navigation}) => {
   const onChangeText = (e, type) => {
     switch (type) {
       case 'name':
-        return SetUser(prev => ({...prev, name: e})), nvalidations(e);
-
-      case 'email':
-        return SetUser(prev => ({...prev, email: e})), ValidateEmail(e);
+        return setUserName(e), nameValidations(e);
 
       case 'password':
-        return SetUser(prev => ({...prev, password: e})), ValidatePassword(e);
-
+        return setPassword(e), ValidatePassword(e);
+      case 'email':
+        return setEmail(e), ValidateEmail(e);
       default:
         return;
     }
   };
-
-  const nvalidations = e => {
+  const nameValidations = e => {
     let res = /^[a-z A-Z]+$/.test(e);
     if (res) {
-      SetUser(prev => ({...prev, nameError: ''}));
+      setNameError('');
     } else {
-      SetUser(prev => ({...prev, nameError: 'Enter Valid Name'}));
-    }
-  };
-  const ValidateEmail = mail => {
-    if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail)) {
-      SetUser(prev => ({...prev, emailError: ''}));
-    } else {
-      SetUser(prev => ({...prev, emailError: 'Enter Valid Email'}));
+      setNameError('Enter Valid Name');
     }
   };
   const ValidatePassword = e => {
     if (e.length < 6) {
-      SetUser(prev => ({
-        ...prev,
-        passwordError: 'password should be 6 character long ',
-      }));
+      setPasswordError('password should be 6 character long ');
     } else {
-      SetUser(prev => ({...prev, passwordError: ''}));
+      setPasswordError('');
     }
   };
+  const ValidateEmail = mail => {
+    if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail)) {
+      setEmailError('');
+    } else {
+      setEmailError('Enter Valid Email');
+    }
+  };
+
   const onSignUpButtonPressed = () => {
     setResError('');
-    if (
-      resError == '' &&
-      user.nameError == '' &&
-      user.emailError == '' &&
-      user.passwordError == '' &&
-      user.name != '' &&
-      user.email != '' &&
-      user.password != ''
-    ) {
-      setLoading(true);
-      AuthController.handleSignupUser(
-        user,
+    if (!username && !email && !password) {
+      setNameError('*required feild!');
+      setPasswordError('*required feild!');
+      setEmailError('*required feild!');
+    } else if (!username) {
+      setNameError('*required feild!');
+    } else if (!email) {
+      setEmailError('*required feild!');
+    } else if (!password) {
+      setPasswordError('*required feild!');
+    } else if (username != '' && email != '' && password != '') {
+      if (!/^[a-z A-Z]+$/.test(username)) {
+        setNameError('Enter Valid Name');
+      } else if (password.length < 6) {
+        setPasswordError('password should be 6 character long ');
+      } else if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+        setEmailError('Enter Valid Email');
+      } else {
+        setLoading(true);
+        setLoading(true);
+        AuthController.handleSignupUser(
+          {username, email, password, roles},
 
-        e => {
-          setLoading(false), setResError(e);
-        },
-      );
+          res => {
+            setLoading(false);
+            if (res.success) {
+              setUserName('');
+              setEmail('');
+              setPassword('');
+            } else {
+              // console.log('abbbb00', res);
+              setResError(res);
+            }
+          },
+        );
+      }
+
+      ///
     }
   };
-
   return (
     <>
-      <View style={[styles.main, {backgroundColor: colors.defaultBackground}]}>
+      <SafeAreaView
+        style={[styles.main, {backgroundColor: colors.defaultBackground}]}>
         <FocusAwareStatusBar
           barStyle={darkMode ? 'light-content' : 'dark-content'}
           backgroundColor={colors.defaultBackground}
@@ -129,142 +141,154 @@ const SignUpScreen = ({navigation}) => {
               // backgroundColor: 'yellow',
               flex: 0.12,
               alignItems: 'center',
-              justifyContent: 'flex-end',
+              justifyContent: 'center',
               paddingBottom: 0,
             },
           ]}>
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            style={{
-              width: '100%',
-              height: '100%',
-              // backgroundColor: 'green',
-              justifyContent: 'flex-end',
-              //   alignItems: 'center',
-              paddingBottom: 20,
-              paddingHorizontal: 10,
-            }}>
-            <ArrowLeftTailSvg color={colors.black} />
-          </TouchableOpacity>
           <Text
             style={[
               styles.labelStyle,
-              {color: colors.black, fontWeight: '900', fontSize: 20},
+              {color: colors.black, fontWeight: '900', fontSize: 19},
             ]}>
             SignUp
           </Text>
         </View>
         <View style={styles.middleContainer}>
-          <View style={[styles.containerHorizontal]}>
-            <AbstractTextInput
-              borderWidth={1}
-              borderColor={lightThemeColors.grey}
-              placeHolderTextStyle={[styles.labelStyle, {color: colors.black}]}
-              type={'simple'}
-              PlaceHolder={'Name'}
-              placeholderTextColor={lightThemeColors.grey}
-              Value={user.name}
-              onChangeText={e => onChangeText(e, 'name')}
-              validate={validate}
-              validations={e => nvalidations(e)}
-              errorMessage={user.nameError}
-            />
-            <AbstractTextInput
-              borderWidth={1}
-              borderColor={lightThemeColors.grey}
-              placeHolderTextStyle={[styles.labelStyle, {color: colors.black}]}
-              type={'simple'}
-              PlaceHolder={'Email'}
-              placeholderTextColor={lightThemeColors.grey}
-              Value={user.email}
-              onChangeText={e => onChangeText(e, 'email')}
-              validate={validate}
-              validations={e => ValidateEmail(e)}
-              errorMessage={user.emailError}
-            />
-            <AbstractTextInput
-              password={true}
-              borderWidth={1}
-              borderColor={lightThemeColors.grey}
-              placeHolderTextStyle={[styles.labelStyle, {color: colors.black}]}
-              type={'simple'}
-              PlaceHolder={'Password'}
-              placeholderTextColor={lightThemeColors.grey}
-              Value={user.password}
-              onChangeText={e => onChangeText(e, 'password')}
-              validate={validate}
-              errorMessage={user.passwordError}
-              validations={e => ValidatePassword(e)}
-            />
+          <AbstractTextInput
+            borderWidth={1}
+            borderColor={lightThemeColors.grey}
+            placeHolderTextStyle={[styles.labelStyle, {color: colors.black}]}
+            type={'simple'}
+            PlaceHolder={'Name'}
+            placeholderTextColor={lightThemeColors.grey}
+            Value={username}
+            onChangeText={e => onChangeText(e, 'name')}
+            errorMessage={nameError}
+          />
+          <AbstractTextInput
+            borderWidth={1}
+            borderColor={lightThemeColors.grey}
+            placeHolderTextStyle={[styles.labelStyle, {color: colors.black}]}
+            type={'simple'}
+            PlaceHolder={'email'}
+            placeholderTextColor={lightThemeColors.grey}
+            Value={email}
+            onChangeText={e => onChangeText(e, 'email')}
+            errorMessage={emailError}
+          />
+          <AbstractTextInput
+            password={true}
+            borderWidth={1}
+            borderColor={lightThemeColors.grey}
+            placeHolderTextStyle={[styles.labelStyle, {color: colors.black}]}
+            type={'simple'}
+            PlaceHolder={'Password'}
+            placeholderTextColor={lightThemeColors.grey}
+            Value={password}
+            onChangeText={e => onChangeText(e, 'password')}
+            errorMessage={passwordError}
+          />
+          <View
+            style={{
+              flexDirection: 'row',
+              width: '100%',
+              // backgroundColor: 'yellow',
+              // justifyContent: 'space-between',
+              // marginTop: 15,
+              marginBottom: 15,
+            }}>
+            <Text
+              style={[
+                styles.labelStyle,
+                {fontSize: 15, color: colors.grey1, marginLeft: 15},
+              ]}>
+              Role
+            </Text>
             <View
               style={{
                 flexDirection: 'row',
-                width: '100%',
-                // backgroundColor: 'yellow',
-                // justifyContent: 'space-between',
-                marginTop: 15,
+                width: '60%',
+                justifyContent: 'space-between',
+                paddingHorizontal: 20,
+                // backgroundColor: 'green',
               }}>
-              <Text
-                style={[
-                  styles.labelStyle,
-                  {fontSize: 15, color: colors.grey1, marginLeft: 15},
-                ]}>
-                Role
-              </Text>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  width: '60%',
-                  justifyContent: 'space-between',
-                  paddingHorizontal: 20,
-                  // backgroundColor: 'green',
-                }}>
-                <AbstaractRadioButton
-                  flexDirection={'row'}
-                  options={options}
-                  setOPtions={SetOptions}
-                  onPress={title => SetUser(prev => ({...prev, role: title}))}
-                />
-              </View>
+              <AbstaractRadioButton
+                flexDirection={'row'}
+                options={options}
+                setOPtions={SetOptions}
+                onPress={title => setRoles([title])}
+              />
             </View>
+          </View>
 
+          <AbstractButton
+            backgroundColor={lightThemeColors.red1}
+            height={50}
+            title={loading ? null : 'SignUp'}
+            titleStyle={{
+              color: colors.white,
+              fontFamily: Fonts.interBold,
+              fontWeight: '600',
+              fontSize: 16,
+            }}
+            renderRightIcon={() =>
+              loading ? (
+                <ActivityIndicator size="small" color={colors.white} />
+              ) : (
+                false
+              )
+            }
+            width={'100%'}
+            borderRadius={30}
+            onPress={onSignUpButtonPressed}
+          />
+          {resError ? (
+            <Text
+              style={[
+                styles.labelStyle,
+                {
+                  color: colors.red1,
+                  fontSize: 14,
+                  alignSelf: 'center',
+                  marginTop: 8,
+                },
+              ]}>
+              {resError}
+            </Text>
+          ) : null}
+          {/* </View> */}
+          <View
+            style={[
+              // styles.containerHorizontal,
+              {
+                alignItems: 'center',
+                flexDirection: 'row',
+                justifyContent: 'flex-start',
+                paddingLeft: 15,
+                paddingTop: 8,
+              },
+            ]}>
+            <Text style={[styles.labelStyle, {color: colors.grey1}]}>
+              Allready Registered!?
+            </Text>
             <AbstractButton
-              backgroundColor={lightThemeColors.red1}
-              height={50}
-              title={loading ? null : 'SignUp'}
+              backgroundColor={'transparent'}
+              height={20}
+              title={'LogIn'}
               titleStyle={{
-                color: colors.white,
+                color: colors.red1,
                 fontFamily: Fonts.interBold,
                 fontWeight: '600',
-                fontSize: 16,
+                fontSize: 13,
               }}
-              renderRightIcon={() =>
-                loading ? (
-                  <ActivityIndicator size="small" color={colors.white} />
-                ) : null
-              }
-              width={'100%'}
+              // iconMargin={10}
+              width={'15%'}
               borderRadius={30}
-              onPress={onSignUpButtonPressed}
+              onPress={() => navigation.navigate('LogInScreen')}
             />
-            {resError != '' ? (
-              <Text
-                style={[
-                  styles.labelStyle,
-                  {
-                    color: colors.red1,
-                    position: 'absolute',
-                    bottom: -20,
-                    left: 17,
-                    fontSize: 14,
-                  },
-                ]}>
-                Network Error, Try Again !
-              </Text>
-            ) : null}
           </View>
         </View>
-      </View>
+      </SafeAreaView>
     </>
   );
 };
@@ -274,22 +298,21 @@ export default SignUpScreen;
 const styles = StyleSheet.create({
   main: {
     flex: 1,
-
-    // backgroundColor: colors.defaultBackground,
+  },
+  middleContainer: {
+    flex: 1,
+    paddingTop: 50,
+    // backgroundColor: 'red',
     // justifyContent: 'center',
     paddingHorizontal: 20,
   },
-  middleContainer: {
-    flex: 0.55,
-    // backgroundColor: 'red',
-    justifyContent: 'center',
-  },
   containerHorizontal: {
-    height: 330,
-    width: '100%',
+    // height: 230,
+    // width: '100%',
+    flex: 1,
     // backgroundColor: 'green',
     // alignItems: 'flex-end',
-    justifyContent: 'space-between',
+    // justifyContent: 'space-between',
   },
   titleStyle: {
     fontFamily: Fonts.interBold,

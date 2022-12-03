@@ -15,13 +15,15 @@ import {useEffect} from 'react';
 import AuthController from '../Controller/authController';
 import {useSelector} from 'react-redux';
 import {roundToNearestPixel} from 'react-native/Libraries/Utilities/PixelRatio';
+import ReduxDispatchController from '../Controller/reduxDispatchController';
 const MoreScreen = ({route, navigation}) => {
   const user = useSelector(state => state.user.user.username);
-  console.log('userinredux', user);
+  // console.log('userinredux', user);
 
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
+    ReduxDispatchController.Expense.updatedDateQueryInStore('toggle', false);
     ThemeController.checkAsyncAndSetPreviousMode();
     ThemeController.listeningToChange(data => {
       setDarkMode(data);

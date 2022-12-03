@@ -18,7 +18,7 @@ const AbstaractRadioButton = ({
   const [radioArray, setRadioArray] = useState(options);
   const {colors} = useTheme();
   const defaultTitleStyle = titleStyle ? titleStyle : styles.titleStyle;
-  const defaultHeight = height ? height : 25;
+  const defaultHeight = height ? height : 30;
   const defaultWidth = width ? width : 68;
   const defaultFlexDirection = flexDirection ? flexDirection : 'row';
 
@@ -46,15 +46,15 @@ const AbstaractRadioButton = ({
     return (
       <TouchableOpacity
         onPress={() => {
-          changePressBoxValue(index), onPress(item.title);
+          changePressBoxValue(index);
+          onPress(item.title);
         }}
         key={index}
         style={{
           height: defaultHeight,
           width: defaultWidth,
           flexDirection: defaultFlexDirection,
-          justifyContent: justifyContent,
-          // backgroundColor: 'green',
+          justifyContent,
         }}>
         {reverse ? (
           <>
@@ -74,11 +74,7 @@ const AbstaractRadioButton = ({
           </>
         ) : (
           <>
-            <TouchableOpacity
-              onPress={() => {
-                changePressBoxValue(index), onPress(item.title);
-              }}
-              style={[styles.tintStyle, {borderColor: defaultTintColor}]}>
+            <View style={[styles.tintStyle, {borderColor: defaultTintColor}]}>
               {item.pressed === true ? (
                 <View
                   style={[
@@ -86,7 +82,7 @@ const AbstaractRadioButton = ({
                     {backgroundColor: defaultBackgroundColor},
                   ]}></View>
               ) : null}
-            </TouchableOpacity>
+            </View>
             <Text style={[defaultTitleStyle, {color: colors.black}]}>
               {item.title}
             </Text>

@@ -5,7 +5,40 @@ import {useSelector} from 'react-redux';
 import axios from 'axios';
 import {useEffect} from 'react';
 import {useState} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+const getMonthNumber = month => {
+  // console.log('switch switch', month);
+  switch (month) {
+    case 'January':
+      return '01';
+    case 'Feburary':
+      return '02';
+    case 'March':
+      return '03';
+    case 'April':
+      return '04';
+    case 'May':
+      return '05';
+    case 'June':
+      return '06';
+    case 'July':
+      return '07';
+    case 'August':
+      return '08';
+    case 'September':
+      return '09';
+    case 'Octobor':
+      return '10';
+    case 'November':
+      return '11';
+    case 'December':
+      return '12';
+    default:
+      return;
+  }
+};
 class ExpenseController {
+  static recentSearchResultsFromCatalog = 'recentSearchResults';
   static getTotalExpenses = (call_back_res, call_back_err) => {
     const totalExpenseInReducer = store.getState().expense.totalExpense;
 
@@ -108,7 +141,6 @@ class ExpenseController {
       })
       .catch(err => console.log(err));
   };
-
   static previousdayExpenseRequest = previousDate => {
     // console.log('date today', typeof currentDate);
     return new Promise((resolve, reject) => {
@@ -159,17 +191,14 @@ class ExpenseController {
         });
     });
   };
-
   static handleAddExpense = (obj, call_back, call_back_err) => {
     console.log('expenseData to be added', obj);
     ExpenseController.addExpenseRequest(obj)
       .then(res => {
-        console.log('responseinhandler', res.data);
         if (res.data.success) {
-          console.log(res.data, '????????');
+          console.log('responseinhandler', res.data.data.obj);
           call_back(res);
-          ReduxDispatchController.Expense.setExpenseList(obj);
-          ExpenseController.getTotalUpdatedExpenses();
+          ReduxDispatchController.Expense.setExpenseList(res.data.data.obj);
         } else {
           call_back(res.data.message);
         }
@@ -188,14 +217,146 @@ class ExpenseController {
         });
     });
   };
+  static handleFindExpenseByMonthWithYear = (dateQuery, call_back) => {
+    ExpenseController.findByMonthWithYearRequest(dateQuery)
+      .then(res => {
+        if (res.data.success) {
+          // console.log('responseinhandler', res.data.data);
+          call_back(res.data.data);
+          ReduxDispatchController.Expense.setFiltersMonthWithYearInRedux(
+            res.data.data,
+          );
+        } else {
+          call_back(res.data.message);
+        }
+      })
+      .catch(err => console.log(err));
+  };
+  static findByMonthWithYearRequest = dateQuery => {
+    // console.log('qqqqq????', getMonthNumber(dateQuery.month), dateQuery.year);
+
+    return new Promise((resolve, reject) => {
+      let baseUrl;
+      if (dateQuery.month == 'Whole Year') {
+        baseUrl = `https://expensemanagementsys.herokuapp.com/expApi/yearly?year=${dateQuery.year}`;
+      } else {
+        baseUrl = `https://expensemanagementsys.herokuapp.com/expApi/monthly?month=${getMonthNumber(
+          dateQuery.month,
+        )}&year=${dateQuery.year}`;
+      }
+      axios
+        .get(baseUrl)
+        .then(response => {
+          resolve(response);
+        })
+        .catch(error => {
+          reject('Network Error');
+        });
+    });
+  };
+  static handleFindExpenseByThisWeek = (dateRange, call_back) => {
+    ExpenseController.findByThisWeekRequest(dateRange)
+      .then(res => {
+        if (res.data.success) {
+          // console.log('responseinhandler of thissss', res.data.data);
+          call_back(res.data.data);
+          ReduxDispatchController.Expense.setFiltersWithThisWeekInRedux(
+            res.data.data,
+          );
+        } else {
+          call_back(res.data.message);
+        }
+      })
+      .catch(err => console.log(err));
+  };
+  static findByThisWeekRequest = dateRange => {
+    // console.log('qqqqq????', dateRange.sDate, dateRange.eDate);
+
+    return new Promise((resolve, reject) => {
+      axios
+        .get(
+          `https://expensemanagementsys.herokuapp.com/expApi/dateRange?sdate=${dateRange.eDate}&edate=${dateRange.sDate}`,
+        )
+        .then(response => {
+          resolve(response);
+        })
+        .catch(error => {
+          reject('Network Error');
+        });
+    });
+  };
+  static handleFindExpenseByLastWeek = (dateRange, call_back) => {
+    ExpenseController.findByLastWeekRequest(dateRange)
+      .then(res => {
+        if (res.data.success) {
+          // console.log('responseinhandler of Last', res.data.data);
+          call_back(res.data.data);
+          ReduxDispatchController.Expense.setFiltersWithLastWeekInRedux(
+            res.data.data,
+          );
+        } else {
+          call_back(res.data.message);
+        }
+      })
+      .catch(err => console.log(err));
+  };
+  static findByLastWeekRequest = dateRange => {
+    // console.log('qqqqq????jaan', dateRange.sDate, dateRange.eDate);
+
+    return new Promise((resolve, reject) => {
+      axios
+        .get(
+          `https://expensemanagementsys.herokuapp.com/expApi/dateRange?sdate=${dateRange.eDate}&edate=${dateRange.sDate}`,
+        )
+        .then(response => {
+          resolve(response);
+        })
+        .catch(error => {
+          reject('Network Error');
+        });
+    });
+  };
+  static handleFindExpenseByDateRange = (dateRange, call_back) => {
+    ExpenseController.findByDateRangeRequest(dateRange)
+      .then(res => {
+        if (res.data.success) {
+          // console.log('responseinhandler of DateRange', res.data.data);
+          call_back(res.data.data);
+          ReduxDispatchController.Expense.setFiltersWithDateRangeInRedux(
+            res.data.data,
+          );
+        } else {
+          call_back(res.data.message);
+        }
+      })
+      .catch(err => console.log(err));
+  };
+  static findByDateRangeRequest = dateRange => {
+    // console.log('qqqqq????jaan', dateRange.eDate, dateRange.sDate);
+
+    return new Promise((resolve, reject) => {
+      axios
+        .get(
+          `https://expensemanagementsys.herokuapp.com/expApi/dateRange?sdate=${dateRange.sDate}&edate=${dateRange.eDate}`,
+        )
+        .then(response => {
+          resolve(response);
+        })
+        .catch(error => {
+          reject('Network Error');
+        });
+    });
+  };
   static addCatalogueExpense = (obj, call_back, call_back_err) => {
-    console.log('expenseData to be added in catlog', obj);
+    // console.log('expenseData to be added in catlog', obj);
     ExpenseController.addCatalogueExpenseRequest(obj)
       .then(res => {
         if (res.data.success) {
-          console.log(res.data, '????????');
+          // console.log(res.data, '????????');
           call_back(res);
-          ReduxDispatchController.Expense.addCatalogueExpensesInRedux(obj);
+          ReduxDispatchController.Expense.addCatalogueExpensesInRedux(
+            res.data.data.obj,
+          );
         } else {
           reject(res.data.message);
         }
@@ -232,7 +393,7 @@ class ExpenseController {
   };
 
   static updateTodayExpenceItem = (obj, _call_back) => {
-    console.log('object to b updated--', obj);
+    // console.log('object to b updated--', obj);
     ExpenseController.updateExpenseItemRequest(obj)
       .then(res => {
         if (res.data.success) {
@@ -245,7 +406,7 @@ class ExpenseController {
       .catch(error => console.log(error));
   };
   static updateTodayExpenseItemRequest = obj => {
-    console.log('object in controller:', obj, 'expenseId: ', obj._id);
+    // console.log('object in controller:', obj, 'expenseId: ', obj._id);
     return new Promise((resolve, reject) => {
       axios
         .put(
@@ -261,7 +422,7 @@ class ExpenseController {
     });
   };
   static updateExpenceItem = (obj, _call_back) => {
-    console.log('object to b updated--', obj);
+    // console.log('object to b updated--', obj);
     ExpenseController.updateExpenseItemRequest(obj)
       .then(res => {
         if (res.data.success) {
@@ -274,7 +435,7 @@ class ExpenseController {
       .catch(error => console.log(error));
   };
   static updateExpenseItemRequest = obj => {
-    console.log('object in controller:', obj, 'expenseId: ', obj._id);
+    // console.log('object in controller:', obj, 'expenseId: ', obj._id);
     return new Promise((resolve, reject) => {
       axios
         .put(
@@ -302,12 +463,12 @@ class ExpenseController {
       .catch(error => console.log(error));
   };
   static updateCatalogExpenseItemRequest = obj => {
-    console.log(
-      'object in controller000---update catalog:',
-      obj,
-      'expenseId: ',
-      obj._id,
-    );
+    // console.log(
+    //   'object in controller000---update catalog:',
+    //   obj,
+    //   'expenseId: ',
+    //   obj._id,
+    // );
     return new Promise((resolve, reject) => {
       axios
         .put(
@@ -338,7 +499,7 @@ class ExpenseController {
       .catch(err => call_back(err));
   };
   static DeleteExpenceItemFromCatalog = (id, call_back, loading) => {
-    console.log('catlog ------expense_id', id);
+    // console.log('catlog ------expense_id', id);
     ExpenseController.deleteExpenseFromCatalogRequest(id)
       .then(res => {
         if (res.data.success) {
@@ -379,7 +540,6 @@ class ExpenseController {
         });
     });
   };
-
   static handlegetExpenseCategories = call_back => {
     ExpenseController.getExpenseCategoryListRequest().then(res => {
       if (res) {
@@ -410,9 +570,10 @@ class ExpenseController {
   static addExpenseCategories = (exp_category, call_back) => {
     ExpenseController.addExpenseCategoryRequest(exp_category)
       .then(res => {
+        // console.log('ressss', res.data.obj);
         if (res) {
           ReduxDispatchController.Expense.addExpenseCategoriesInRedux(
-            exp_category,
+            res.data.obj,
           ),
             call_back(res.data.message);
         }
@@ -425,7 +586,7 @@ class ExpenseController {
         .post(
           'https://expensemanagementsys.herokuapp.com/expApi/addExpCategory',
           {
-            name: 'newSalary',
+            name: exp_category,
           },
         )
         .then(response => {
@@ -441,13 +602,74 @@ class ExpenseController {
         });
     });
   };
+  static addInRecentSearchResultsFromCatalog = itemsArray => {
+    return new Promise((resolve, reject) => {
+      AsyncStorage.getItem(this.recentSearchResultsFromCatalog)
+        .then(res => {
+          if (res !== null) {
+            const resultArray = JSON.parse(res);
+            console.log(resultArray, 'resultArray');
+            const newlyArray = itemsArray.concat(resultArray);
+            console.log(newlyArray, 'newlyArraynewlyArray');
+            AsyncStorage.setItem(
+              this.recentSearchResultsFromCatalog,
+              JSON.stringify(newlyArray),
+            )
+              .then(res => {
+                resolve(newlyArray);
+                console.log('res in redux', res);
+              })
+              .catch(err => reject(err));
+          } else {
+            console.log('return null');
+            AsyncStorage.setItem(
+              this.recentSearchResultsFromCatalog,
+              JSON.stringify(itemsArray),
+            )
+              .then(res => {
+                resolve(itemsArray);
+                console.log('res in redux', res);
+              })
+              .catch(err => reject(err));
+          }
+        })
+        .catch(err => reject(err));
+    });
+  };
+  static clearRecentCatalogueSearchResultsAsync = () => {
+    AsyncStorage.removeItem(this.recentSearchResultsFromCatalog);
+  };
+  static getRecentSearchResultsFromCatalog = () => {
+    AsyncStorage.getItem(this.recentSearchResultsFromCatalog)
+      .then(res => {
+        if (res !== null) {
+          ReduxDispatchController.Expense.saveSearchResultsFromCatalogInRedux(
+            JSON.parse(res),
+          );
+        } else {
+          ReduxDispatchController.Expense.saveSearchResultsFromCatalogInRedux(
+            [],
+          );
+        }
+      })
+      .catch(err => reject(err));
+  };
+
   static dateSlicer = date => {
     return date.slice(0, 10);
   };
 }
-
 export default ExpenseController;
+export const dateSlicer = date => {
+  return date.slice(0, 10);
+};
 export const categorySelector = cat_id => {
+  const allCategories = useSelector(state => state.expense.expenseCategories);
+  const newArr = [...allCategories];
+  const newObj = newArr.find(item => item._id == cat_id);
+  return newObj?.name;
+};
+export const useCategorySelector = cat_id => {
   const allCategories = useSelector(state => state.expense.expenseCategories);
   const newArr = [...allCategories];
   const newObj = newArr.find(item => item._id == cat_id);
@@ -459,7 +681,6 @@ export const useGetSingleExpence = id => {
     const signleItem = totalExpense.find(
       singleExpense => singleExpense.id === id,
     );
-
     return signleItem;
   } else {
     return undefined;
@@ -471,7 +692,6 @@ export const useGetSingleExpenceCategory = id => {
     const signleItem = allExpenseCategories.find(
       singleExpenseCategory => singleExpenseCategory.id === id,
     );
-
     return signleItem;
   } else {
     return undefined;
@@ -486,34 +706,147 @@ export const useGetExpensesDetails = type => {
       return useSelector(state => state.expense.todayExpenses);
     }
     case 'previous': {
-      return useSelector(state => state.expense.previousdayExpenses);
+      const allExpenses = useSelector(state => state.expense.allExpenses);
+      let previousExpenses = allExpenses.filter(
+        singleExpense =>
+          ExpenseController.dateSlicer(singleExpense.createdAt) !=
+          dateConverter(new Date()),
+      );
+      return previousExpenses;
     }
     default:
       return;
   }
 };
-
 export const useFilteredMostRecent = currentDate => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     ExpenseController.findAllExpensesHandler(res => {
-      console.log('api called');
+      // console.log('api called');
       setLoading(false);
     });
   }, []);
-
+  const recentlyAdded = useSelector(state => state.expense.allExpenses);
+  let filtered = recentlyAdded.slice(-7);
+  return {recentlyAdded: filtered, loading};
+};
+export const useGetPrevious = (currentDate, setLoading) => {
+  useEffect(() => {
+    ExpenseController.findAllExpensesHandler(res => {
+      // console.log('api called');
+      setLoading(false);
+    });
+  }, []);
   const allExpenses = useSelector(state => state.expense.allExpenses);
-  let filtered = allExpenses.filter(
+  let previousExpenses = allExpenses.filter(
     singleExpense =>
-      ExpenseController.dateSlicer(singleExpense.createdAt) == currentDate,
+      ExpenseController.dateSlicer(singleExpense.createdAt) != currentDate,
   );
-
-  return {allExpenses: filtered, loading};
+  return {previousExpenses};
 };
 export const dateConverter = inputDate => {
   let date, month, year;
   date = inputDate.getDate();
+  month = inputDate.getMonth() + 1;
+  year = inputDate.getFullYear();
+  date = date.toString().padStart(2, '0');
+  month = month.toString().padStart(2, '0');
+  let result = `${year}-${month}-${date}`;
+  return result.toString();
+};
+
+export const convertTodayDateTitle = (inputDate, onlyName) => {
+  let date, month, year;
+  date = inputDate.getDate();
+  month = inputDate.getMonth() + 1;
+  month = month.toString().padStart(2, '0');
+  year = inputDate.getFullYear();
+  let modifymonth = month => {
+    switch (month) {
+      case '01':
+        return 'Jan';
+      case '02':
+        return 'Feb';
+      case '03':
+        return 'Mar';
+      case '04':
+        return 'Apr';
+      case '05':
+        return 'May';
+      case '06':
+        return 'Jun';
+      case '07':
+        return 'Jul';
+      case '08':
+        return 'Aug';
+      case '09':
+        return 'Sep';
+      case '10':
+        return 'Oct';
+      case '11':
+        return 'Nov';
+      case '12':
+        return 'Dec';
+      default:
+        return;
+    }
+  };
+  if (onlyName) {
+    return `${modifymonth(month)}`;
+  } else {
+    return `${date}th\u0020${modifymonth(month)}`;
+  }
+};
+
+export const getMonthName = month => {
+  // console.log(month, '???');
+  switch (month) {
+    case '01':
+      return 'Jan';
+    case '02':
+      return 'Feb';
+    case '03':
+      return 'Mar';
+    case '04':
+      return 'Apr';
+    case '05':
+      return 'May';
+    case '06':
+      return 'Jun';
+    case '07':
+      return 'Jul';
+    case '08':
+      return 'Aug';
+    case '09':
+      return 'Sep';
+    case '10':
+      return 'Oct';
+    case '11':
+      return 'Nov';
+    case '12':
+      return 'Dec';
+    default:
+      return month;
+  }
+};
+
+export const useDateQuery = () => {
+  return useSelector(state => state.expense.dateQuery);
+};
+export const convertPreviousDate = inputDate => {
+  let date, month, year;
+  date = inputDate.getDate() - 1;
+  month = inputDate.getMonth() + 1;
+  year = inputDate.getFullYear();
+  date = date.toString().padStart(2, '0');
+  month = month.toString().padStart(2, '0');
+  let result = `${year}-${month}-${date}`;
+  return result.toString();
+};
+export const getMinimumDate = inputDate => {
+  let date, month, year;
+  date = inputDate.getDate() - 10;
   month = inputDate.getMonth() + 1;
   year = inputDate.getFullYear();
   date = date.toString().padStart(2, '0');

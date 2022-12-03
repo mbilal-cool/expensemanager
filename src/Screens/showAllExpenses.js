@@ -1,15 +1,12 @@
 import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import React, {useState, useEffect} from 'react';
-
 import {Fonts, lightThemeColors} from '../theme';
-
 import {useTheme} from '@react-navigation/native';
 import {expenseList} from '../mockData';
 // import ExpenseDetailItem from '../Components/Module/expenseDetailItem';
 import ExpenseDetailHeader from '../Components/Module/expenseDetailHeader';
 import FocusAwareStatusBar from '../Components/Abstract/focusAwareStatusBar';
 import ThemeController from '../Controller/themeController';
-
 import AbstractHeader from '../Components/Abstract/abstractHeader';
 import {useGetExpensesDetails} from '../Controller/expenseController';
 import ArrowLeftTailSvg from '../Assets/Icons/arrowleftTailSvg';
@@ -19,7 +16,6 @@ import {FlatList} from 'react-native-gesture-handler';
 import ExpenseDetailItem from '../Components/Module/expenseDetailItem';
 const ExpenseDetailItemListPlacehlder = ({showAllButton}) => {
   const {colors} = useTheme();
-
   return (
     <SkeletonPlaceholder
       borderRadius={4}
@@ -35,7 +31,7 @@ const ExpenseDetailItemListPlacehlder = ({showAllButton}) => {
 export default function ShowAllExpenses({route, navigation}) {
   const {viewAllType} = route.params;
   const allExpenses = useGetExpensesDetails(viewAllType);
-  console.log('allexp', viewAllType);
+  // console.log('allexp', viewAllType, allExpenses);
   const {colors} = useTheme();
   const [expenses, SetExpenses] = useState(expenseList);
   const [darkMode, setDarkMode] = useState();
@@ -109,19 +105,6 @@ export default function ShowAllExpenses({route, navigation}) {
             {noOfPlaceHolders.map((item, index) => (
               <ExpenseDetailItemListPlacehlder key={index} />
             ))}
-            <SkeletonPlaceholder
-              borderRadius={4}
-              backgroundColor={colors.white}
-              highlightColor={'#F4f4f9'}
-              speed={1200}>
-              <View
-                style={{
-                  height: 28,
-                  width: 69,
-                  backgroundColor: 'green',
-                  alignSelf: 'flex-end',
-                }}></View>
-            </SkeletonPlaceholder>
           </>
         ) : (
           <>

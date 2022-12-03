@@ -25,11 +25,15 @@ import ThemeController from '../Controller/themeController';
 import ExpenseController, {
   categorySelector,
   dateConverter,
+  getMinimumDate,
 } from '../Controller/expenseController';
 import {useSelector} from 'react-redux';
 const OneTimeExpense = ({route, navigation}) => {
   const userId = useSelector(state => state.user.user.id);
+  const user_ = useSelector(state => state.user);
+  console.log('userId', user_);
   const {editExpense, type, expensCategoryItem} = route.params;
+  // console.log('catid', expensCategoryItem ? expensCategoryItem._id : null);
   const [loading, setLoading] = useState(false);
   const [oneTimeExpenseID, SetoneTimeExpenseID] = useState(
     '63625be0bec8a249188c9be1',
@@ -43,12 +47,21 @@ const OneTimeExpense = ({route, navigation}) => {
     paymentMedium: 'Cash',
     createdBy: userId,
     expenseType: oneTimeExpenseID,
-    expenseCategory: '63625be1bec8a249188c9be7',
+    expenseCategory: expensCategoryItem
+      ? expensCategoryItem._id
+      : '6376256871e7fe0016d3c6bc',
   });
 
   const [open, setOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const {colors} = useTheme();
+
+  useEffect(() => {
+    if (expensCategoryItem) {
+      setExpense({...expense, expenseCategory: expensCategoryItem._id});
+    }
+  }, [expensCategoryItem]);
+
   useEffect(() => {
     setExpense(editExpense ? editExpense : expense);
     ThemeController.checkAsyncAndSetPreviousMode();
@@ -94,8 +107,7 @@ const OneTimeExpense = ({route, navigation}) => {
         navigation.navigate('EntryDetails', {singleExpense: expense});
     } else {
       ExpenseController.handleAddExpense(expense, res => {
-        setLoading(false),
-          ExpenseController.findAllExpensesHandler(res => navigation.goBack());
+        setLoading(false), navigation.goBack();
       });
     }
   };
@@ -298,7 +310,10 @@ const OneTimeExpense = ({route, navigation}) => {
           </View>
         </View>
         <DatePicker
+          // minimumDate={new Date(getMinimumDate(new Date()))}
+          maximumDate={new Date()}
           modal
+          mode="date"
           open={open}
           date={new Date()}
           onConfirm={date => onConfirmDate(date)}

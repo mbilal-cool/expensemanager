@@ -23,20 +23,14 @@ import ExpenseTypeTile from '../Components/Module/expenseTypeTile';
 import {useTheme} from '@react-navigation/native';
 import ThemeController from '../Controller/themeController';
 import ExpenseController, {
+  dateConverter,
   categorySelector,
+  getMinimumDate,
 } from '../Controller/expenseController';
 import {useSelector} from 'react-redux';
 const EditExpense = ({route, navigation}) => {
   const userId = useSelector(state => state.user.user.id);
   const {editExpense, type, expensCategoryItem, screenName} = route.params;
-  // console.log(
-  //   'Type',
-  //   type,
-  //   '----editExpense???',
-  //   editExpense,
-  //   'screenName: ',
-  //   screenName,
-  // );
   const [loading, setLoading] = useState(false);
   const [oneTimeExpenseID, SetoneTimeExpenseID] = useState(
     '63625be0bec8a249188c9be1',
@@ -67,6 +61,11 @@ const EditExpense = ({route, navigation}) => {
       ThemeController.removingListener();
     };
   }, [editExpense]);
+  useEffect(() => {
+    if (expensCategoryItem) {
+      setExpense({...expense, expenseCategory: expensCategoryItem._id});
+    }
+  }, [expensCategoryItem]);
   const handleExpenseTypePressed = () => {
     navigation.navigate('ExpenseType', {
       type,
@@ -90,12 +89,6 @@ const EditExpense = ({route, navigation}) => {
   const handleSavePress = () => {
     setLoading(true);
     if (type == 'edit') {
-      if (screenName == 'Home') {
-        ExpenseController.updateTodayExpenceItem(expense, call_back => {
-          setLoading(false),
-            navigation.navigate('EntryDetails', {singleExpense: expense});
-        });
-      }
       ExpenseController.updateExpenceItem(expense, call_back => {
         setLoading(false);
         navigation.navigate('EntryDetails', {singleExpense: expense});
@@ -154,7 +147,6 @@ const EditExpense = ({route, navigation}) => {
             </TouchableOpacity>
           )}
         />
-
         <View style={styles.middleContainer}>
           <View
             style={[
@@ -308,7 +300,10 @@ const EditExpense = ({route, navigation}) => {
           </View>
         </View>
         <DatePicker
+          minimumDate={new Date(getMinimumDate(new Date()))}
+          maximumDate={new Date()}
           modal
+          mode="date"
           open={open}
           date={new Date()}
           onConfirm={date => onConfirmDate(date)}

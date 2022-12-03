@@ -10,8 +10,9 @@ import React from 'react';
 import {lightThemeColors, Fonts} from '../../theme';
 import SearchIconSvg from '../../Assets/Icons/searchSvg';
 import {useTheme} from '@react-navigation/native';
-
 const SearchBar = ({
+  onSubmitEditing,
+  inputRef,
   Height,
   Width,
   backgroundColor,
@@ -36,11 +37,9 @@ const SearchBar = ({
   const defaultValue = Value ? Value : null;
   const defaultBorderWidth = borderWidth ? borderWidth : 0;
   const defaultBorderColor = borderColor ? borderColor : 0;
-
   const defaultBackgroundColor = backgroundColor
     ? backgroundColor
     : colors.darkBlue1;
-
   return (
     <View
       style={[
@@ -75,16 +74,18 @@ const SearchBar = ({
           </Text>
         ) : (
           <TextInput
+            onSubmitEditing={onSubmitEditing}
+            ref={inputRef ? inputRef : null}
             onFocus={() => onFocus()}
             placeholderTextColor={searchBarplaceholderTextColor}
             placeholder={searchBarPlaceHolder}
             style={[
               styles.textInput,
-              [styles.labelStyle],
+              [styles.labelStyle, {color: searchBarplaceholderTextColor}],
               searchBarPlaceHolderStyle,
             ]}
             value={defaultValue}
-            onChangeText={onChangeText}
+            onChangeText={e => onChangeText(e)}
           />
         )}
         {renderIconRight ? renderIconRight() : null}
@@ -110,7 +111,7 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.interBold,
     fontWeight: '500',
     fontSize: 15,
-    color: lightThemeColors.white,
+    color: lightThemeColors.black,
   },
   textInput: {
     height: '100%',

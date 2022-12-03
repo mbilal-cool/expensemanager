@@ -8,6 +8,7 @@ const SplashScreen = () => {
   useEffect(() => {
     AuthController.handleRestoreUserAndAuthenticate()
       .then(res => {
+        console.log(res, '????PPPPP');
         if (res) {
           RNBootSplash.hide({fade: true});
           navigate('AppStack');
